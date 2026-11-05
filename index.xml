@@ -2,42 +2,42 @@
 <rss version="2.0">
   <channel>
     <title>Justin Valentine</title>
-    <link>https://example.com/</link>
+    <link>https://justinvalentine.ca/</link>
     <description>Notes on robotics, tools, haptics, and things I build.</description>
     <language>en-us</language>
     <lastBuildDate>Thu, 09 Jul 2026 00:00:00 -0400</lastBuildDate>
     <item>
       <title>Teaching the Hopper Where to Put Its Foot</title>
-      <link>https://example.com/posts/teaching-the-hopper-where-to-put-its-foot/</link>
-      <guid>https://example.com/posts/teaching-the-hopper-where-to-put-its-foot/</guid>
+      <link>https://justinvalentine.ca/posts/teaching-the-hopper-where-to-put-its-foot/</link>
+      <guid>https://justinvalentine.ca/posts/teaching-the-hopper-where-to-put-its-foot/</guid>
       <pubDate>Thu, 09 Jul 2026 00:00:00 -0400</pubDate>
       <description>Simulation notes on the hopper's controller: a Cubli-style reaction-wheel triad, deadbeat foot placement, and softer landings.</description>
     </item>
     <item>
       <title>A Variable-Pitch Hopper</title>
-      <link>https://example.com/posts/variable-pitch-hopper/</link>
-      <guid>https://example.com/posts/variable-pitch-hopper/</guid>
+      <link>https://justinvalentine.ca/posts/variable-pitch-hopper/</link>
+      <guid>https://justinvalentine.ca/posts/variable-pitch-hopper/</guid>
       <pubDate>Thu, 09 Jul 2026 00:00:00 -0400</pubDate>
       <description>Design notes for a variable-pitch, reaction-wheel-stabilized hopping robot.</description>
     </item>
     <item>
       <title>Getting this site off the ground</title>
-      <link>https://example.com/posts/getting-this-site-off-the-ground/</link>
-      <guid>https://example.com/posts/getting-this-site-off-the-ground/</guid>
+      <link>https://justinvalentine.ca/posts/getting-this-site-off-the-ground/</link>
+      <guid>https://justinvalentine.ca/posts/getting-this-site-off-the-ground/</guid>
       <pubDate>Sat, 25 Apr 2026 00:00:00 -0600</pubDate>
       <description>A short first post for a small personal blog.</description>
     </item>
     <item>
       <title>Haptic wrist test notes</title>
-      <link>https://example.com/posts/haptic-wrist-test-notes/</link>
-      <guid>https://example.com/posts/haptic-wrist-test-notes/</guid>
+      <link>https://justinvalentine.ca/posts/haptic-wrist-test-notes/</link>
+      <guid>https://justinvalentine.ca/posts/haptic-wrist-test-notes/</guid>
       <pubDate>Sat, 18 Apr 2026 00:00:00 -0600</pubDate>
       <description>Notes from testing a haptic wrist controller.</description>
     </item>
     <item>
       <title>A small teleoperation checklist</title>
-      <link>https://example.com/posts/teleoperation-checklist/</link>
-      <guid>https://example.com/posts/teleoperation-checklist/</guid>
+      <link>https://justinvalentine.ca/posts/teleoperation-checklist/</link>
+      <guid>https://justinvalentine.ca/posts/teleoperation-checklist/</guid>
       <pubDate>Thu, 02 Apr 2026 00:00:00 -0600</pubDate>
       <description>A short checklist for robot teleoperation sessions.</description>
     </item>
