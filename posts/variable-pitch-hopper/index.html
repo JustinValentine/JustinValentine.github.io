@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Variable-Pitch Hopper | Justin Valentine</title>
+    <meta name="description" content="Design notes for a variable-pitch, reaction-wheel-stabilized hopping robot.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../projects/index.html">Projects</a>
+          <a href="../../index.html#publications">Publications</a>
+          <a href="../../posts/index.html" aria-current="page">Notes</a>
+          <a href="../../about/index.html">About</a>
+          <a class="nav-cv" href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>A Variable-Pitch Hopper</h1>
+          <p class="post-meta"><time datetime="2026-07-09">July 9, 2026</time> &middot; <a href="../../projects/index.html#hopper">Part of the hopper project</a></p>
+        </header>
+
+        <div class="post-content">
+          <p>I am building a hopping robot. The short version is that it has one leg, a very energetic motor, and several ways to make a bad decision at high speed.</p>
+
+          <p>The longer version starts with <a href="https://robot-daycare.com/categories/hopper/">Ben Katz's Hopper series</a>. In particular, the posts on <a href="https://robot-daycare.com/posts/2020-06-07-simple-dynamics-with-varying-transmission-ratios/">variable transmission dynamics</a>, the <a href="https://robot-daycare.com/posts/2020-08-31-varying-pitch-screw-mechanism/">varying-pitch screw mechanism</a>, and the <a href="https://robot-daycare.com/posts/2020-11-18-transmission-ratio-trajectory-optimization/">transmission-ratio optimization</a> put a very appealing idea in my head: use the shape of a mechanism, rather than a gearbox with a fixed ratio, to decide how motor energy reaches the ground.</p>
+
+          <p>That is the thread I am pulling on here. This is not a replica of that robot; it is my attempt to turn the same basic idea into a buildable leg, a controllable body, and eventually a machine that can hop repeatedly instead of merely making one spectacular launch.</p>
+
+          <h2>A leg that changes gears without changing gears</h2>
+
+          <p>A fixed transmission makes a familiar trade: gear down far enough to get a large force at the start of the stroke, and the motor runs out of speed near takeoff. Gear it for speed, and it cannot push the robot hard enough from a crouch. A hopper needs both ends of that trade in a few tenths of a second.</p>
+
+          <p>The proposed answer is a cylindrical cam: a hollow screw with a spiral groove whose pitch changes along its length. The nut is held against rotation and has rolling cam followers in the groove. When the screw turns, the nut—and therefore the leg—moves linearly. The local pitch sets the transmission ratio: <code>k(θ) = dx/dθ</code>.</p>
+
+          <p>Near the bottom of the stroke, the groove has a small value of <code>k</code>. That gives a large mechanical reduction and plenty of thrust while the motor is still accelerating. Near takeoff, the groove opens up: the leg travels farther per motor radian, and the rotor can give its stored momentum back to the body instead of carrying it away.</p>
+
+          <figure>
+            <img src="../../images/screw_cam_plots.png" alt="Optimization plots for the varying-pitch screw cam">
+            <figcaption class="caption">The screw-cam optimizer turns a desired push into a groove profile, then checks geometry, motor speed, and contact loads.</figcaption>
+          </figure>
+
+          <p>It is a mechanical transmission schedule. There is no electronic gearshift to synchronize; the groove itself is the program.</p>
+
+          <h2>The first serious design</h2>
+
+          <p>The present leg study uses a 350 mm stroke and a hollow 7075 aluminium screw. The screw is not just a convenient shape—it is part of the moving and spinning system—so its mass, rotor inertia, cam friction, rail drag, and bending critical speed all make it into the model.</p>
+
+          <p>The current actuator candidate is a CubeMars RI50 rewound to KV220, driven by a Barrett Puck at 60 V. The modelled robot mass excluding the screw is 750 g; the screw adds about 143 g. One aggressive candidate reaches 10.7 m/s takeoff velocity in a 61 ms push, corresponding to a 5.8 m <em>idealized</em> ballistic apex. Those numbers are useful for sizing parts and exposing failure modes, not a promise of what the finished robot will do.</p>
+
+          <p>In fact, the first pass makes the uncomfortable parts very obvious. The cam follower loads are large, the screw must stay below its whirl speed, and the calculated contact stress in the aluminium groove is higher than I am willing to accept for a durable mechanism. The next revision needs larger or better-supported followers and a tougher groove surface—hard anodizing or a steel contact surface are both on the table. Landing is equally important: the drive and transmission need enough authority to regenerate the robot's kinetic energy before the leg reaches its hard stop.</p>
+
+          <p>That is the attraction of doing the optimization early. It does not make the mechanism easy; it tells me exactly which problems deserve the machining time.</p>
+
+          <h2>Hopping is also an attitude-control problem</h2>
+
+          <p>A leg can make vertical impulse, but it does not automatically put the foot in the right place for the next hop. During flight, the body has to aim its leg. During stance, the robot has to get rid of any angular momentum it accumulated while doing that.</p>
+
+          <p>The current control model uses a large inertial tail for pitch and reaction wheels for roll and yaw. The tail turns the body fore and aft to aim the foot; the two additional wheels handle lateral lean and heading. The important trick is to despin the wheels while the foot is on the ground. With a contact point to push against, the robot can dump wheel momentum into the floor and start the next flight with control authority available again.</p>
+
+          <figure>
+            <img src="../../images/slip3d.png" alt="Simulation plots of the three-dimensional screw-cam hopper">
+            <figcaption class="caption">A 3D simulation is where the leg, contact timing, foot placement, and reaction-wheel controller first meet.</figcaption>
+          </figure>
+
+          <p>I have been using a MuJoCo model to work through the interaction between the leg, the reaction wheels, contact timing, and foot placement before asking the hardware to teach the same lessons more expensively. The model includes the variable-ratio screw as a constrained mechanism rather than pretending it is a fixed gear. It is still a model: compliance, backlash, real contacts, and noisy sensors will get a vote later.</p>
+
+          <h2>Electronics that assume the robot is trying to misbehave</h2>
+
+          <p>The control computer is a Teensy 4.1 on a purpose-built carrier board. It has a central IMU, separate CAN buses for the screw and reaction-wheel drives, a foot-contact input, and connectors for a downward-looking flow/range sensor. The board is deliberately organized around timing and failure handling: a missed control-loop deadline disarms the system, an open arm switch is safe, and the safety checks run before motion control.</p>
+
+          <figure>
+            <img src="../../images/preview.png" alt="Preview of the Teensy 4.1 control-hat circuit board">
+            <figcaption class="caption">The control hat collects sensing, CAN buses, the arm interface, and the foot-contact input around a Teensy 4.1.</figcaption>
+          </figure>
+
+          <p>The flight controller is being developed in simulation first, then ported to C++ for the Teensy; its tuned constants are generated from the simulation model. There is a replay test that runs a recorded simulation episode through both implementations and compares their outputs, so changing a gain or the cam profile does not quietly create a second, slightly different controller in firmware. That is a small bit of discipline I expect to pay for itself as soon as there are spinning parts.</p>
+
+          <h2>What comes next</h2>
+
+          <p>Right now this is a design-and-controls project with hardware moving into the foreground. The immediate work is intentionally unglamorous:</p>
+
+          <ul>
+            <li>Turn the screw/cam design into a manufacturable part and validate it on the bench.</li>
+            <li>Prove the guide, followers, bearings, and drive can survive repeated push-and-catch cycles.</li>
+            <li>Bring up the control board, sensors, and CAN drives one subsystem at a time.</li>
+            <li>Start with constrained leg tests, then low-energy vertical hops, then ask the reaction wheels to steer.</li>
+          </ul>
+
+          <p>There is a long way between a promising transmission plot and a robot that can leave the floor, land, and choose to do it again. But that is exactly the point of this project. A hopper compresses mechanism design, motor physics, state estimation, and control into a very compact problem—and gives immediate feedback when any one of them is wrong.</p>
+
+          <p>More to come once there is a real screw, a real leg, and hopefully fewer reasons to stand behind a safety shield.</p>
+        </div>
+
+        <footer class="post-tags">
+          <span>Categories:</span>
+          <a href="../../categories/index.html">Robotics</a>
+        </footer>
+
+        <nav class="post-nav" aria-label="Post navigation">
+          <a href="../teaching-the-hopper-where-to-put-its-foot/index.html">&larr; Teaching the Hopper Where to Put Its Foot</a>
+          <a href="../getting-this-site-off-the-ground/index.html">Getting this site off the ground &rarr;</a>
+        </nav>
+
+        <section class="comments" aria-labelledby="comments">
+          <h2 id="comments">Comments</h2>
+          <p class="no-comments">No comments yet. Email is the comment section for now.</p>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p>Justin Valentine &middot; Edmonton, Alberta</p>
+      <p><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="../../cv.pdf">CV</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+  </body>
+</html>

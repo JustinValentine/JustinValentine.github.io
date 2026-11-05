@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Projects | Justin Valentine</title>
+    <meta name="description" content="Robotics and software projects by Justin Valentine: a cable-driven haptic wrist, a field mobile manipulator, a variable-pitch hopping robot, a quadruped, a haptic lightsaber demo, teleoperation software, a CAM planner and more.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="index.html" aria-current="page">Projects</a>
+          <a href="../index.html#publications">Publications</a>
+          <a href="../posts/index.html">Notes</a>
+          <a href="../about/index.html">About</a>
+          <a class="nav-cv" href="../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <header class="post-header">
+        <h1>Projects</h1>
+      </header>
+      <p class="page-intro">Each project covers more than one discipline. For each one I&rsquo;ve listed what I did myself, and team projects say so.</p>
+
+      <ol class="toc" aria-label="Projects on this page">
+        <li><span>01</span><a href="#haptic-wrist">Haptic wrist</a></li>
+        <li><span>02</span><a href="#mobile-manipulator">Field mobile manipulator</a></li>
+        <li><span>03</span><a href="#hopper">Hopping robot</a></li>
+        <li><span>04</span><a href="#quadruped">Quadruped</a></li>
+        <li><span>05</span><a href="#lightsaber">Lightsaber demo</a></li>
+        <li><span>06</span><a href="#test-suite">Wrist test suite</a></li>
+        <li><span>07</span><a href="#teleoperation">Teleoperation software</a></li>
+        <li><span>08</span><a href="#replicator">Replicator</a></li>
+        <li><span>09</span><a href="#sisyphus">Sisyphus</a></li>
+        <li><span>10</span><a href="#spherical-go">Spherical Go</a></li>
+      </ol>
+
+      <!-- 01 -->
+      <section class="project" id="haptic-wrist" aria-labelledby="haptic-wrist-title">
+        <p class="eyebrow">01 &middot; MSc thesis and Barrett Technology</p>
+        <h2 id="haptic-wrist-title">Haptic wrist for the Barrett WAM</h2>
+        <p>A cable-driven haptic wrist that mounts on a Barrett WAM arm on the operator&rsquo;s side. Together they give full 7-DOF control of a follower WAM, and the operator feels the forces the follower meets.</p>
+        <p>The wrist was the final stage of a research project that ran from 2014 to 2026. I developed it through my MSc at the University of Alberta, then spent four months in 2026 at Barrett Technology in the Boston area, the company behind the WAM, designing and building the final version alongside their engineers.</p>
+
+        <figure class="project-media">
+          <img src="../images/wrist-lab.jpg" alt="The haptic wrist on an optical table in the lab, with its handle at the top and a blue Barrett drive on the side" width="1600" height="1000">
+          <figcaption class="caption">The final version on the bench at the University of Alberta.</figcaption>
+        </figure>
+
+        <dl class="title-block six spec" aria-label="Haptic wrist specifications">
+          <div><dt>Range</dt><dd><strong>172&deg; / 131&deg; / 69&deg;</strong>pronation&ndash;supination, flexion&ndash;extension, ulnar&ndash;radial deviation</dd></div>
+          <div><dt>Bandwidth</dt><dd><strong>33&ndash;40 Hz</strong>closed loop, per joint</dd></div>
+          <div><dt>Peak torque</dt><dd><strong>8.4 N&middot;m</strong>most of a person&rsquo;s wrist strength</dd></div>
+          <div><dt>Control loop</dt><dd><strong>500 Hz</strong>CANopen, with a 2 ms safety supervisor</dd></div>
+          <div><dt>Drives</dt><dd>Barrett Puck&reg; P4-37&trade; with TQ ILM50 frameless motors</dd></div>
+          <div><dt>Transmission</dt><dd>Two motors share flexion and deviation through a cable differential</dd></div>
+        </dl>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Designed and built the final version with Barrett&rsquo;s engineers, from mechanism to firmware</dd></div>
+          <div><dt>When</dt><dd>MSc from Sep 2024; Barrett Technology for four months in 2026</dd></div>
+          <div><dt>Status</dt><dd>Final version: two units built at Barrett; demoed at IROS 2026</dd></div>
+          <div><dt>Tools</dt><dd>CAD, FEA, CNC, KiCad, CANopen, C++, Python, libbarrett</dd></div>
+        </dl>
+
+        <h3>At Barrett Technology, Boston area (2026)</h3>
+        <ul>
+          <li>Mechanical design and manufacturing of the final version: the full assembly and drawings, and work with manufacturers on tolerances and materials.</li>
+          <li>Ran FEA under multiple load cases, and analysed cable stiffness, pulley geometry and reflected inertia.</li>
+          <li>Automated motor characterization on a dynamometer: load sweeps, efficiency curves, and thermal and peak-torque tests.</li>
+          <li>Worked on porting the WAM from Barrett&rsquo;s own CAN protocol to standard CANopen, from the control library down to the safety-board firmware.</li>
+          <li>Wrote Python interfaces for Barrett&rsquo;s motor controllers, plus tools for gravity calibration, dynamics identification and friction compensation.</li>
+          <li>Built haptic demos in virtual environments, including a <a href="#lightsaber">lightsaber game</a> whose resistance depends on where the blade is hit. Visitors to Barrett&rsquo;s booth at IROS 2026 in Pittsburgh duelled with it through the week.</li>
+        </ul>
+
+        <h3>In my MSc</h3>
+        <ul>
+          <li>Designed and built four cable-driven wrist prototypes, including a high-performance version with a precision cable-tensioning unit.</li>
+          <li>Machined and assembled more than a dozen custom aluminum parts on CNC mills and lathes.</li>
+          <li>Designed a custom PCB for the haptic handle around a PS5 trigger module.</li>
+          <li>Wrote the real-time C++ stack on libbarrett, including a port of Barrett&rsquo;s gravity calibration tools to the new wrist.</li>
+          <li>Wrote a real-time C++ CANopen driver for the final wrist, and an automated <a href="#test-suite">test suite</a> to measure it.</li>
+          <li>Led three undergraduate contributors from mechanical engineering, computing science and computer engineering.</li>
+          <li>Before this, as an undergraduate: designed and tested spherical-parallel and serial-gimbal wrist mechanisms with researchers at Johns Hopkins University, under a $500K CFI JELF grant.</li>
+        </ul>
+
+        <div class="gallery">
+          <figure>
+            <a href="../images/wrist-cad.jpg"><img src="../images/wrist-cad.jpg" alt="Exploded CAD view of the wrist: handle, side plates, differential cage and pulleys, drive modules and platform" loading="lazy"></a>
+            <figcaption class="caption">Exploded view of the final design.</figcaption>
+          </figure>
+          <figure>
+            <a href="../images/wrist-prototype.jpg"><img src="../images/wrist-prototype.jpg" alt="An earlier wrist prototype on an optical table, with exposed wiring" loading="lazy" style="object-fit: cover; padding: 0"></a>
+            <figcaption class="caption">An earlier prototype, driven by mjbots moteus controllers.</figcaption>
+          </figure>
+        </div>
+
+        <p class="related"><strong>Related</strong><a href="https://www.linkedin.com/feed/update/urn:li:activity:7503904034324365312/">Four months at Barrett (LinkedIn)</a> &middot; <a href="https://www.linkedin.com/feed/update/urn:li:activity:7511937046878433280/">The IROS 2026 lightsaber duels (LinkedIn)</a> &middot; <a href="../posts/haptic-wrist-test-notes/index.html">Haptic wrist test notes</a> &middot; <a href="https://arxiv.org/abs/2607.01201">Sensorless four-channel teleoperation paper</a> (submitted to IROS 2026)</p>
+      </section>
+
+      <!-- 02 -->
+      <section class="project" id="mobile-manipulator" aria-labelledby="mobile-manipulator-title">
+        <p class="eyebrow">02 &middot; Research team</p>
+        <h2 id="mobile-manipulator-title">Haptic mobile manipulator for the IDEaS challenge</h2>
+        <p>A teleoperated robot for disaster zones and other places too dangerous to send a person. A 7-DOF Barrett WAM rides on a Clearpath Husky. The operator drives it from a second WAM fitted with a cable-driven wrist, feels the forces the robot meets, and sees the scene in VR through a 360&deg; camera. Our team demonstrated it to the Department of National Defence as one of eight finalists in the IDEaS challenge.</p>
+
+        <div class="gallery photos">
+          <figure>
+            <a href="../images/mobile-manipulator.jpg"><img src="../images/mobile-manipulator.jpg" alt="A Barrett WAM arm on a Clearpath Husky with a camera mast, reaching into an elevator shaft door" width="1056" height="1132" loading="lazy"></a>
+            <figcaption class="caption">Opening an elevator shaft door by teleoperation. The red housing on the mast is the Ladybug2 360&deg; camera.</figcaption>
+          </figure>
+          <figure>
+            <a href="../images/mobile-manipulator-nav.jpg"><img src="../images/mobile-manipulator-nav.jpg" alt="The robot driving itself down an aisle between office cubicles" width="1273" height="570" loading="lazy"></a>
+            <figcaption class="caption">Mapping and navigating a floor of the ECERF building on its own, with SLAM on a Hokuyo LiDAR.</figcaption>
+          </figure>
+        </div>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Undergraduate research assistant: mobile base, sensing and ROS integration</dd></div>
+          <div><dt>When</dt><dd>2022 &ndash; 2024</dd></div>
+          <div><dt>Outcome</dt><dd>Finalist team (1 of 8); funded by a $500K IDEaS grant</dd></div>
+          <div><dt>Stack</dt><dd>ROS, SLAM, FLIR Ladybug2 and Blackfly, Oculus Rift, two WAMs</dd></div>
+        </dl>
+
+        <h3>How the system works</h3>
+        <ul>
+          <li>The operator side is a 4-DOF WAM plus a 3-DOF cable-driven wrist exoskeleton, matched joint for joint to the 7-DOF WAM on the robot.</li>
+          <li>The arms are coupled in joint space: each joint runs a PD position loop with the matching joint on the other arm as its setpoint, so forces on the robot push back on the operator.</li>
+          <li>The cable drive gives a linear map from motor output to joint torque, so the operator feels correctly scaled forces.</li>
+          <li>A Ladybug2 360&deg; camera feeds an Oculus Rift headset, with FLIR Blackfly cameras covering the front and rear.</li>
+          <li>The WAM is mounted low on the Husky for stability, and SLAM on a Hokuyo LiDAR handles mapping and autonomous navigation.</li>
+        </ul>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Redesigned and manufactured the Husky chassis and body panels to carry the WAM with a low center of gravity.</li>
+          <li>Integrated the sensors in ROS with URDF models of the full robot: LiDAR navigation, the Ladybug2 and Blackfly cameras, IMU and GPS.</li>
+          <li>Modified legacy LiDAR hardware to run on ROS Noetic, and tracked down hardware and communication faults with oscilloscopes and serial diagnostics.</li>
+          <li>Presented the system as first author at the Alberta Robotics &amp; Intelligent Systems Expo, and helped demonstrate it to the Department of National Defence.</li>
+        </ul>
+
+        <p class="related"><strong>Related</strong><a href="../files/rise-poster.pdf">Expo poster (PDF)</a> &middot; The wrist exoskeleton uses the same cable-driven approach as my <a href="#haptic-wrist">haptic wrist</a></p>
+      </section>
+
+      <!-- 03 -->
+      <section class="project" id="hopper" aria-labelledby="hopper-title">
+        <p class="eyebrow">03 &middot; Personal project</p>
+        <h2 id="hopper-title">Variable-pitch hopping robot</h2>
+        <p>A one-legged hopping robot whose leg is driven by a screw with a variable-pitch groove, so the gear ratio changes along the stroke: high force from a crouch, high speed at takeoff. Three reaction wheels on a cube corner steer it in flight.</p>
+
+        <figure class="project-media">
+          <div class="clip">
+            <video class="zoom" autoplay muted loop playsinline preload="auto" aria-label="Simulated hopper hopping in place on its reaction-wheel triad">
+              <source src="../images/triad_hop.mp4" type="video/mp4">
+            </video>
+          </div>
+          <figcaption class="caption">Hopping in place in simulation, under a realistic sensor-noise model. Full clip with controls in <a href="../posts/teaching-the-hopper-where-to-put-its-foot/index.html">the write-up</a>.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Solo: mechanism, electronics, controls and firmware</dd></div>
+          <div><dt>When</dt><dd>2026 &ndash; present</dd></div>
+          <div><dt>Status</dt><dd>Controller proven in simulation; board designed; hardware build next</dd></div>
+          <div><dt>Tools</dt><dd>Python, MuJoCo, C++ on Teensy 4.1, KiCad, CAN</dd></div>
+        </dl>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Wrote an optimizer that turns a desired push into a groove profile and checks it against motor speed, contact stress and screw whirl. One candidate reaches a modelled 10.7&nbsp;m/s takeoff in a 61&nbsp;ms push.</li>
+          <li>Replaced a tail and two reaction wheels with three identical wheels on a cube corner. Their axes are orthogonal, so torque allocation is a single matrix transpose.</li>
+          <li>Built foot placement on the robot&rsquo;s measured hop-to-hop return map: a 0.3&nbsp;m/s shove is gone by the next hop.</li>
+          <li>Added a soft-landing mode that cut landing deceleration from 8.6&nbsp;g to 5.7&nbsp;g, plus a safety supervisor that has kept the leg under 85% of its stroke in every simulated run.</li>
+          <li>Designed a Teensy 4.1 carrier board with three CAN buses and a central IMU. It disarms the robot if a control loop misses its deadline.</li>
+          <li>Ported the controller to C++. A replay test matches the Python version to within 1e-12 over a 16,000-tick episode.</li>
+        </ul>
+
+        <div class="gallery">
+          <figure>
+            <a href="../images/screw_cam_plots.png"><img src="../images/screw_cam_plots.png" alt="Screw-cam optimizer plots: trajectory, transmission ratio, motor speed, groove lead angle, forces and landing catch" loading="lazy"></a>
+            <figcaption class="caption">Screw-cam optimizer output.</figcaption>
+          </figure>
+          <figure>
+            <a href="../images/preview.png"><img src="../images/preview.png" alt="Schematic of the Teensy 4.1 control board: power, three CAN transceivers, IMU, flow sensor and foot-contact input" loading="lazy"></a>
+            <figcaption class="caption">Control board schematic.</figcaption>
+          </figure>
+        </div>
+
+        <p class="related"><strong>Write-ups</strong><a href="../posts/variable-pitch-hopper/index.html">A Variable-Pitch Hopper</a> &middot; <a href="../posts/teaching-the-hopper-where-to-put-its-foot/index.html">Teaching the Hopper Where to Put Its Foot</a></p>
+      </section>
+
+      <!-- 04 -->
+      <section class="project" id="quadruped" aria-labelledby="quadruped-title">
+        <p class="eyebrow">04 &middot; Research platform</p>
+        <h2 id="quadruped-title">HAL, a quadruped with an actuated spine</h2>
+        <p>A 9-DOF quadruped research robot with a spine actuator, designed to stay mechanically sound through long experiments and dynamic gaits, as a platform for reinforcement-learning research.</p>
+
+        <figure class="project-media">
+          <img src="../images/hal-sim.jpg" alt="The HAL quadruped's MuJoCo model standing on a plain floor" width="1200" height="750" loading="lazy" style="background: #fff">
+          <figcaption class="caption">HAL&rsquo;s MuJoCo model, rebuilt from the CAD.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Mechanical design, manufacturing and actuator electronics</dd></div>
+          <div><dt>Structure</dt><dd>CNC-machined aluminum and carbon-fiber nylon prints</dd></div>
+          <div><dt>Actuation</dt><dd>BLDC motors with absolute magnetic encoders</dd></div>
+          <div><dt>Tools</dt><dd>CAD, CNC, 3D printing, MuJoCo MJX, Brax PPO</dd></div>
+        </dl>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Designed and built a novel 9-DOF quadruped with an actuated spine.</li>
+          <li>Manufactured it from CNC-machined aluminum and carbon-fiber nylon 3D-printed parts.</li>
+          <li>Integrated BLDC actuators, absolute magnetic encoders and custom motor-control hardware for reinforcement-learning experiments.</li>
+          <li>Built MuJoCo Gymnasium environments for jumping, flipping, walking and running.</li>
+          <li>Rebuilt the full model from the CAD for MuJoCo MJX, with motor models that limit torque by current and back-EMF.</li>
+          <li>Set up a backflip task trained with Brax PPO on thousands of parallel simulated robots, with domain randomization. Training is in progress.</li>
+        </ul>
+      </section>
+
+      <!-- 05 -->
+      <section class="project" id="lightsaber" aria-labelledby="lightsaber-title">
+        <p class="eyebrow">05 &middot; Barrett Technology</p>
+        <h2 id="lightsaber-title">Haptic lightsaber demo</h2>
+        <p>A sword-fighting game for a WAM fitted with the <a href="#haptic-wrist">haptic wrist</a>. The arm renders the blade&rsquo;s contacts, so a block pushes back, and resistance depends on where the blade is hit. Visitors to Barrett&rsquo;s booth at IROS 2026 in Pittsburgh played it through the week.</p>
+
+        <figure class="project-media">
+          <img src="../images/lightsaber.jpg" alt="Headset view of the game: a hand holding a blue saber crossed with a red one in a corridor" width="1200" height="750" loading="lazy">
+          <figcaption class="caption">The Meta Quest 3 view. The saber follows the wrist; the arm is drawn from the grip position, not tracked.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Game, haptic rendering and viewers</dd></div>
+          <div><dt>When</dt><dd>2026, at Barrett Technology</dd></div>
+          <div><dt>Status</dt><dd>Shown at IROS 2026</dd></div>
+          <div><dt>Tools</dt><dd>C++, libbarrett, Python, WebXR</dd></div>
+        </dl>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Wrote the game and its haptic rendering in C++ on libbarrett, inside the arm&rsquo;s 500&nbsp;Hz control loop.</li>
+          <li>Streamed game state over UDP to a desktop viewer and to a Meta Quest 3 browser viewer with stereo rendering and head tracking. The viewers only display; they never send commands to the robot.</li>
+          <li>Added fruit slicing and sparring opponents with adjustable difficulty.</li>
+        </ul>
+
+        <p class="related"><strong>Related</strong><a href="https://www.linkedin.com/feed/update/urn:li:activity:7511937046878433280/">The IROS 2026 lightsaber duels (LinkedIn)</a></p>
+      </section>
+
+      <!-- 06 -->
+      <section class="project" id="test-suite" aria-labelledby="test-suite-title">
+        <p class="eyebrow">06 &middot; MSc thesis</p>
+        <h2 id="test-suite-title">Haptic wrist test suite</h2>
+        <p>Automated bench experiments that measure what the wrist can render: closed-loop bandwidth, friction, Z-width, virtual-wall hardness, impedance and thermal limits. Each experiment can dry-run against a simulated wrist before it touches hardware, and each has a paired analysis that writes the figures.</p>
+
+        <figure class="project-media">
+          <img src="../images/wrist-bandwidth.png" alt="Bode plot of tracking gain and phase for the three wrist joints, crossing minus 3 dB between 33 and 40 Hz" width="1046" height="962" loading="lazy" style="max-width: 34rem; padding: 0.5rem; background: #fff">
+          <figcaption class="caption">Measured tracking response for each joint: &minus;3&nbsp;dB at 33&nbsp;Hz (pronation&ndash;supination), 38&nbsp;Hz (flexion&ndash;extension) and 40&nbsp;Hz (ulnar&ndash;radial deviation).</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Solo: experiments, driver and analysis</dd></div>
+          <div><dt>When</dt><dd>2026</dd></div>
+          <div><dt>Status</dt><dd>Run on two wrists; feeding the thesis</dd></div>
+          <div><dt>Tools</dt><dd>Python, C++, CANopen, NumPy, SciPy</dd></div>
+        </dl>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Wrote a small real-time C++ CANopen library for the wrist: a 500&nbsp;Hz SYNC loop with PD and feedforward rendering through the differential, zeroing, and its own safety supervision, since the bench has no safety board.</li>
+          <li>Identified inertia, damping and friction from the drives&rsquo; measured current rather than from controller models, so the numbers describe the device and not the loop.</li>
+          <li>Logged loop timing and measured command-to-torque delay in every run, so late cycles and lost positions show up in the analysis.</li>
+          <li>Ran the suite on the final wrist and on an earlier moteus-driven prototype.</li>
+        </ul>
+
+        <p class="related"><strong>Code</strong><a href="https://github.com/JustinValentine/haptic_wrist_characterization">haptic_wrist_characterization on GitHub</a> &middot; <a href="../posts/haptic-wrist-test-notes/index.html">Haptic wrist test notes</a></p>
+      </section>
+
+      <!-- 07 -->
+      <section class="project" id="teleoperation" aria-labelledby="teleoperation-title">
+        <p class="eyebrow">07 &middot; Lab team</p>
+        <h2 id="teleoperation-title">WAM teleoperation software</h2>
+        <p>Our lab&rsquo;s leader&ndash;follower system for two Barrett WAM arms, which the haptic wrist plugs into. This is team software; I worked on it with Dylan Miller, Sergey Khlynovskiy and Amir Noohian.</p>
+
+        <figure class="project-media">
+          <img src="../images/teleop-leader.jpg" alt="An operator wearing a headset drives the leader WAM arm through the haptic wrist" width="540" height="664" loading="lazy" style="max-width: 22rem">
+          <figcaption class="caption">The leader side: an operator drives one WAM through the haptic wrist. Figure from our IROS 2026 submission.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Contributor: torque control, gripper, haptic handle, Docker</dd></div>
+          <div><dt>When</dt><dd>2024 &ndash; 2026</dd></div>
+          <div><dt>Status</dt><dd>Used in our IROS 2026 submission</dd></div>
+          <div><dt>Tools</dt><dd>C++, ROS Noetic, libbarrett, Teensy, CAN-FD, Docker</dd></div>
+        </dl>
+
+        <h3>What I did</h3>
+        <ul>
+          <li>Torque control for the sensorless four-channel controller, and the vertical-mount dynamics used to estimate external torque.</li>
+          <li>Integrated the gripper and a haptic trigger handle. I wrote the handle&rsquo;s Teensy 4.0 firmware, which talks CAN-FD and stiffens a PS5 trigger as the gripper&rsquo;s measured torque rises.</li>
+          <li>Helped containerize the stack with Docker, and ported libbarrett to Ubuntu 24.04.</li>
+        </ul>
+
+        <p class="related"><strong>Related</strong><a href="https://arxiv.org/abs/2607.01201">Sensorless four-channel teleoperation paper</a> (submitted to IROS 2026) &middot; TSHOR, a cable-driven haptic trigger led by Tenzin Phelgyal (RISEx 2026) &middot; <a href="https://github.com/JustinValentine/teensy-teleop-controller">Handle firmware on GitHub</a></p>
+      </section>
+
+      <!-- 08 -->
+      <section class="project" id="replicator" aria-labelledby="replicator-title">
+        <p class="eyebrow">08 &middot; Personal project</p>
+        <h2 id="replicator-title">Replicator</h2>
+        <p>Planning CAM for 3-axis machining. Open a STEP part, say which holes are threads and which bores need a fit, and it plans the whole job: setups, workholding, toolpaths, measure-and-correct checkpoints and LinuxCNC G-code. The goal is CAM that feels like a 3D-printer slicer.</p>
+
+        <figure class="project-media">
+          <img src="../images/replicator.jpg" alt="Replicator Studio showing a block with holes, one bore selected and its fit settings in a side panel" width="1200" height="750" loading="lazy">
+          <figcaption class="caption">Replicator Studio, setting a fit on a bore.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Solo</dd></div>
+          <div><dt>When</dt><dd>2026</dd></div>
+          <div><dt>Status</dt><dd>Early but end to end; not yet run on a real machine</dd></div>
+          <div><dt>Tools</dt><dd>C++20, OpenCASCADE, Clipper2, wxWidgets, Catch2</dd></div>
+        </dl>
+
+        <h3>What it does</h3>
+        <ul>
+          <li>Plans setups, including flipped and side setups, and reaches angled holes on a 3+2 tilting table instead of re-clamping.</li>
+          <li>Clears the part with 2.5D toolpaths, then drills, bores and thread-mills holes to the stated ISO fits.</li>
+          <li>Adds measure-and-correct checkpoints for fits, and writes LinuxCNC G-code for each setup.</li>
+          <li>Replays the plan in a preview that shows the setups, the tool moving along the timeline, and why each choice was made.</li>
+        </ul>
+      </section>
+
+      <!-- 09 -->
+      <section class="project" id="sisyphus" aria-labelledby="sisyphus-title">
+        <p class="eyebrow">09 &middot; Personal project</p>
+        <h2 id="sisyphus-title">Sisyphus</h2>
+        <p>A Mac app for indoor cycling. It holds a smart trainer at a target wattage (ERG mode) over standard Bluetooth, in a small glass overlay that floats over full-screen video. A tiny Sisyphus pushes his boulder one step per pedal stroke.</p>
+
+        <figure class="project-media">
+          <img src="../images/sisyphus.jpg" alt="The Sisyphus overlay showing power, target, cadence, heart rate and ride time" width="1024" height="640" loading="lazy">
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Solo</dd></div>
+          <div><dt>When</dt><dd>2026</dd></div>
+          <div><dt>Status</dt><dd>Open source, MIT license</dd></div>
+          <div><dt>Tools</dt><dd>Swift, CoreBluetooth, no third-party dependencies</dd></div>
+        </dl>
+
+        <ul>
+          <li>Controls the trainer through the Bluetooth Fitness Machine Service that most current smart trainers support.</li>
+          <li>Reads heart rate from any Bluetooth sensor, keeps a ride history with power and heart-rate charts, and exports TCX or uploads to Strava.</li>
+        </ul>
+
+        <p class="related"><strong>Code</strong><a href="https://github.com/JustinValentine/Sisyphus">Sisyphus on GitHub</a></p>
+      </section>
+
+      <!-- 10 -->
+      <section class="project" id="spherical-go" aria-labelledby="spherical-go-title">
+        <p class="eyebrow">10 &middot; Personal project</p>
+        <h2 id="spherical-go-title">Spherical Go</h2>
+        <p>Go played on a sphere. The board is a latitude&ndash;longitude grid with a point at each pole, shown as a globe and as a stereographic map. It uses Tromp&ndash;Taylor rules, which carry over to a closed board with almost no changes.</p>
+
+        <figure class="project-media">
+          <img src="../images/spherical-go.jpg" alt="A Go board drawn on a globe beside the same board as a stereographic map" width="534" height="334" loading="lazy" style="max-width: 34rem">
+          <figcaption class="caption">The computer playing itself on the small board.</figcaption>
+        </figure>
+
+        <dl class="title-block spec">
+          <div><dt>Role</dt><dd>Solo</dd></div>
+          <div><dt>When</dt><dd>Started 2022, updated 2026</dd></div>
+          <div><dt>Status</dt><dd>Playable, three board sizes</dd></div>
+          <div><dt>Tools</dt><dd>C++17, OpenGL</dd></div>
+        </dl>
+
+        <ul>
+          <li>The computer opponent uses Monte Carlo tree search with RAVE, running random games on every core but one.</li>
+          <li>Board sizes of 86, 182 and 366 points, roughly matching 9&times;9, 13&times;13 and 19&times;19.</li>
+        </ul>
+      </section>
+
+      <section class="project" id="other" aria-labelledby="other-title">
+        <p class="eyebrow">Also</p>
+        <h2 id="other-title">Smaller builds and industry work</h2>
+        <ul>
+          <li><strong>Motor dynamometer toolkit, Barrett Technology.</strong> Python tools that drive a torquemeter, brake supply and oscilloscope through automated test protocols and produce torque, speed, efficiency and thermal curves.</li>
+          <li><strong>BLDC motor test stand.</strong> Designed and programmed a stand with load cells and a Teensy 4.1 for characterizing actuators.</li>
+          <li><strong>Box-picking robot, Millennium Three Technologies.</strong> Designed and machined aluminum components that made the robot stiffer and lighter, using CAD/CAM, CNC milling and waterjet cutting.</li>
+          <li><strong>Teaching robotics.</strong> As a TA for Introduction to Robotics and Mechatronics, helped student teams build a penalty-kicking robot, a planar cable-driven robot and a ball-balancing platform.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Justin Valentine &middot; Edmonton, Alberta</p>
+      <p><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="../cv.pdf">CV</a> &middot; <a href="../index.xml">RSS</a></p>
+    </footer>
+
+    <script>
+      // Respect reduced-motion settings: hold the hopper clip on its first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) {
+          v.removeAttribute("autoplay");
+          v.pause();
+        });
+      }
+    </script>
+  </body>
+</html>

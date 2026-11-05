@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Justin Valentine · Robotics engineer</title>
+    <meta name="description" content="Justin Valentine, robotics engineer in Edmonton. Haptic and teleoperation hardware, from mechanism to firmware and real-time control.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="projects/index.html">Projects</a>
+          <a href="#publications">Publications</a>
+          <a href="posts/index.html">Notes</a>
+          <a href="about/index.html">About</a>
+          <a class="nav-cv" href="cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="intro">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow">Robotics engineer &middot; Edmonton, Alberta</p>
+            <h1 id="intro">Justin Valentine</h1>
+            <p class="lede">I build robot hardware end to end, from mechanisms and circuit boards to firmware and real-time control, mostly for haptics and teleoperation.</p>
+            <p class="lede">I&rsquo;m finishing an MSc in Computing Science at the University of Alberta (December 2026). My thesis is a haptic wrist for the Barrett WAM, the last stage of a project my lab has worked on since 2014. I designed it and built the final two units with Barrett Technology&rsquo;s engineers, and visitors to Barrett&rsquo;s booth at IROS&nbsp;2026 in Pittsburgh duelled with it in a haptic lightsaber game.</p>
+            <p class="contact-line"><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a><span aria-hidden="true">/</span><a href="cv.pdf">CV</a><span aria-hidden="true">/</span><a href="https://github.com/JustinValentine">GitHub</a></p>
+          </div>
+          <figure>
+            <img src="images/wrist-portrait.jpg" alt="The aluminum haptic wrist on an optical table, its handle at the top and a blue Barrett drive on the side" width="1000" height="1250">
+            <figcaption>The haptic wrist, final version, on the bench at the University of Alberta.</figcaption>
+          </figure>
+        </div>
+
+        <p class="spec-head">The wrist, measured</p>
+        <dl class="title-block six" aria-label="Haptic wrist specifications">
+          <div><dt>Range</dt><dd><strong>172&deg; / 131&deg; / 69&deg;</strong>pronation&ndash;supination, flexion&ndash;extension, ulnar&ndash;radial deviation</dd></div>
+          <div><dt>Bandwidth</dt><dd><strong>33&ndash;40 Hz</strong>closed loop, per joint</dd></div>
+          <div><dt>Peak torque</dt><dd><strong>8.4 N&middot;m</strong>most of a person&rsquo;s wrist strength</dd></div>
+          <div><dt>Control loop</dt><dd><strong>500 Hz</strong>CANopen, with a 2 ms safety supervisor</dd></div>
+          <div><dt>Drives</dt><dd>Barrett Puck&reg; P4-37&trade; with TQ ILM50 frameless motors</dd></div>
+          <div><dt>Transmission</dt><dd>Two motors share flexion and deviation through a cable differential</dd></div>
+        </dl>
+
+        <ul class="credits">
+          <li>Haptic wrist demo, Barrett Technology booth, IROS 2026</li>
+          <li>Co-author, ICRA 2025 Best Student Paper</li>
+          <li>Finalist team (1 of 8), DND IDEaS challenge</li>
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="projects-heading">
+        <div class="section-head">
+          <h2 id="projects-heading">Selected projects</h2>
+          <a href="projects/index.html">Full project details &rarr;</a>
+        </div>
+        <p class="section-note">Solid tags mark the main disciplines in each project; outlined tags mark supporting work.</p>
+
+        <div class="cards">
+          <article class="card">
+            <a class="card-media" href="projects/index.html#haptic-wrist" tabindex="-1" aria-hidden="true">
+              <img src="images/wrist-front.jpg" alt="" width="1600" height="1000" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">MSc thesis + Barrett &middot; 2024&ndash;2026</p>
+              <h3><a href="projects/index.html#haptic-wrist">Haptic wrist for the Barrett WAM</a></h3>
+              <p>A 3-DOF cable-driven wrist that turns a WAM arm into a 7-DOF haptic leader for a second WAM. Four prototypes at the University of Alberta, then two final units built with Barrett.</p>
+              <ul class="facts"><li>4 prototypes</li><li>2 units built at Barrett</li><li>demoed at IROS 2026</li></ul>
+              <ul class="disciplines" aria-label="Disciplines"><li class="core">Mechanical</li><li class="core">Electronics</li><li class="core">Controls</li><li class="core">Software</li></ul>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#mobile-manipulator" tabindex="-1" aria-hidden="true">
+              <img src="images/mobile-manipulator.jpg" alt="" width="1056" height="1132" loading="lazy" style="object-position: 50% 70%">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Research team &middot; 2022&ndash;2024</p>
+              <h3><a href="projects/index.html#mobile-manipulator">Haptic mobile manipulator</a></h3>
+              <p>A 7-DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. Built for teleoperation in disaster zones.</p>
+              <ul class="facts"><li>DND IDEaS finalist, 1 of 8</li><li>360&deg; VR view</li><li>SLAM navigation</li></ul>
+              <ul class="disciplines" aria-label="Disciplines"><li class="core">Mechanical</li><li>Electronics</li><li>Controls</li><li class="core">Software</li></ul>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#hopper" tabindex="-1" aria-hidden="true">
+              <video class="zoom" autoplay muted loop playsinline preload="auto" aria-hidden="true"><source src="images/triad_hop.mp4" type="video/mp4"></video>
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Personal project &middot; 2026&ndash;present</p>
+              <h3><a href="projects/index.html#hopper">Variable-pitch hopping robot</a></h3>
+              <p>A one-legged hopper with a screw-cam leg that changes gear ratio along its stroke, and three reaction wheels for attitude. The controller works in simulation; the hardware build is next.</p>
+              <ul class="facts"><li>10.7 m/s modelled takeoff</li><li>C++ firmware replays the sim</li></ul>
+              <ul class="disciplines" aria-label="Disciplines"><li class="core">Mechanical</li><li class="core">Electronics</li><li class="core">Controls</li><li class="core">Software</li></ul>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#quadruped" tabindex="-1" aria-hidden="true">
+              <img src="images/hal-sim.jpg" alt="" width="1200" height="750" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Research platform &middot; 2024&ndash;2026</p>
+              <h3><a href="projects/index.html#quadruped">HAL, a quadruped with an actuated spine</a></h3>
+              <p>A 9-DOF quadruped built for reinforcement-learning experiments on real hardware. I rebuilt its MuJoCo model from the CAD and set up a GPU backflip task; training is in progress.</p>
+              <ul class="facts"><li>CNC aluminum + CF nylon</li><li>MuJoCo MJX</li><li>Brax PPO</li></ul>
+              <ul class="disciplines" aria-label="Disciplines"><li class="core">Mechanical</li><li class="core">Electronics</li><li>Controls</li><li class="core">Software</li></ul>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="subhead" id="more-projects">More projects</h3>
+        <div class="cards small">
+          <article class="card">
+            <a class="card-media" href="projects/index.html#lightsaber" tabindex="-1" aria-hidden="true">
+              <img src="images/lightsaber.jpg" alt="" width="1200" height="750" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Barrett &middot; 2026</p>
+              <h3><a href="projects/index.html#lightsaber">Haptic lightsaber demo</a></h3>
+              <p>A sword-fighting game on the WAM and the haptic wrist, where blade contact pushes back through the arm. Played at Barrett&rsquo;s IROS 2026 booth.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media figure" href="projects/index.html#test-suite" tabindex="-1" aria-hidden="true">
+              <img src="images/wrist-bandwidth.png" alt="" width="1046" height="962" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">MSc thesis &middot; 2026</p>
+              <h3><a href="projects/index.html#test-suite">Haptic wrist test suite</a></h3>
+              <p>Automated bench experiments for bandwidth, friction, Z-width and virtual walls, each tested against a simulated wrist before it runs on hardware.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#teleoperation" tabindex="-1" aria-hidden="true">
+              <img src="images/teleop-leader.jpg" alt="" width="540" height="664" loading="lazy" style="object-position: 50% 30%">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Lab team &middot; 2024&ndash;2026</p>
+              <h3><a href="projects/index.html#teleoperation">WAM teleoperation software</a></h3>
+              <p>Our lab&rsquo;s leader&ndash;follower stack for two WAMs. I worked on torque control, the gripper and haptic trigger handle, and Docker builds.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#replicator" tabindex="-1" aria-hidden="true">
+              <img src="images/replicator.jpg" alt="" width="1200" height="750" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Personal &middot; 2026</p>
+              <h3><a href="projects/index.html#replicator">Replicator</a></h3>
+              <p>Planning CAM for 3-axis machining: a STEP part in, setups, toolpaths and LinuxCNC G-code out. Early, but it works end to end.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#sisyphus" tabindex="-1" aria-hidden="true">
+              <img src="images/sisyphus.jpg" alt="" width="1024" height="640" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Personal &middot; 2026</p>
+              <h3><a href="projects/index.html#sisyphus">Sisyphus</a></h3>
+              <p>A Mac app that holds a smart bike trainer at a target wattage over Bluetooth, in a small overlay that floats over whatever you&rsquo;re watching.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <a class="card-media" href="projects/index.html#spherical-go" tabindex="-1" aria-hidden="true">
+              <img src="images/spherical-go.jpg" alt="" width="534" height="334" loading="lazy">
+            </a>
+            <div class="card-body">
+              <p class="card-meta">Personal &middot; 2022, 2026</p>
+              <h3><a href="projects/index.html#spherical-go">Spherical Go</a></h3>
+              <p>Go played on a sphere and drawn as a stereographic map, with a Monte Carlo tree search opponent. C++ and OpenGL.</p>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="subhead">Also</h3>
+        <ul class="also">
+          <li><strong>Motor dynamometer toolkit, Barrett</strong>Python tools that drive a torquemeter, brake and scope to produce torque, speed, efficiency and thermal curves.</li>
+          <li><strong>WAM control software, Barrett</strong>Worked on porting the WAM&rsquo;s control library and safety-board firmware to CANopen.</li>
+          <li><strong>BLDC motor test stand</strong>Load cells and a Teensy 4.1 for characterizing actuators.</li>
+          <li><strong>Box-picking robot, Millennium Three</strong>Machined aluminum parts that made the robot stiffer and lighter.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="publications" aria-labelledby="pubs-heading">
+        <div class="section-head">
+          <h2 id="pubs-heading">Publications</h2>
+          <a href="about/index.html">Experience and education &rarr;</a>
+        </div>
+        <ol class="pubs-home">
+          <li><span class="venue">RISEx 2026</span><span>TSHOR: A cable-driven haptic trigger interface for robotic gripper teleoperation<span class="authors">T. Phelgyal, J. S. Chhabra, <strong>J. Valentine</strong>, M. Jagersand</span></span></li>
+          <li><span class="venue">IROS 2026, submitted</span><span><a href="https://arxiv.org/abs/2607.01201">Sensorless four-channel control architecture using inverse dynamics modeling for human-scale bilateral teleoperation</a><span class="authors">A. Noohian, D. Miller, <strong>J. Valentine</strong>, A. Lynch, M. Jagersand</span></span></li>
+          <li><span class="venue">ICRA 2025</span><span><a href="https://arxiv.org/abs/2510.08753">Point and Go: Intuitive reference frame reallocation in mode switching for assistive robotics</a> <span class="award">Best Student Paper</span><span class="authors">A. Wang, C. Jiang, M. Przystupa, <strong>J. Valentine</strong>, M. Jagersand</span></span></li>
+          <li><span class="venue">IROS 2024</span><span>Immersive human-in-the-loop control: Real-time 3D surface meshing and physics simulation<span class="authors">S. Akturk, <strong>J. Valentine</strong>, M. Jagersand</span></span></li>
+          <li><span class="venue">RISE 2024</span><span><a href="files/rise-poster.pdf">Teleoperation for mobile manipulation in unstructured environments</a><span class="authors"><strong>J. Valentine</strong>, D. Miller, F. Haghverd, J. Piwowarczyk, M. Jagersand</span></span></li>
+        </ol>
+      </section>
+
+      <section class="section" aria-labelledby="notes-heading">
+        <div class="section-head">
+          <h2 id="notes-heading">From the notebook</h2>
+          <a href="posts/index.html">All notes &rarr;</a>
+        </div>
+        <ul class="post-list">
+          <li><article><time datetime="2026-07-09">Jul 9, 2026</time><div><a href="posts/teaching-the-hopper-where-to-put-its-foot/index.html">Teaching the Hopper Where to Put Its Foot</a><p class="post-summary">A corner-balanced wheel triad, one-hop foot placement and softer landings, all in simulation.</p></div></article></li>
+          <li><article><time datetime="2026-07-09">Jul 9, 2026</time><div><a href="posts/variable-pitch-hopper/index.html">A Variable-Pitch Hopper</a><p class="post-summary">A screw cam whose groove sets the gear ratio, and the control board built around it.</p></div></article></li>
+          <li><article><time datetime="2026-04-18">Apr 18, 2026</time><div><a href="posts/haptic-wrist-test-notes/index.html">Haptic wrist test notes</a><p class="post-summary">What a slow direction change revealed about the friction model.</p></div></article></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Justin Valentine &middot; Edmonton, Alberta</p>
+      <p><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="cv.pdf">CV</a> &middot; <a href="index.xml">RSS</a></p>
+    </footer>
+
+    <script>
+      // Respect reduced-motion settings: hold the hopper clip on its first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) {
+          v.removeAttribute("autoplay");
+          v.pause();
+        });
+      }
+    </script>
+  </body>
+</html>

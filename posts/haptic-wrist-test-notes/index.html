@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Haptic wrist test notes | Justin Valentine</title>
+    <meta name="description" content="Notes from testing a haptic wrist controller.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../projects/index.html">Projects</a>
+          <a href="../../index.html#publications">Publications</a>
+          <a href="../../posts/index.html" aria-current="page">Notes</a>
+          <a href="../../about/index.html">About</a>
+          <a class="nav-cv" href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>Haptic wrist test notes</h1>
+          <p class="post-meta"><time datetime="2026-04-18">April 18, 2026</time> &middot; <a href="../../projects/index.html#haptic-wrist">Part of the haptic wrist project</a></p>
+        </header>
+
+        <div class="post-content">
+          <p>The useful test was not the one that showed the controller behaving perfectly. It was the one where the wrist felt fine until a slow direction change, then quietly announced that the friction model was doing less work than I thought.</p>
+          <p>A few notes for the next pass:</p>
+          <ul>
+            <li>Log commanded torque, measured position, and filtered velocity together.</li>
+            <li>Keep the low-speed sweep boring and repeatable.</li>
+            <li>Record the setup before changing gains.</li>
+          </ul>
+          <pre><code>test:
+  sweep: slow
+  axis: wrist_pitch
+  save: torque_position_velocity.csv</code></pre>
+          <p>There is probably a better name for the current compensation term. There is definitely a better plot.</p>
+        </div>
+
+        <footer class="post-tags">
+          <span>Categories:</span>
+          <a href="../../categories/index.html">Haptics</a>
+        </footer>
+
+        <nav class="post-nav" aria-label="Post navigation">
+          <a href="../getting-this-site-off-the-ground/index.html">&larr; Getting this site off the ground</a>
+          <a href="../teleoperation-checklist/index.html">A small teleoperation checklist &rarr;</a>
+        </nav>
+
+        <section class="comments" aria-labelledby="comments">
+          <h2 id="comments">Comments</h2>
+          <p class="no-comments">No comments yet. Email is the comment section for now.</p>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p>Justin Valentine &middot; Edmonton, Alberta</p>
+      <p><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="../../cv.pdf">CV</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+  </body>
+</html>
