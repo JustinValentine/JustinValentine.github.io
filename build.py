@@ -136,6 +136,9 @@ def page(title, body, depth, current="", description="", head_extra="", tail="")
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{esc(full_title)}</title>{desc}
+    <link rel="icon" href="{r}favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="{r}favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="{r}apple-touch-icon.png">
     <link rel="stylesheet" href="{r}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="{r}index.xml">{head_extra}
   </head>
