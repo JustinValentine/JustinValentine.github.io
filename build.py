@@ -342,7 +342,7 @@ def build_home(posts):
       <p class="topic-line">Topics: {topics}</p>
 
 {featured_row(posts)}
-      <h2>{"More posts" if any(p.featured for p in posts) else "Posts"}</h2>
+      <h2>{"More posts" if any(p.featured for p in posts) else "Recent posts"}</h2>
 {entry_list([p for p in posts if p.home and not p.featured], "")}"""
     write(os.path.join(ROOT, "index.html"), page("", body, 0, description="Justin Valentine builds robots and other machines in Edmonton, from the mechanism and machined parts to the electronics, firmware and control code."))
 
