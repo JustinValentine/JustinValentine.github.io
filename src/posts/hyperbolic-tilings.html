@@ -1,0 +1,63 @@
+title: Tiling the hyperbolic plane
+date: 2023-02
+topics: software
+math: yes
+summary: A Python program that draws regular hyperbolic tilings in the Poincar&eacute; disk, by reflecting one polygon across its own edges over and over.
+image: images/hyperbolic-tilings/grow.jpg
+video: images/hyperbolic-tilings/grow.mp4
+---
+<figure style="max-width: 32rem">
+  <img src="../../images/hyperbolic-tilings/kites-5-5.png" alt="A circular hyperbolic tiling in pastel pink, blue, purple, yellow and green: four-sided tiles that shrink toward the edge of the disk" width="1000" height="1000">
+  <figcaption>Five pentagons at every corner, each split into five kites.</figcaption>
+</figure>
+
+<p>In February 2023 I wrote a program to draw tilings like this one. The tiles look like they shrink toward the edge, but in the geometry they live in they&rsquo;re all the same size. They tile the hyperbolic plane, and the disk is a map of it. It&rsquo;s a Python program that builds them from a single polygon and draws them as SVG or PNG, with a small desktop interface for picking the tiling, colours and size.</p>
+
+<h2>Which tilings are hyperbolic</h2>
+<p>A regular tiling \(\{p, q\}\) has \(p\)-sided polygons with \(q\) of them meeting at every corner, so each corner angle is \(2\pi/q\). On a flat plane a regular \(p\)-gon has corner angles of \((p-2)\pi/p\), and the two only agree when</p>
+\[ (p - 2)(q - 2) = 4, \]
+<p>which gives squares, triangles and hexagons. In the hyperbolic plane, polygons have smaller angles than flat ones with the same number of sides, so they can fit more of them around a corner. That gives the condition</p>
+\[ (p - 2)(q - 2) &gt; 4, \]
+<p>and infinitely many tilings: \(\{5,4\}\), \(\{4,5\}\), \(\{3,7\}\), \(\{8,3\}\) and so on.</p>
+
+<h2>The Poincar&eacute; disk</h2>
+<p>The program draws everything in the Poincar&eacute; disk, the unit disk with the metric</p>
+\[ ds = \frac{2\,|dz|}{1 - |z|^2}. \]
+<p>Distances blow up near the edge, which is why equal tiles look smaller there. Straight lines in this geometry are diameters and circular arcs that meet the edge of the disk at right angles. The outlines get thinner toward the edge too, scaled with \(\sqrt{1 - |z|^2}\).</p>
+<p>The first polygon sits at the centre. For a regular \(\{p,q\}\) polygon, the hyperbolic distance \(R\) from its centre to a corner satisfies \(\cosh R = \cot(\pi/p)\cot(\pi/q)\), and in the disk that corner sits at radius \(r = \tanh(R/2)\). Working that through gives</p>
+\[ r = \sqrt{\frac{\cos(\pi/p + \pi/q)}{\cos(\pi/p - \pi/q)}}. \]
+
+<h2>Reflecting across edges</h2>
+<p>Every other tile is a reflection of the first one. To reflect a point \(z\) across the edge from corner \(a\) to corner \(b\), the program moves \(a\) to the centre of the disk with the M&ouml;bius transformation</p>
+\[ T_a(z) = \frac{z - a}{1 - \bar a z}, \]
+<p>which maps the disk to itself and keeps hyperbolic distances. That turns the edge into a straight diameter, so the reflection is just a complex conjugate rotated into line with \(T_a(b)\):</p>
+\[ w = \overline{T_a(z)}\,\frac{T_a(b)}{\overline{T_a(b)}}, \qquad z' = T_a^{-1}(w) = \frac{w + a}{1 + \bar a w}. \]
+<p>This is steadier than inverting through each edge&rsquo;s circle directly, because edges near the centre are almost straight and their circles have huge radii.</p>
+<p>The tiling grows outward, breadth first. Each tile is reflected across each of its edges. A spatial hash on tile centres catches a reflection that lands on a tile that already exists, and the two shared corners are copied exactly so edges don&rsquo;t drift apart. Growth stops once tile centres get within a pixel of the edge of the disk. Past that point the tiles are smaller than a pixel, and there are infinitely many of them.</p>
+
+<figure style="max-width: 32rem">
+  <video autoplay muted loop playsinline preload="metadata" poster="../../images/hyperbolic-tilings/grow.jpg" width="700" height="700">
+    <source src="../../images/hyperbolic-tilings/grow.mp4" type="video/mp4">
+  </video>
+  <figcaption>The default kite tiling growing from the centre, rendered by the program one batch of tiles at a time. The full image has 7,055 tiles.</figcaption>
+</figure>
+
+<h2>Kites and colours</h2>
+<p>The pastel design at the top starts from \(\{5,5\}\): five pentagons at every corner. Each pentagon is split into five kites by joining its centre to the hyperbolic midpoints of its edges, so every kite has corners of 72&deg; and 90&deg; in turn. The colours come from a seeded greedy pass that gives each tile the colour its already-coloured neighbours use least, so the same seed always gives the same picture.</p>
+
+<div class="pair natural">
+  <figure>
+    <img src="../../images/hyperbolic-tilings/triangles-3-7.png" alt="A hyperbolic tiling of triangles in blues and greens, seven triangles at every corner" width="1000" height="1000" loading="lazy">
+    <figcaption>\(\{3,7\}\): seven triangles at every corner.</figcaption>
+  </figure>
+  <figure>
+    <img src="../../images/hyperbolic-tilings/squares-4-5.png" alt="A hyperbolic tiling of curved squares, five meeting at the centre" width="1000" height="1000" loading="lazy">
+    <figcaption>\(\{4,5\}\): five squares at every corner, centred on a corner.</figcaption>
+  </figure>
+  <figure>
+    <img src="../../images/hyperbolic-tilings/octagons-8-3.png" alt="A hyperbolic tiling of octagons in purples, pinks and oranges, three meeting at every corner" width="1000" height="1000" loading="lazy">
+    <figcaption>\(\{8,3\}\): three octagons at every corner.</figcaption>
+  </figure>
+</div>
+
+<p>SVG output keeps every edge as an exact circular arc and needs only Python&rsquo;s standard library. PNG output and the desktop preview use Pillow. The tests check the geometry itself: that reflections keep side lengths and angles, that every edge meets the edge of the disk at right angles, that shared edges line up, and that the right number of tiles meet at each corner.</p>

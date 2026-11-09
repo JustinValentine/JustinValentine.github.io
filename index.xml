@@ -125,6 +125,13 @@
       <description>My CMPUT 428 final project with Justin Rozeboom. Six cheap action cameras in a laser-cut hexagonal housing on an iRobot Create 2, calibrated and stitched into cylindrical panoramas, plus a first try at structure from motion on the reprojected images.</description>
     </item>
     <item>
+      <title>Tiling the hyperbolic plane</title>
+      <link>https://justinvalentine.ca/posts/hyperbolic-tilings/</link>
+      <guid>https://justinvalentine.ca/posts/hyperbolic-tilings/</guid>
+      <pubDate>Wed, 01 Feb 2023 12:00:00 +0000</pubDate>
+      <description>A Python program that draws regular hyperbolic tilings in the Poincar&amp;eacute; disk, by reflecting one polygon across its own edges over and over.</description>
+    </item>
+    <item>
       <title>A painting robot</title>
       <link>https://justinvalentine.ca/posts/painting-robot/</link>
       <guid>https://justinvalentine.ca/posts/painting-robot/</guid>
