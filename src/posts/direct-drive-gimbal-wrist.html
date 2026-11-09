@@ -2,6 +2,7 @@ title: A simple direct-drive gimbal wrist
 date: 2024
 topics: haptics, mechanisms, teleoperation
 series: haptic-wrist
+series_order: 2
 math: yes
 summary: A gimbal wrist for the WAM, driven directly so it&rsquo;s easy to prototype, that we use to test strapping the WAM to an operator&rsquo;s forearm as an approximate exoskeleton.
 image: images/direct-drive-gimbal-wrist/thumb-full.jpg
@@ -18,7 +19,7 @@ thumb_fit: contain
   </figure>
 </div>
 
-<p>This is a simple gimbal wrist for the WAM leader arm. Its joints are driven directly, with no cables, because that makes it easy to prototype. J5 and J6 use quasi-direct-drive (QDD) actuators for extra torque. A final design would swap those for capstans, and the <a href="../haptic-wrist-barrett/index.html">later wrists in this series</a> are cable-driven.</p>
+<p>After the <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a>, my second design is much simpler. This is a gimbal wrist for the WAM leader arm. Its joints are driven directly, with no cables, because that makes it easy to prototype. J5 and J6 use quasi-direct-drive (QDD) actuators for extra torque. A final design would swap those for capstans, and most of the <a href="../haptic-wrist-barrett/index.html">later wrists in this series</a> are cable-driven.</p>
 
 <p>The wrist is really a way into a bigger question. So far we&rsquo;ve run the WAM in end-effector mode, where the operator holds a handle at the end of the arm. Could it work as an approximate exoskeleton instead, with the operator&rsquo;s forearm strapped to it? We write down these questions:</p>
 
@@ -130,3 +131,6 @@ thumb_fit: contain
   <tr><th>Upper-arm attachment</th><td>Not necessary, and it adds a lot of bulk.</td></tr>
   <tr><th>Passive joint at the hand</th><td>Doesn&rsquo;t seem necessary, though it needs more testing.</td></tr>
 </table>
+
+<h2>What comes next</h2>
+<p>The main thing I take from the gimbal is how much the attachment matters. A rigid cuff is uncomfortable, and one passive joint at the forearm is what makes the approximate exoskeleton workable. For the next design I try going the other way: an <a href="../end-effector-wrist/index.html">end-effector wrist</a> with nothing strapped to the arm at all.</p>

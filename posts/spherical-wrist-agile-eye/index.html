@@ -4,7 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A spherical wrist after the Agile Eye | Justin Valentine</title>
-    <meta name="description" content="A three-motor spherical parallel mechanism I&amp;rsquo;m trying out as a haptic wrist, and why its Jacobian is the identity matrix at the home pose.">
+    <meta name="description" content="A three-motor spherical parallel mechanism I’m trying out as a haptic wrist, and why its Jacobian is the identity matrix at the home pose.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/spherical-wrist-agile-eye/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A spherical wrist after the Agile Eye">
+    <meta property="og:description" content="A three-motor spherical parallel mechanism I’m trying out as a haptic wrist, and why its Jacobian is the identity matrix at the home pose.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/spherical-wrist-agile-eye/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/spm/spm-assembled.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">December 8, 2023 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 1 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li>A spherical wrist after the Agile Eye <span class="year">(Dec 8, 2023)</span></li>
-          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
-          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
-          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
-          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a> <span class="year">(Apr 7, 2026)</span></li>
-          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          <li><strong>A spherical wrist after the Agile Eye</strong></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></li>
+          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -50,7 +58,7 @@
   <figcaption>December 8, 2023. The finished mechanism.</figcaption>
 </figure>
 
-<p>Before the cable-driven wrists, I try something different for a haptic wrist: a spherical parallel mechanism. The idea comes from the Agile Eye, a camera-pointing mechanism from Cl&eacute;ment Gosselin&rsquo;s lab at Universit&eacute; Laval, and from Skyentific&rsquo;s video of a stepper-driven version, <a href="https://www.youtube.com/watch?v=0sKqc5IwQQQ">Now it works! Spherical Parallel Joint</a>.</p>
+<p>This is where my search for a haptic wrist design starts. Before I settle on cable drives, I try a spherical parallel mechanism. The idea comes from the Agile Eye, a camera-pointing mechanism from Cl&eacute;ment Gosselin&rsquo;s lab at Universit&eacute; Laval, and from Skyentific&rsquo;s video of a stepper-driven version, <a href="https://www.youtube.com/watch?v=0sKqc5IwQQQ">Now it works! Spherical Parallel Joint</a>.</p>
 
 <h2>How it moves</h2>
 <p>Three motors sit on the base with their axes meeting at one point. Each motor swings a curved link, and a second curved link joins it to the moving platform. All nine joint axes pass through the same centre, so the platform can only rotate about that point, like a motorized ball joint.</p>
@@ -122,6 +130,9 @@
   </video>
   <figcaption>January 12, 2024. Moving the platform by hand.</figcaption>
 </figure>
+
+<h2>What comes next</h2>
+<p>The next design goes in a much simpler direction: a <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal</a> that mounts straight on the WAM leader arm, which I use to work out how the wrist should attach to the operator&rsquo;s arm.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../six-camera-panorama/index.html">&larr; A 360° camera from six $20 action cameras</a><a href="../mobile-manipulator/index.html">A haptic mobile manipulator &rarr;</a></nav>

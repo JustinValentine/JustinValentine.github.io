@@ -2,6 +2,7 @@ title: A direct-drive end-effector wrist
 date: 2025-11
 topics: haptics, mechanisms, teleoperation, control
 series: haptic-wrist
+series_order: 3
 math: yes
 summary: A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.
 image: images/end-effector-wrist/thumb.jpg
@@ -12,7 +13,7 @@ video: images/end-effector-wrist/teleop-lab.mp4
   <figcaption>The Z-Y-X version in CAD. Z4, Z5 and Z6 are the axes of J5, J6 and J7.</figcaption>
 </figure>
 
-<p>This is a three-joint wrist for the leader WAM in our lab&rsquo;s teleoperation setup. It&rsquo;s an end-effector design: the operator holds a handle at the end of the arm, and nothing is strapped to their forearm. That makes it a different device from the <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a>, which is our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton.</p>
+<p>After the gimbal, I try going the other way. This is a three-joint wrist for the leader WAM in our lab&rsquo;s teleoperation setup. It&rsquo;s an end-effector design: the operator holds a handle at the end of the arm, and nothing is strapped to their forearm. The <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a> before it is our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton.</p>
 <p>I demo this wrist at RISEx 2025, and it&rsquo;s the one on the leader arm in our <a href="https://arxiv.org/abs/2607.01201">sensorless four-channel teleoperation paper</a>.</p>
 
 <h2>Why an end-effector design</h2>
@@ -97,3 +98,6 @@ video: images/end-effector-wrist/teleop-lab.mp4
 
 <h2>In the four-channel paper</h2>
 <p>This wrist is on the leader arm in <a href="https://arxiv.org/abs/2607.01201">Sensorless Four-Channel Control Architecture Using Inverse Dynamics Modeling for Human-Scale Bilateral Teleoperation</a>, by Amir Noohian, Dylan Miller, me, Alan Lynch and Martin Jagersand, submitted to IROS 2026. Amir is the first author. The paper describes the leader as a 4-DOF WAM with a 3-DOF custom haptic wrist. Its experiments only control the arm&rsquo;s first four joints, with the wrist joints locked and modelled as a rigid link.</p>
+
+<h2>What comes next</h2>
+<p>For the next design I go back to the forearm. The <a href="../coaxial-semi-differential-wrist/index.html">coaxial wrist</a> straps the operator&rsquo;s forearm into a cuff again, with cable drives instead of direct drive and a fourth joint that adds range.</p>

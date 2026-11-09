@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A direct-drive end-effector wrist | Justin Valentine</title>
     <meta name="description" content="A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/end-effector-wrist/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A direct-drive end-effector wrist">
+    <meta property="og:description" content="A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/end-effector-wrist/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/end-effector-wrist/thumb.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">November 2025 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/control/index.html">Control</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 3 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
-          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
-          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
-          <li>A direct-drive end-effector wrist <span class="year">(Nov 2025)</span></li>
-          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a> <span class="year">(Apr 7, 2026)</span></li>
-          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></li>
+          <li><strong>A direct-drive end-effector wrist</strong></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></li>
+          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -50,7 +58,7 @@
   <figcaption>The Z-Y-X version in CAD. Z4, Z5 and Z6 are the axes of J5, J6 and J7.</figcaption>
 </figure>
 
-<p>This is a three-joint wrist for the leader WAM in our lab&rsquo;s teleoperation setup. It&rsquo;s an end-effector design: the operator holds a handle at the end of the arm, and nothing is strapped to their forearm. That makes it a different device from the <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a>, which is our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton.</p>
+<p>After the gimbal, I try going the other way. This is a three-joint wrist for the leader WAM in our lab&rsquo;s teleoperation setup. It&rsquo;s an end-effector design: the operator holds a handle at the end of the arm, and nothing is strapped to their forearm. The <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a> before it is our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton.</p>
 <p>I demo this wrist at RISEx 2025, and it&rsquo;s the one on the leader arm in our <a href="https://arxiv.org/abs/2607.01201">sensorless four-channel teleoperation paper</a>.</p>
 
 <h2>Why an end-effector design</h2>
@@ -135,6 +143,9 @@
 
 <h2>In the four-channel paper</h2>
 <p>This wrist is on the leader arm in <a href="https://arxiv.org/abs/2607.01201">Sensorless Four-Channel Control Architecture Using Inverse Dynamics Modeling for Human-Scale Bilateral Teleoperation</a>, by Amir Noohian, Dylan Miller, me, Alan Lynch and Martin Jagersand, submitted to IROS 2026. Amir is the first author. The paper describes the leader as a 4-DOF WAM with a 3-DOF custom haptic wrist. Its experiments only control the arm&rsquo;s first four joints, with the wrist joints locked and modelled as a rigid link.</p>
+
+<h2>What comes next</h2>
+<p>For the next design I go back to the forearm. The <a href="../coaxial-semi-differential-wrist/index.html">coaxial wrist</a> straps the operator&rsquo;s forearm into a cuff again, with cable drives instead of direct drive and a fourth joint that adds range.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../coaxial-semi-differential-wrist/index.html">&larr; The coaxial semi-differential wrist</a><a href="../wham-wrist/index.html">Building the WHAM wrist &rarr;</a></nav>

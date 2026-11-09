@@ -4,7 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Alberta wrist | Justin Valentine</title>
-    <meta name="description" content="The last haptic wrist in the series, which I design at Barrett Technology in 2026. It goes from a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and on to Barrett&amp;rsquo;s booth at IROS in September. I also go through the motor and ratio choices, the FEA and the measured results.">
+    <meta name="description" content="The last haptic wrist in the series, which I design at Barrett Technology in 2026. It goes from a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and on to Barrett’s booth at IROS in September. I also go through the motor and ratio choices, the FEA and the measured results.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/haptic-wrist-barrett/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="The Alberta wrist">
+    <meta property="og:description" content="The last haptic wrist in the series, which I design at Barrett Technology in 2026. It goes from a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and on to Barrett’s booth at IROS in September. I also go through the motor and ratio choices, the FEA and the measured results.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/haptic-wrist-barrett/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/wrist-front.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">September 30, 2026 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/electronics/index.html">Electronics</a>, <a href="../../topics/control/index.html">Control</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 6 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
-          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
-          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
-          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
-          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a> <span class="year">(Apr 7, 2026)</span></li>
-          <li>The Alberta wrist <span class="year">(Sep 30, 2026)</span></li>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></li>
+          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a></li>
+          <li><strong>The Alberta wrist</strong></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -52,7 +60,7 @@
   <figcaption>October 19, 2026. One of the finished wrists on the bench at the University of Alberta.</figcaption>
 </figure>
 
-<p>The Alberta wrist is the last haptic wrist in this series. It mounts on a 4&#8209;DOF WAM arm on the operator&rsquo;s side. Together they make a 7&#8209;DOF leader for a second WAM, and the operator feels the forces the follower runs into. It&rsquo;s the last stage of a research project in our lab that goes back to 2014. In my thesis drafts it&rsquo;s the P4 wrist, after the Barrett P4-37 Pucks that drive it.</p>
+<p>The Alberta wrist is where my search for a wrist design ends. I design it at Barrett Technology after the <a href="../wham-wrist/index.html">WHAM wrist</a>. It mounts on a 4&#8209;DOF WAM arm on the operator&rsquo;s side. Together they make a 7&#8209;DOF leader for a second WAM, and the operator feels the forces the follower runs into. It&rsquo;s the last stage of a research project in our lab that goes back to 2014. In my thesis drafts it&rsquo;s the P4 wrist, after the Barrett P4-37 Pucks that drive it.</p>
 <p>Over my MSc I design and build four cable-driven prototypes, one of them with a precision cable-tensioning unit. I machine more than a dozen of the aluminum parts on CNC mills and lathes, and I design a PCB for the handle around a PS5 trigger module. On the software side I write the real-time C++ on libbarrett, including a port of Barrett&rsquo;s gravity calibration tools to the new wrist. I also lead three undergraduates who work on it, from mechanical engineering, computing science and computer engineering. The prototype just before this one is the <a href="../wham-wrist/index.html">WHAM wrist</a>.</p>
 <p>In 2026 I spend four months at Barrett Technology near Boston, the company that makes the WAM, designing this wrist with their engineers. I do the mechanical design and drawings and work with the manufacturers on tolerances and materials. I also run FEA under several load cases and work through cable stiffness, pulley geometry and reflected inertia. Barrett has the parts machined for three wrists.</p>
 <p>The photos run from a cardboard model on May 26 to Barrett&rsquo;s booth at IROS on September 30. Captions give the date, and the local time for phone photos.</p>

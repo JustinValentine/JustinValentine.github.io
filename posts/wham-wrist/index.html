@@ -4,7 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Building the WHAM wrist | Justin Valentine</title>
-    <meta name="description" content="A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&amp;rsquo;s last joint. It&amp;rsquo;s my biggest machining project so far, and it goes from a printed version in January 2026 to the WAM in April.">
+    <meta name="description" content="A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower’s last joint. It’s my biggest machining project so far, and it goes from a printed version in January 2026 to the WAM in April.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/wham-wrist/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Building the WHAM wrist">
+    <meta property="og:description" content="A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower’s last joint. It’s my biggest machining project so far, and it goes from a printed version in January 2026 to the WAM in April.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/wham-wrist/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/wham-wrist/thumb-full.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">April 7, 2026 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/electronics/index.html">Electronics</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 5 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
-          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
-          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
-          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
-          <li>Building the WHAM wrist <span class="year">(Apr 7, 2026)</span></li>
-          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></li>
+          <li><strong>Building the WHAM wrist</strong></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -50,7 +58,7 @@
   <figcaption>April 7, 2026. The wrist on the end of the WAM leader.</figcaption>
 </figure>
 
-<p>The WHAM wrist is the haptic wrist I build in the first few months of 2026, before I leave for Barrett Technology. It mounts on the forearm of a WAM arm that the operator wears as the leader. It comes after the <a href="../coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> I design at Barrett, and it&rsquo;s my biggest machining project to date. I&rsquo;m now writing a paper on it with Martin Jagersand.</p>
+<p>The WHAM wrist is my attempt to pull everything together into a final design before I leave for Barrett Technology. I build it in the first few months of 2026. It mounts on the forearm of a WAM arm that the operator wears as the leader. It comes after the <a href="../coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> I design at Barrett, and it&rsquo;s my biggest machining project to date. I&rsquo;m now writing a paper on it with Martin Jagersand.</p>
 <p>The photos run from a printed version on January 23 to the wrist on the WAM on April 7. Each caption gives the date of the photo or video.</p>
 
 <h2>Two haptic joints and a joystick</h2>
@@ -259,6 +267,9 @@
 
 <h2>Testing</h2>
 <p>In October 2026 I run my <a href="../wrist-test-suite/index.html">test suite</a> on both joints, and the full results are in that post. PS tracks position to 47&nbsp;Hz and FE to 31&nbsp;Hz at &minus;3&nbsp;dB, and FE has about three times the sliding friction of PS, 0.50&nbsp;N&middot;m against 0.15&nbsp;N&middot;m.</p>
+
+<h2>What comes next</h2>
+<p>In May I leave for Barrett Technology, where the last wrist in this series takes shape: the <a href="../haptic-wrist-barrett/index.html">Alberta wrist</a>, designed and built with their engineers.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../end-effector-wrist/index.html">&larr; A direct-drive end-effector wrist</a><a href="../getting-this-site-off-the-ground/index.html">Getting this site off the ground &rarr;</a></nav>

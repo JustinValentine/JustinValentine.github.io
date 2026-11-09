@@ -4,7 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A simple direct-drive gimbal wrist | Justin Valentine</title>
-    <meta name="description" content="A gimbal wrist for the WAM, driven directly so it&amp;rsquo;s easy to prototype, that we use to test strapping the WAM to an operator&amp;rsquo;s forearm as an approximate exoskeleton.">
+    <meta name="description" content="A gimbal wrist for the WAM, driven directly so it’s easy to prototype, that we use to test strapping the WAM to an operator’s forearm as an approximate exoskeleton.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/direct-drive-gimbal-wrist/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A simple direct-drive gimbal wrist">
+    <meta property="og:description" content="A gimbal wrist for the WAM, driven directly so it’s easy to prototype, that we use to test strapping the WAM to an operator’s forearm as an approximate exoskeleton.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/direct-drive-gimbal-wrist/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/direct-drive-gimbal-wrist/thumb-full.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">2024 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 2 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
-          <li>A simple direct-drive gimbal wrist <span class="year">(2024)</span></li>
-          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
-          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
-          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a> <span class="year">(Apr 7, 2026)</span></li>
-          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a></li>
+          <li><strong>A simple direct-drive gimbal wrist</strong></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></li>
+          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -56,7 +64,7 @@
   </figure>
 </div>
 
-<p>This is a simple gimbal wrist for the WAM leader arm. Its joints are driven directly, with no cables, because that makes it easy to prototype. J5 and J6 use quasi-direct-drive (QDD) actuators for extra torque. A final design would swap those for capstans, and the <a href="../haptic-wrist-barrett/index.html">later wrists in this series</a> are cable-driven.</p>
+<p>After the <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a>, my second design is much simpler. This is a gimbal wrist for the WAM leader arm. Its joints are driven directly, with no cables, because that makes it easy to prototype. J5 and J6 use quasi-direct-drive (QDD) actuators for extra torque. A final design would swap those for capstans, and most of the <a href="../haptic-wrist-barrett/index.html">later wrists in this series</a> are cable-driven.</p>
 
 <p>The wrist is really a way into a bigger question. So far we&rsquo;ve run the WAM in end-effector mode, where the operator holds a handle at the end of the arm. Could it work as an approximate exoskeleton instead, with the operator&rsquo;s forearm strapped to it? We write down these questions:</p>
 
@@ -168,6 +176,9 @@
   <tr><th>Upper-arm attachment</th><td>Not necessary, and it adds a lot of bulk.</td></tr>
   <tr><th>Passive joint at the hand</th><td>Doesn&rsquo;t seem necessary, though it needs more testing.</td></tr>
 </table>
+
+<h2>What comes next</h2>
+<p>The main thing I take from the gimbal is how much the attachment matters. A rigid cuff is uncomfortable, and one passive joint at the forearm is what makes the approximate exoskeleton workable. For the next design I try going the other way: an <a href="../end-effector-wrist/index.html">end-effector wrist</a> with nothing strapped to the arm at all.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../mobile-manipulator/index.html">&larr; A haptic mobile manipulator</a><a href="../hal-quadruped/index.html">HAL, a quadruped with an actuated spine &rarr;</a></nav>

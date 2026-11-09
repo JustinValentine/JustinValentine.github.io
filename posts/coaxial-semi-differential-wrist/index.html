@@ -4,7 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The coaxial semi-differential wrist | Justin Valentine</title>
-    <meta name="description" content="A four-joint, cable-driven leader wrist for the WAM. Two of its drives are rings stacked around the forearm, and a fourth motor turns the whole wrist relative to the arm it&amp;rsquo;s mounted on.">
+    <meta name="description" content="A four-joint, cable-driven leader wrist for the WAM. Two of its drives are rings stacked around the forearm, and a fourth motor turns the whole wrist relative to the arm it’s mounted on.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/coaxial-semi-differential-wrist/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="The coaxial semi-differential wrist">
+    <meta property="og:description" content="A four-joint, cable-driven leader wrist for the WAM. Two of its drives are rings stacked around the forearm, and a fourth motor turns the whole wrist relative to the arm it’s mounted on.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/coaxial-semi-differential-wrist/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/coaxial-semi-differential-wrist/thumb-full.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -34,14 +42,14 @@
           <p class="post-meta">October 2025 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/control/index.html">Control</a></p>
         </header>
         <aside class="series">
-          <p>Haptic wrist prototypes, in order:</p>
+          <p><strong>Finding a haptic wrist design</strong>, part 4 of 6. Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.</p>
           <ol>
-          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
-          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
-          <li>The coaxial semi-differential wrist <span class="year">(Oct 2025)</span></li>
-          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
-          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a> <span class="year">(Apr 7, 2026)</span></li>
-          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a></li>
+          <li><strong>The coaxial semi-differential wrist</strong></li>
+          <li><a href="../wham-wrist/index.html">Building the WHAM wrist</a></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a></li>
           </ol>
         </aside>
         <div class="post-content">
@@ -50,7 +58,7 @@
   <figcaption>The wrist on an optical table in the lab.</figcaption>
 </figure>
 
-<p>This wrist goes on the end of a Barrett WAM. The operator straps their forearm into the cuff and holds the handle, and the WAM and the wrist together act as the leader for a second WAM. It comes after the <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> from my time at Barrett.</p>
+<p>This wrist goes on the end of a Barrett WAM. The operator straps their forearm into the cuff and holds the handle, and the WAM and the wrist together act as the leader for a second WAM. It comes after the <a href="../end-effector-wrist/index.html">end-effector wrist</a>, and it goes back to strapping the operator&rsquo;s forearm into a cuff, now with cable drives on every joint.</p>
 <p>It has four joints. Three follow the human wrist: pronation&ndash;supination (PS), flexion&ndash;extension (FE) and radial&ndash;ulnar deviation (RU). The fourth, which I call ATT for active attachment, sits between the wrist and its mount and turns the whole thing, cuff included. Every joint is cable driven, and the whole device weighs 4.9&nbsp;kg.</p>
 
 <figure class="tall">
@@ -201,6 +209,9 @@
 <p>Range is still the biggest limit. Without your fingers, most tasks are awkward. The ATT joint&rsquo;s extra range does make tabletop tasks possible with the elbow down, which the three-joint wrists can&rsquo;t do, but more range on the leader would make it much more usable.</p>
 <p>I&rsquo;m also not sure force feedback on all three anatomical joints helps. It feels a bit awkward, and PS motion often makes the arm slip in the cuff, which throws the user out of line with the WAM. For most tasks, feedback on PS seems less important than on FE and RU, so a later version could drop it there.</p>
 <p>The elbow is the other open problem. Ideally the plane through my upper arm and forearm matches the plane through the WAM&rsquo;s upper arm and forearm. In gravity mode that&rsquo;s easy to keep. In teleoperation the WAM&rsquo;s higher apparent impedance damps the motion, and keeping the two planes together gets much harder. I end up adjusting the elbow with my other arm or moving my body to compensate.</p>
+
+<h2>What comes next</h2>
+<p>The <a href="../wham-wrist/index.html">WHAM wrist</a> that comes next takes a different approach to the same problems. It has just two haptic joints, PS and FE, with far more PS range than this one. It hands the follower&rsquo;s last joint to a thumb joystick and adds a passive joint at the forearm so the operator&rsquo;s elbow doesn&rsquo;t have to line up with the WAM&rsquo;s.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../sketch-generation-flow-matching/index.html">&larr; Drawing sketches with guided flow matching</a><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist &rarr;</a></nav>

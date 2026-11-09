@@ -16,7 +16,9 @@ Header keys:
   thumb_fit contain, to show the whole thumbnail image instead of cropping it
   thumb_position  CSS object-position for the thumbnail crop, e.g. 50% 30%
   thumb_zoom      scale factor for a thumbnail, e.g. 1.8
+  featured  1, 2, 3...: show the post in the homepage's Featured row, in that order
   series    a key from SERIES, to list the other posts in that series
+  series_order  position in the series (otherwise date order)
   math      yes, to load KaTeX for \\( ... \\) and \\[ ... \\]
   home      no, to leave a post off the homepage
 
@@ -32,6 +34,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE_URL = "https://justinvalentine.ca/"
 EMAIL = "justin@justinvalentine.ca"
 GITHUB = "https://github.com/JustinValentine"
+DEFAULT_IMAGE = "images/wrist-front.jpg"  # link-preview image for pages without their own
 SCHOLAR = "https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en"
 
 TOPICS = [
@@ -49,7 +52,10 @@ TOPICS = [
     ("games", "Games"),
 ]
 TOPIC_NAMES = dict(TOPICS)
-SERIES = {"haptic-wrist": "Haptic wrist prototypes"}
+SERIES = {"haptic-wrist": {
+    "title": "Finding a haptic wrist design",
+    "intro": "Before I leave for Barrett, I&rsquo;m trying to settle on a wrist design for our WAM teleoperation setup, so I build and test one idea after another. These are the designs in the order I try them.",
+}}
 # Comments with giscus (GitHub Discussions). Turned on once category_id is filled in.
 GISCUS = {
     "repo": "JustinValentine/JustinValentine.github.io",
@@ -88,7 +94,9 @@ class Post:
         self.image = meta.get("image", "")
         self.video = meta.get("video", "")
         self.series = meta.get("series", "")
+        self.series_order = int(meta.get("series_order", "0") or 0)
         self.thumb_fit = meta.get("thumb_fit", "")
+        self.featured = int(meta.get("featured", "0") or 0)
         self.thumb_position = meta.get("thumb_position", "")
         self.thumb_zoom = meta.get("thumb_zoom", "")
         self.math = meta.get("math", "no") == "yes"
@@ -127,7 +135,7 @@ def load_posts():
 
 # ---------- page shell ----------
 
-def page(title, body, depth, current="", description="", head_extra="", tail=""):
+def page(title, body, depth, current="", description="", head_extra="", tail="", path="", image="", og_type="website"):
     r = "../" * depth
     nav = [("topics", "Topics", f"{r}topics/index.html"), ("papers", "Papers", f"{r}about/index.html#papers"),
            ("about", "About", f"{r}about/index.html"), ("cv", "CV", f"{r}cv.pdf")]
@@ -136,13 +144,24 @@ def page(title, body, depth, current="", description="", head_extra="", tail="")
         f'          <a href="{href}"{cur if key == current else ""}>{label}</a>'
         for key, label, href in nav)
     full_title = "Justin Valentine" if not title else f"{title} | Justin Valentine"
+    description = html.unescape(description)
     desc = f'\n    <meta name="description" content="{esc(description)}">' if description else ""
+    og_title = html.unescape(title or "Justin Valentine")
+    preview = f"""
+    <link rel="canonical" href="{SITE_URL}{path}">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="{og_type}">
+    <meta property="og:title" content="{esc(og_title)}">
+    <meta property="og:description" content="{esc(description)}">
+    <meta property="og:url" content="{SITE_URL}{path}">
+    <meta property="og:image" content="{SITE_URL}{image or DEFAULT_IMAGE}">
+    <meta name="twitter:card" content="summary_large_image">"""
     return f"""<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{esc(full_title)}</title>{desc}
+    <title>{esc(full_title)}</title>{desc}{preview}
     <link rel="icon" href="{r}favicon.ico" sizes="any">
     <link rel="icon" href="{r}favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="{r}apple-touch-icon.png">
@@ -201,9 +220,7 @@ def topic_links(topics, r):
     return ", ".join(f'<a href="{r}topics/{t}/index.html">{TOPIC_NAMES[t]}</a>' for t in topics)
 
 
-def entry(p, r):
-    """One post in a list: thumbnail (if any), title, date, summary, topics."""
-    href = f"{r}posts/{p.slug}/index.html"
+def thumb_html(p, r, href):
     style = ""
     if p.thumb_position:
         style += f"object-position: {p.thumb_position};"
@@ -212,12 +229,17 @@ def entry(p, r):
     style = f' style="{style}"' if style else ""
     cls = "thumb contain" if p.thumb_fit == "contain" else "thumb"
     if p.video:
-        thumb = (f'<a class="{cls}" href="{href}" tabindex="-1" aria-hidden="true"><video autoplay muted loop '
-                 f'playsinline preload="auto"{style}><source src="{r}{p.video}" type="video/mp4"></video></a>')
-    elif p.image:
-        thumb = f'<a class="{cls}" href="{href}" tabindex="-1" aria-hidden="true"><img src="{r}{p.image}" alt="" loading="lazy"{style}></a>'
-    else:
-        thumb = '<span class="thumb empty" aria-hidden="true"></span>'
+        return (f'<a class="{cls}" href="{href}" tabindex="-1" aria-hidden="true"><video autoplay muted loop '
+                f'playsinline preload="auto"{style}><source src="{r}{p.video}" type="video/mp4"></video></a>')
+    if p.image:
+        return f'<a class="{cls}" href="{href}" tabindex="-1" aria-hidden="true"><img src="{r}{p.image}" alt="" loading="lazy"{style}></a>'
+    return '<span class="thumb empty" aria-hidden="true"></span>'
+
+
+def entry(p, r):
+    """One post in a list: thumbnail (if any), title, date, summary, topics."""
+    href = f"{r}posts/{p.slug}/index.html"
+    thumb = thumb_html(p, r, href)
     meta = p.date_short + (f" &middot; {topic_links(p.topics, r)}" if p.topics else "")
     summary = f"\n            <p>{p.summary}</p>" if p.summary else ""
     return f"""        <li>
@@ -240,14 +262,15 @@ def build_post(p, posts):
     meta = p.date_text + (f" &middot; {topic_links(p.topics, r)}" if p.topics else "")
     series = ""
     if p.series:
-        members = sorted([q for q in posts if q.series == p.series], key=lambda q: q.sort)
+        members = sorted([q for q in posts if q.series == p.series], key=lambda q: (q.series_order or 99, q.sort))
+        part = members.index(p) + 1
         items = "\n".join(
-            f"          <li>{q.title} <span class=\"year\">({q.date_short})</span></li>" if q is p else
-            f'          <li><a href="../{q.slug}/index.html">{q.title}</a> <span class="year">({q.date_short})</span></li>'
+            f"          <li><strong>{q.title}</strong></li>" if q is p else
+            f'          <li><a href="../{q.slug}/index.html">{q.title}</a></li>'
             for q in members)
         series = f"""
         <aside class="series">
-          <p>{SERIES[p.series]}, in order:</p>
+          <p><strong>{SERIES[p.series]['title']}</strong>, part {part} of {len(members)}. {SERIES[p.series]['intro']}</p>
           <ol>
 {items}
           </ol>
@@ -277,7 +300,7 @@ def build_post(p, posts):
     <script defer src="{KATEX}contrib/auto-render.min.js" onload="renderMathInElement(document.body, {{delimiters: [{{left: '\\\\[', right: '\\\\]', display: true}}, {{left: '\\\\(', right: '\\\\)', display: false}}]}})"></script>"""
     out = os.path.join(ROOT, "posts", p.slug)
     os.makedirs(out, exist_ok=True)
-    write(os.path.join(out, "index.html"), page(p.title, body, 2, description=re.sub("<[^>]+>", "", p.summary), head_extra=head))
+    write(os.path.join(out, "index.html"), page(p.title, body, 2, description=re.sub("<[^>]+>", "", p.summary), head_extra=head, path=f"posts/{p.slug}/", image=p.image, og_type="article"))
 
 
 def comments_block():
@@ -294,6 +317,22 @@ def comments_block():
         </section>"""
 
 
+def featured_row(posts):
+    feat = sorted([p for p in posts if p.featured], key=lambda p: p.featured)
+    if not feat:
+        return ""
+    cards = "\n".join(f"""        <li>
+          {thumb_html(p, "", f"posts/{p.slug}/index.html")}
+          <h3><a href="posts/{p.slug}/index.html">{p.title}</a></h3>
+          <p class="entry-meta">{p.date_short}</p>
+        </li>""" for p in feat)
+    return f"""      <h2>Featured</h2>
+      <ul class="featured">
+{cards}
+      </ul>
+"""
+
+
 def build_home(posts):
     intro = open(os.path.join(ROOT, "src", "home.html"), encoding="utf-8").read().strip()
     counts = {t: sum(t in p.topics for p in posts) for t, _ in TOPICS}
@@ -302,8 +341,9 @@ def build_home(posts):
 
       <p class="topic-line">Topics: {topics}</p>
 
-      <h2>Posts</h2>
-{entry_list([p for p in posts if p.home], "")}"""
+{featured_row(posts)}
+      <h2>{"More posts" if any(p.featured for p in posts) else "Posts"}</h2>
+{entry_list([p for p in posts if p.home and not p.featured], "")}"""
     write(os.path.join(ROOT, "index.html"), page("", body, 0, description="Justin Valentine builds robots and other machines in Edmonton, from the mechanism and machined parts to the electronics, firmware and control code."))
 
 
@@ -317,7 +357,7 @@ def build_topics(posts):
       <h1>{name}</h1>
 {entry_list(tp, "../../")}"""
         os.makedirs(os.path.join(ROOT, "topics", t), exist_ok=True)
-        write(os.path.join(ROOT, "topics", t, "index.html"), page(name, body, 2, current="topics", description=f"Posts by Justin Valentine about {name.lower()}."))
+        write(os.path.join(ROOT, "topics", t, "index.html"), page(name, body, 2, current="topics", description=f"Posts by Justin Valentine about {name.lower()}.", path=f"topics/{t}/"))
         items = "\n".join(f'          <li><a href="../posts/{p.slug}/index.html">{p.title}</a> <span class="year">{p.date_short}</span></li>' for p in tp)
         sections.append(f"""      <section class="topic">
         <h2><a href="{t}/index.html">{name}</a></h2>
@@ -326,7 +366,7 @@ def build_topics(posts):
         </ul>
       </section>""")
     body = "      <h1>Topics</h1>\n" + "\n".join(sections)
-    write(os.path.join(ROOT, "topics", "index.html"), page("Topics", body, 1, current="topics", description="Posts by Justin Valentine, by topic."))
+    write(os.path.join(ROOT, "topics", "index.html"), page("Topics", body, 1, current="topics", description="Posts by Justin Valentine, by topic.", path="topics/"))
 
 
 def build_archive(posts):
@@ -335,12 +375,12 @@ def build_archive(posts):
         items = "\n".join(f'        <li><time datetime="{p.iso}">{p.date_short}</time><a href="{p.slug}/index.html">{p.title}</a></li>' for p in posts if p.y == y)
         years.append(f"      <h2>{y}</h2>\n      <ul class=\"dated\">\n{items}\n      </ul>")
     body = "      <h1>All posts</h1>\n" + "\n".join(years)
-    write(os.path.join(ROOT, "posts", "index.html"), page("All posts", body, 1, description="Every post on the site, newest first."))
+    write(os.path.join(ROOT, "posts", "index.html"), page("All posts", body, 1, description="Every post on the site, newest first.", path="posts/"))
 
 
 def build_about():
     body = open(os.path.join(ROOT, "src", "about.html"), encoding="utf-8").read().rstrip()
-    write(os.path.join(ROOT, "about", "index.html"), page("About", body, 1, current="about", description="About Justin Valentine, who builds robots and other machines in Edmonton."))
+    write(os.path.join(ROOT, "about", "index.html"), page("About", body, 1, current="about", description="About Justin Valentine, who builds robots and other machines in Edmonton.", path="about/"))
 
 
 def build_redirect(path, target, label):

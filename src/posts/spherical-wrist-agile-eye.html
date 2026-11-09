@@ -2,6 +2,7 @@ title: A spherical wrist after the Agile Eye
 date: 2023-12-08
 topics: haptics, mechanisms
 series: haptic-wrist
+series_order: 1
 math: yes
 summary: A three-motor spherical parallel mechanism I&rsquo;m trying out as a haptic wrist, and why its Jacobian is the identity matrix at the home pose.
 image: images/spm/spm-assembled.jpg
@@ -11,7 +12,7 @@ image: images/spm/spm-assembled.jpg
   <figcaption>December 8, 2023. The finished mechanism.</figcaption>
 </figure>
 
-<p>Before the cable-driven wrists, I try something different for a haptic wrist: a spherical parallel mechanism. The idea comes from the Agile Eye, a camera-pointing mechanism from Cl&eacute;ment Gosselin&rsquo;s lab at Universit&eacute; Laval, and from Skyentific&rsquo;s video of a stepper-driven version, <a href="https://www.youtube.com/watch?v=0sKqc5IwQQQ">Now it works! Spherical Parallel Joint</a>.</p>
+<p>This is where my search for a haptic wrist design starts. Before I settle on cable drives, I try a spherical parallel mechanism. The idea comes from the Agile Eye, a camera-pointing mechanism from Cl&eacute;ment Gosselin&rsquo;s lab at Universit&eacute; Laval, and from Skyentific&rsquo;s video of a stepper-driven version, <a href="https://www.youtube.com/watch?v=0sKqc5IwQQQ">Now it works! Spherical Parallel Joint</a>.</p>
 
 <h2>How it moves</h2>
 <p>Three motors sit on the base with their axes meeting at one point. Each motor swings a curved link, and a second curved link joins it to the moving platform. All nine joint axes pass through the same centre, so the platform can only rotate about that point, like a motorized ball joint.</p>
@@ -83,3 +84,6 @@ image: images/spm/spm-assembled.jpg
   </video>
   <figcaption>January 12, 2024. Moving the platform by hand.</figcaption>
 </figure>
+
+<h2>What comes next</h2>
+<p>The next design goes in a much simpler direction: a <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal</a> that mounts straight on the WAM leader arm, which I use to work out how the wrist should attach to the operator&rsquo;s arm.</p>
