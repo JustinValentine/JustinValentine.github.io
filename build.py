@@ -54,8 +54,8 @@ SERIES = {"haptic-wrist": "Haptic wrist prototypes"}
 GISCUS = {
     "repo": "JustinValentine/JustinValentine.github.io",
     "repo_id": "R_kgDOVkY93w",
-    "category": "Comments",
-    "category_id": "",
+    "category": "Announcements",
+    "category_id": "DIC_kwDOVkY9384DKtdl",
 }
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December"]
