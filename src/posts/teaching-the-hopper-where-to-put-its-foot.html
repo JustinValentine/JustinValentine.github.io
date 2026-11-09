@@ -1,20 +1,20 @@
 title: Teaching the Hopper Where to Put Its Foot
 date: 2026-07-09
 topics: legged-robots, control, simulation, electronics
-summary: A corner-balanced wheel triad, one-hop foot placement and softer landings, all in simulation.
+summary: In simulation, I swap the hopper's tail for a corner-balanced wheel triad, place its foot with a measured one-hop return map, and soften its landings.
 video: images/triad_hop.mp4
 thumb_zoom: 1.8
 math: yes
 ---
-      <p><a href="../variable-pitch-hopper/index.html">Last time</a> the hopper was a set of promising plots: a variable-pitch screw, a motor that can throw 900 grams several meters upward, and a circuit board that assumes the robot is trying to misbehave. This post is about what happened between the plots and the machine shop: making the thing hop, steer, and land without drama—in simulation, where crashes are free.</p>
+      <p>In the <a href="../variable-pitch-hopper/index.html">last post</a> the hopper is still a set of promising plots: a variable-pitch screw, a motor that can throw 900 grams several meters up, and a control board built around failure handling. This post covers the step between the plots and the machine shop, which is getting the thing to hop, steer and land without drama. All of it happens in simulation, where crashes are free.</p>
 
-      <p>Simulation-first deserves one sentence of defense. Everything below runs under a hardware-realistic sensor model—quantized encoders, a noisy IMU, about a millisecond and a half of latency, a 1&nbsp;kHz loop—and the C++ port for the Teensy replays a 16,000-tick episode to within a trillionth of the Python controller's outputs. None of this has touched a real floor yet, but the controller being tuned here is, tick for tick, the one that will.</p>
+      <p>Everything below runs under a hardware-realistic sensor model, with quantized encoders, a noisy IMU, about a millisecond and a half of latency and a 1&nbsp;kHz loop. The C++ port for the Teensy replays a 16,000-tick episode to within a trillionth of the Python controller's outputs. None of this has touched a real floor yet, but the controller I'm tuning here is, tick for tick, the one that will.</p>
 
       <h2>How the loop runs</h2>
 
-      <p>Most of this post is about how each piece is implemented, so here is the whole loop first. MuJoCo steps the robot every 0.1&nbsp;ms. The controller never reads MuJoCo's state directly. A sensor model hands it a copy that is 1.5&nbsp;ms old, with noise and slowly drifting biases added, and the controller samples that copy at 1&nbsp;kHz. A contact-aided estimator turns the measurements into position and velocity. The controller produces one torque for each body axis plus a torque for the screw motor, and an allocator turns the three axis torques into the three wheel-motor torques. On the way out every command picks up a fixed per-run torque scale error (5% standard deviation) and 2% current ripple, and it is held until the next tick.</p>
+      <p>Most of this post goes through the pieces one at a time, so here's the whole loop first. MuJoCo steps the robot every 0.1&nbsp;ms. The controller never reads MuJoCo's state directly. A sensor model hands it a copy that is 1.5&nbsp;ms old, with noise and slowly drifting biases added, and the controller samples that copy at 1&nbsp;kHz. A contact-aided estimator turns the measurements into position and velocity. The controller produces one torque for each body axis plus a torque for the screw motor, and an allocator turns the three axis torques into the three wheel-motor torques. On the way out every command picks up a fixed per-run torque scale error (5% standard deviation) and 2% current ripple, and it's held until the next tick.</p>
 
-      <p>I have kept working on the code since July. The constants in the sections below come from the current version, which uses the star-serial ILM-E50x14 leg motor from the <a href="../variable-pitch-hopper/index.html">update on the last post</a> (the preset <code>ilm_x14ser</code>, 0.920&nbsp;kg launched). The July runs used the parallel winding of the same motor, and where that changes a number I give both.</p>
+      <p>I've kept working on the code since July, so the constants in the sections below come from the current version. It uses the star-serial ILM-E50x14 leg motor from the <a href="../variable-pitch-hopper/index.html">update on the last post</a> (the preset <code>ilm_x14ser</code>, 0.920&nbsp;kg launched). The July runs use the parallel winding of the same motor, and where that changes a number I give both.</p>
 
       <figure>
         <div style="overflow-x:auto">
@@ -105,10 +105,10 @@ math: yes
           </g>
         </svg>
         </div>
-        <figcaption class="caption">The loop as it runs in simulation. The firmware runs the estimator, controller and allocator; the plant and the sensor model are what the real robot will replace.</figcaption>
+        <figcaption class="caption">The loop as it runs in simulation. The firmware runs the estimator, controller and allocator. On the real robot, the hardware takes the place of the plant and the sensor model.</figcaption>
       </figure>
 
-      <p>The controller is a state machine with two phases. Contact comes from a foot switch, which in the simulation is a touch sensor on the foot that reads closed above 5&nbsp;N. The raw switch has to disagree with the current phase for 2&nbsp;ms before the phase changes. Without that debounce, a single noisy tick halfway through a push could fire a false liftoff: the flight logic braked the screw, the aborted push unloaded the foot, and the false reading became true. The transitions are:</p>
+      <p>The controller is a state machine with two phases. Contact comes from a foot switch, which in the simulation is a touch sensor on the foot that reads closed above 5&nbsp;N. The raw switch has to disagree with the current phase for 2&nbsp;ms before the phase changes. Without that debounce, a single noisy tick halfway through a push can fire a false liftoff. The flight logic brakes the screw, the aborted push unloads the foot, and the false reading becomes true. The transitions are:</p>
 
       <ul>
         <li><strong>Touchdown</strong>: in flight, debounced contact and \(v_z \le 0\). Here the controller decides whether this stance is firm. It is firm if the commanded speed is above 0.45&nbsp;m/s, the body arrives faster than <code>firm_vz</code> (2.9&nbsp;m/s in the stock law, 4.2&nbsp;m/s in the soft law), or the last apex was more than 0.22&nbsp;m below target.</li>
@@ -120,27 +120,27 @@ math: yes
 
       <h2>What the simulation contains</h2>
 
-      <p>The body is a free 6-DOF torso. With the current preset the launched mass is 0.920&nbsp;kg: 0.394&nbsp;kg of torso, 0.110&nbsp;kg of leg, a 37&nbsp;g foot, 18&nbsp;g of rotor and three 120&nbsp;g wheels. The leg is rigid with the body and only extends. It is a prismatic joint along the body's &minus;z axis with 350&nbsp;mm of stroke and a length of 450&nbsp;mm at full extension, with no spring and no damper on the joint. The foot is a 12&nbsp;mm sphere with a friction coefficient of 1.0 and a point contact, which has no torsional friction, so the ground cannot take any yaw torque from the robot.</p>
+      <p>The body is a free 6-DOF torso. With the current preset the launched mass is 0.920&nbsp;kg: 0.394&nbsp;kg of torso, 0.110&nbsp;kg of leg, a 37&nbsp;g foot, 18&nbsp;g of rotor and three 120&nbsp;g wheels. The leg is rigid with the body and only extends. It's a prismatic joint along the body's &minus;z axis with 350&nbsp;mm of stroke and a length of 450&nbsp;mm at full extension, with no spring and no damper on the joint. The foot is a 12&nbsp;mm sphere with a friction coefficient of 1.0 and a point contact, which has no torsional friction, so the ground cannot take any yaw torque from the robot.</p>
 
       <p>The screw is a hinge on the leg axis carrying 1.39&times;10<sup>&minus;5</sup>&nbsp;kg&middot;m<sup>2</sup> of spin inertia: the motor rotor (9.30&times;10<sup>&minus;6</sup>) plus the screw itself (4.60&times;10<sup>&minus;6</sup>, measured from the CAD). The cam is a MuJoCo joint equality that ties the leg joint to the screw angle through a quartic polynomial:</p>
 
       \[ x_{\text{leg}}(\theta) = c_0 + c_1\theta + c_2\theta^2 + c_3\theta^3 + c_4\theta^4 \]
 
-      <p>One quartic can be 30% off in transmission ratio on an aggressive cam, so the profile is split into five quartic pieces that match in value and slope at the knots. Each piece is its own equality constraint, and the simulation loop sets <code>eq_active</code> every step so that only the piece containing the current screw angle is enforced. The constraint is stiff, with a 0.2&nbsp;ms time constant, because a tiny rotor is driving a kilogram-scale load through it. That is why the timestep is 0.1&nbsp;ms.</p>
+      <p>One quartic can be 30% off in transmission ratio on an aggressive cam, so I split the profile into five quartic pieces that match in value and slope at the knots. Each piece is its own equality constraint, and the simulation loop sets <code>eq_active</code> every step so that only the piece containing the current screw angle is enforced. The constraint is stiff, with a 0.2&nbsp;ms time constant, because a tiny rotor is driving a kilogram-scale load through it. That's why the timestep is 0.1&nbsp;ms.</p>
 
       <p>Nothing else about the transmission is written by hand. The constrained dynamics produce the varying ratio \(k(\theta) = dx/d\theta\) and the reflected inertia on their own. For a vertical push with body mass \(m\), spin inertia \(j\) and motor torque \(\tau\), the leg obeys</p>
 
       \[ (j + m k^2)\,\ddot\theta + m\,k\,k'\,\dot\theta^2 + m g k = \tau \]
 
-      <p>and I checked MuJoCo's full-torque push against a hand integration of this equation when I set the model up. On the star-serial cam \(k\) runs from 8.9&nbsp;mm/rad at full compression to 28.6&nbsp;mm/rad at full extension, so the rotor's reflected mass \(j/k^2\) falls from 174&nbsp;g at the bottom to 17&nbsp;g at the top. The screw motor is a torque actuator clamped every tick to the motor's envelope: 1.72&nbsp;N&middot;m up to 256.4&nbsp;rad/s, falling linearly to zero at 394.7&nbsp;rad/s when the torque is in the direction of spin. Braking torque gets the full 1.72&nbsp;N&middot;m at any speed, because the back-EMF helps the current when the drive regenerates.</p>
+      <p>and one of my first checks when setting up the model is MuJoCo's full-torque push against a hand integration of this equation. On the star-serial cam \(k\) runs from 8.9&nbsp;mm/rad at full compression to 28.6&nbsp;mm/rad at full extension, so the rotor's reflected mass \(j/k^2\) falls from 174&nbsp;g at the bottom to 17&nbsp;g at the top. The screw motor is a torque actuator clamped every tick to the motor's envelope: 1.72&nbsp;N&middot;m up to 256.4&nbsp;rad/s, falling linearly to zero at 394.7&nbsp;rad/s when the torque is in the direction of spin. Braking torque gets the full 1.72&nbsp;N&middot;m at any speed, because the back-EMF helps the current when the drive regenerates.</p>
 
       <p>The three wheels are hinge bodies whose axes are taken from the allocation matrix below, so the geometry is defined in one place. Each is a 120&nbsp;g rim at 45&nbsp;mm radius, \(I_s = m r^2 = 2.43\times10^{-4}\)&nbsp;kg&middot;m<sup>2</sup>, centred 52&nbsp;mm from the leg axis, with a &plusmn;0.55&nbsp;N&middot;m motor. The torso is drawn as a cube standing on one corner with a wheel on each lower face. The cube is only the rendering; the torso inertia is set separately (2.0, 2.0 and 1.2&times;10<sup>&minus;3</sup>&nbsp;kg&middot;m<sup>2</sup>).</p>
 
       <h2>Balancing on a corner</h2>
 
-      <p>The last post steered with a mixed set: a big inertial tail for pitch and two reaction wheels for roll and yaw. It works, but the tail is a propeller-sized part with its own motor sizing, and every asymmetric mass hanging off the body is one more thing pulling the center of mass off the leg axis.</p>
+      <p>In the last post the hopper steers with a mixed set: a big inertial tail for pitch and two reaction wheels for roll and yaw. That works, but the tail is a propeller-sized part with its own motor sizing, and every asymmetric mass hanging off the body is one more thing pulling the center of mass off the leg axis.</p>
 
-      <p>The replacement is three identical wheels arranged like <a href="https://www.youtube.com/watch?v=n_6p-1J551Y">the Cubli</a> balancing on its corner: each spin axis tilted about 54.7 degrees off the leg, spaced 120 degrees apart. That particular angle makes the three axes mutually orthogonal, so the matrix built from them is orthonormal and its inverse is just its transpose. The attitude controller did not change at all—it still commands virtual pitch, roll, and yaw wheels, and a small allocator multiplies by a transpose to get physical motor torques. The controller does not know the tail is gone. The symmetry also puts the center of mass back on the leg axis by construction, and the shopping list drops to one wheel motor SKU.</p>
+      <p>I replace all of that with three identical wheels arranged like <a href="https://www.youtube.com/watch?v=n_6p-1J551Y">the Cubli</a> balancing on its corner. Each spin axis tilts about 54.7 degrees off the leg, and the three are spaced 120 degrees apart. That particular angle makes the axes mutually orthogonal, so the matrix built from them is orthonormal and its inverse is just its transpose. The attitude controller doesn't change at all. It still commands virtual pitch, roll and yaw wheels, and a small allocator multiplies by a transpose to get the physical motor torques, so the controller doesn't know the tail is gone. The symmetry also puts the center of mass back on the leg axis by construction, and the shopping list drops to one wheel motor SKU.</p>
 
       <figure>
         <video controls loop muted playsinline preload="metadata" style="max-width:100%;height:auto">
@@ -149,9 +149,9 @@ math: yes
         <figcaption class="caption">Twelve seconds of hopping in place on the wheel triad, under the full sensor-noise model. The body is drawn as the cube it is: corner down, one wheel on each lower face.</figcaption>
       </figure>
 
-      <p>The triad is not free. A pure pitch command now splits across two tilted wheels at 0.71 of full strength each, and the momentum stored in the wheels lives on tilted axes too—so when the body rotates, that stored momentum shows up as a gyroscopic disturbance torque. That one killed sustained sideways hopping above about 0.35&nbsp;m/s until the allocator learned to compute the cross product from wheel telemetry and cancel it explicitly.</p>
+      <p>The triad isn't free. A pure pitch command now splits across two tilted wheels at 0.71 of full strength each, and the momentum stored in the wheels sits on tilted axes too. When the body rotates, that stored momentum shows up as a gyroscopic disturbance torque. Left uncorrected, it kills sustained sideways hopping above about 0.35&nbsp;m/s, so the allocator computes the cross product from wheel telemetry and cancels it explicitly.</p>
 
-      <p>The more surprising lesson was mechanical. What keeps the triad stable is wheel <em>inertia</em>, not motor torque. A solid-disk wheel fell over; a rim-loaded wheel of exactly the same mass—a ring stores roughly twice the inertia per gram—hops all afternoon. The first wheel spec that came out of this was a 42-gram rim at 52&nbsp;mm radius per wheel, 0.55&nbsp;N·m and about 700&nbsp;rad/s at the motor; with the ILM leg motor it grew to a 120-gram rim at 45&nbsp;mm and a 900&nbsp;rad/s cap. Where the mass sits mattered more than how much of it there is.</p>
+      <p>The more surprising lesson is mechanical. The triad's stability comes from wheel <em>inertia</em> rather than motor torque. A solid-disk wheel falls over, and a rim-loaded wheel of exactly the same mass hops all afternoon. Where the mass sits matters more than how much of it there is, since a ring stores roughly twice the inertia per gram. The first wheel spec to come out of this is a 42-gram rim at 52&nbsp;mm radius per wheel, with 0.55&nbsp;N·m and about 700&nbsp;rad/s at the motor. With the ILM leg motor it grows to a 120-gram rim at 45&nbsp;mm and a 900&nbsp;rad/s cap.</p>
 
       <h3>The allocator</h3>
 
@@ -165,7 +165,7 @@ math: yes
 
       <p>Read off \(W^\mathsf{T}\), a pure pitch command lands on the wheels as (0, 0.707, &minus;0.707) of the demand, a pure roll command as (0.816, &minus;0.408, &minus;0.408), and a pure yaw command as &minus;0.577 on all three. The \(\omega_b \times h\) term is the gyroscopic correction from the paragraph above: \(h\) is the wheels' stored momentum in body axes, computed from the drive telemetry, and \(\omega_b\) is the measured body rate.</p>
 
-      <p>Saturation is handled per real wheel inside the allocator. Each motor torque is clipped to &plusmn;0.55&nbsp;N&middot;m, and a wheel already past 900&nbsp;rad/s gets zero torque if the command would spin it faster. The controller's own per-axis speed limits are switched off on the triad, because a virtual axis speed can legitimately exceed any one wheel's limit, and tripping the virtual limit cut aim torque in the middle of a flight. One wheel holds \(I_s\,\omega_{\max} = 0.219\)&nbsp;N&middot;m&middot;s at its 900&nbsp;rad/s limit. In the runs on the current build shown below, the wheels peak at 56&nbsp;rad/s while steering and 71&nbsp;rad/s through a maximum jump, under 8% of that limit.</p>
+      <p>Saturation is handled per real wheel inside the allocator. Each motor torque is clipped to &plusmn;0.55&nbsp;N&middot;m, and a wheel already past 900&nbsp;rad/s gets zero torque if the command would spin it faster. The controller's own per-axis speed limits are switched off on the triad, because a virtual axis speed can legitimately exceed any one wheel's limit, and tripping the virtual limit cuts aim torque in the middle of a flight. One wheel holds \(I_s\,\omega_{\max} = 0.219\)&nbsp;N&middot;m&middot;s at its 900&nbsp;rad/s limit. In the runs on the current build shown below, the wheels peak at 56&nbsp;rad/s while steering and 71&nbsp;rad/s through a maximum jump, under 8% of that limit.</p>
 
       <h3>Despinning in stance</h3>
 
@@ -173,11 +173,11 @@ math: yes
 
       \[ \begin{aligned} \tau_{\text{pitch}} &amp;= -0.06\,\omega_{\text{pitch}} \\ \tau_{\text{roll}} &amp;= -0.04\,\omega_{\text{roll}} \\ \tau_{\text{yaw}} &amp;= -0.04\,\big(\omega_{\text{yaw}} - \omega_{\text{yaw}}^{*}\big) \end{aligned} \]
 
-      <p>The foot takes the reaction, so the wheels start the next flight with their full range. The controller does not try to stand the body upright during a normal stance: the body is supposed to vault over the foot, and driving roll to zero there cancelled the lateral foot placement. Yaw is the exception. The point foot cannot push back in yaw, so the z angular momentum of body, wheels and screw rotor stays nearly constant through the whole hop, and whatever the screw rotor takes, the body yaws by. The yaw despin therefore aims for the wheel speed that parks the rotor's momentum in the wheels,</p>
+      <p>The foot takes the reaction, so the wheels start the next flight with their full range. The controller doesn't try to stand the body upright during a normal stance. The body is supposed to vault over the foot, and driving roll to zero there cancels the lateral foot placement. Yaw is the exception. The point foot cannot push back in yaw, so the z angular momentum of body, wheels and screw rotor stays nearly constant through the whole hop, and whatever the screw rotor takes, the body yaws by. So the yaw despin aims for the wheel speed that parks the rotor's momentum in the wheels,</p>
 
       \[ \omega_{\text{yaw}}^{*} = -\frac{j\,\omega_{\text{screw}}}{I_s} \]
 
-      <p>using the measured screw speed. I tried feeding the motor torque forward instead and it over-corrected by about six times, since most of that torque leaves through the cam as leg force; yaw error went from 1.8&deg; to 51&deg;. A filtered derivative of the rotor momentum was also worse, because it amplified encoder noise and lagged the 5&nbsp;ms catch (jump yaw went from 4.6&deg; to 11&deg;).</p>
+      <p>using the measured screw speed. I've tried feeding the motor torque forward instead, and it over-corrects by about six times, since most of that torque leaves through the cam as leg force. Yaw error goes from 1.8&deg; to 51&deg;. A filtered derivative of the rotor momentum is also worse, because it amplifies encoder noise and lags the 5&nbsp;ms catch (jump yaw goes from 4.6&deg; to 11&deg;).</p>
 
       <figure>
         <video controls loop muted playsinline preload="metadata" style="max-width:100%;height:auto">
@@ -192,36 +192,36 @@ math: yes
 
       \[ \begin{aligned} \tau_{\text{pitch}} &amp;= 16\,(\theta - \theta_d) + 2.5\,\dot\theta \\ \tau_{\text{roll}} &amp;= 0.9\,(\phi - \phi_d) + 0.12\,\dot\phi \\ \tau_{\text{yaw}} &amp;= 0.6\,\psi + 0.08\,\dot\psi \end{aligned} \]
 
-      <p>in N&middot;m with angles in radians. The pitch loop is the old tail loop, unchanged, and is clamped at &plusmn;1.5&nbsp;N&middot;m before the allocator; roll and yaw are clamped at &plusmn;0.45&nbsp;N&middot;m. Yaw holds the heading at zero and has no wheel-speed term in flight. Adding one fed about 1&nbsp;rad/s of wheel-telemetry noise into roughly 0.04&nbsp;N&middot;m of torque ripple, and the heading random-walked (rms yaw went from 0.5&deg; to 6.6&deg; at 0.3&nbsp;m/s).</p>
+      <p>in N&middot;m with angles in radians. The pitch loop is the old tail loop, unchanged, and is clamped at &plusmn;1.5&nbsp;N&middot;m before the allocator; roll and yaw are clamped at &plusmn;0.45&nbsp;N&middot;m. Yaw holds the heading at zero and has no wheel-speed term in flight. Adding one turns about 1&nbsp;rad/s of wheel-telemetry noise into roughly 0.04&nbsp;N&middot;m of torque ripple, and the heading random-walks (rms yaw goes from 0.5&deg; to 6.6&deg; at 0.3&nbsp;m/s).</p>
 
       <p>Foot placement, in the next section, produces a foot offset \((x_f, y_f)\) in world axes. The controller rotates it into the body's heading and converts it to lean angles with the small-angle relation between body tilt and foot position, using the extended leg length \(L_0 = 0.45\)&nbsp;m:</p>
 
       \[ \begin{bmatrix} x_b \\ y_b \end{bmatrix} = \begin{bmatrix} \cos\psi &amp; \sin\psi \\ -\sin\psi &amp; \cos\psi \end{bmatrix} \begin{bmatrix} x_f \\ y_f \end{bmatrix}, \qquad \theta_d = -\frac{x_b}{L_0}, \qquad \phi_d = \frac{y_b}{L_0} \]
 
-      <p>The targets are clamped to &plusmn;0.26&nbsp;rad in pitch and &plusmn;0.20&nbsp;rad in roll. Those caps have to stay above the Raibert neutral point at the fastest commanded speed with the long soft stance; with a cap below it, the controller cannot ask for a braking foothold and the speed runs away. After a maximum jump the caps shrink to the neutral lean for the drift that flight built up plus 0.04&nbsp;rad, bounded between 0.06 and 0.13&nbsp;rad, so the big landing comes in close to vertical.</p>
+      <p>The targets are clamped to &plusmn;0.26&nbsp;rad in pitch and &plusmn;0.20&nbsp;rad in roll. Those caps have to stay above the Raibert neutral point at the fastest commanded speed with the long soft stance; with a cap below it, the controller can't ask for a braking foothold and the speed runs away. After a maximum jump the caps shrink to the neutral lean for the drift that flight built up plus 0.04&nbsp;rad, bounded between 0.06 and 0.13&nbsp;rad, so the big landing comes in close to vertical.</p>
 
       <p>Some stances are a balancing act: the crouch and launch of a maximum jump, the landing after one, a restart from standing, and any stance longer than 0.25&nbsp;s. In those, all three wheels hold the body upright. With the foot planted the body is an inverted pendulum about the foot, and its inertia \(I_b + m L^2\) changes a lot because \(L\) goes from 0.10&nbsp;m crouched to 0.45&nbsp;m extended. The controller solves an LQR problem at both ends,</p>
 
       \[ (I_b + m L^2)\,\ddot\varphi = m g L\,\varphi - \tau, \qquad Q = \operatorname{diag}(60,\ 0.6), \qquad R = 0.45 \]
 
-      <p>with a small Hamiltonian-eigenvector solver, and interpolates the gains linearly in leg extension. For pitch that gives \(k_p\) from 12.5 to 16.3&nbsp;N&middot;m/rad and \(k_d\) from 1.27 to 2.73&nbsp;N&middot;m&middot;s/rad between crouched and extended. The weights were chosen so the extended gains land near the flight gains.</p>
+      <p>with a small Hamiltonian-eigenvector solver, and interpolates the gains linearly in leg extension. For pitch that gives \(k_p\) from 12.5 to 16.3&nbsp;N&middot;m/rad and \(k_d\) from 1.27 to 2.73&nbsp;N&middot;m&middot;s/rad between crouched and extended. I chose the weights so the extended gains land near the flight gains.</p>
 
       <h2>One number per hop</h2>
 
-      <p>A hopper's locomotion interface is unusually honest. Once the foot is on the ground, physics mostly happens to you; the real decision is made in flight, and it is a single number per hop: where the foot lands relative to the hip.</p>
+      <p>Steering a hopper is surprisingly simple. Once the foot is on the ground, physics mostly happens to you. The real decision gets made in flight, and it's a single number per hop: where the foot lands relative to the hip.</p>
 
-      <p>The classic way to pick that number is Raibert's heuristic—place the foot at half the stance travel plus a gain times the velocity error. It works, and it is what got this robot hopping in the first place. But measured on this plant it only removes about 20% of a velocity error per hop, so a shove takes a long, wandering while to die out.</p>
+      <p>The classic way to pick that number is Raibert's heuristic: place the foot at half the stance travel plus a gain times the velocity error. It works, and it's what gets this robot hopping in the first place. Measured on this plant, though, it only removes about 20% of a velocity error per hop, so a shove takes a long, wandering while to die out.</p>
 
-      <p>The better answer comes from <a href="https://people.eecs.berkeley.edu/~ronf/PAPERS/jyim-iros18.pdf">Salto-1P</a>: measure the apex-to-apex return map of your actual robot—vault dynamics, cam profile, damping and all—and invert it at runtime. Given the velocity you have and the velocity you want at the next apex, solve the map for the foot offset that gets you there. One hop, done. The map comes from simulation probes, which is exactly the kind of thing you can afford when your robot is already a simulation.</p>
+      <p>The better answer comes from <a href="https://people.eecs.berkeley.edu/~ronf/PAPERS/jyim-iros18.pdf">Salto-1P</a>. Measure the apex-to-apex return map of your actual robot, with its vault dynamics, cam profile, damping and all, and invert it at runtime. Given the velocity you have and the velocity you want at the next apex, solve the map for the foot offset that gets you there. One hop, done. I build the map from simulation probes, which are easy to afford when the robot is already a simulation.</p>
 
       <figure>
         <img src="../../images/hopper-foot/deadbeat-map.png" alt="Two panels of return maps: next apex velocity against foot placement ahead of the hip, one line per hop height. The July map's slopes are 5.6, 14.7 and 19.9 per second at 0.52, 0.64 and 0.80 m apexes; the current map's are 9.5, 13.9 and 17.1 per second at 0.54, 0.68 and 0.77 m" width="1472" height="624" loading="lazy">
-        <figcaption class="caption">The measured return map the controller inverts, for hopping in place: foot offset in, next apex velocity out. The slope is the placement gain. On the July map it more than triples between the 0.55&nbsp;m and 0.85&nbsp;m targets, which settled at 0.52&nbsp;m and 0.80&nbsp;m. On the current star-serial map it changes by a factor of 1.8. That swing is one reason a single map wasn't enough.</figcaption>
+        <figcaption class="caption">The measured return map the controller inverts, for hopping in place: foot offset in, next apex velocity out. The slope is the placement gain. On the July map it more than triples between the 0.55&nbsp;m and 0.85&nbsp;m targets, which settle at 0.52&nbsp;m and 0.80&nbsp;m. On the current star-serial map it changes by a factor of 1.8. That swing is one reason a single map isn't enough.</figcaption>
       </figure>
 
-      <p>Two details turned out to matter more than the idea itself. First, probe the map from the <em>warm</em> gait: settle into the limit cycle for at least six hops before measuring. Cold-start probes overestimate the placement gain by a factor of 2.2, and a controller built on the cold map diverges exactly when you leant on it. Second, the map depends on hop height—the gain swing above—so there is one map per energy level and the controller interpolates.</p>
+      <p>Two details matter more than the idea itself. First, probe the map from the <em>warm</em> gait, which means settling into the limit cycle for at least six hops before measuring. Cold-start probes overestimate the placement gain by a factor of 2.2, and a controller built on the cold map diverges exactly when you lean on it. Second, the map depends on hop height (that's the gain swing above), so there's one map per energy level and the controller interpolates.</p>
 
-      <p>At runtime the controller aims to remove 80% of the error each hop rather than 100%—a little damping buys robustness—and a slow per-hop integrator nulls whatever model bias remains. The triad needed the gain backed off further still (0.8 to 0.6); with the crisper wheels it over-drove itself into a growing side-to-side oscillation before the retune. The result is worth the fuss: in a clean simulation of the earlier tail build, a 0.3&nbsp;m/s shove was gone by the next apex, and hopping in place holds station within about a decimeter under the full noise model.</p>
+      <p>At runtime the controller aims to remove 80% of the error each hop instead of 100%, because a little damping buys some margin, and a slow per-hop integrator nulls whatever model bias is left. The triad needs the gain backed off further still, from 0.8 to 0.6. At 0.8 the crisper wheels over-drive it into a growing side-to-side oscillation. It's worth the fuss. In a clean simulation of the earlier tail build, a 0.3&nbsp;m/s shove is gone by the next apex, and hopping in place holds station within about a decimeter under the full noise model.</p>
 
       <figure>
         <img src="../../images/triad_station.png" alt="Simulation panels: hop height, body attitude, top-down path, and horizontal speed for the triad hopping in place">
@@ -230,11 +230,11 @@ math: yes
 
       <h3>Measuring the map</h3>
 
-      <p>The map builder (<code>deadbeat.py</code>) runs the same model, controller and allocator the robot flies with, without the noise model, and with foot placement switched to the Raibert fallback so it probes the plant instead of itself. For each of three apex targets (0.55, 0.70 and 0.85&nbsp;m) and each commanded speed from 0 to 0.9&nbsp;m/s in steps of 0.1&nbsp;m/s, it starts the robot at the target height with 80% of the commanded speed, lets it hop until the sixth apex, and snapshots the full state there, including a deep copy of the controller. From that snapshot it tries 17 foot placements from &minus;120 to +120&nbsp;mm in 15&nbsp;mm steps. Each probe runs exactly one hop and records the horizontal velocity at the next apex. That is 510 probes per map.</p>
+      <p>The map builder (<code>deadbeat.py</code>) runs the same model, controller and allocator the robot flies with, without the noise model, and with foot placement switched to the Raibert fallback so it probes the plant instead of itself. For each of three apex targets (0.55, 0.70 and 0.85&nbsp;m) and each commanded speed from 0 to 0.9&nbsp;m/s in steps of 0.1&nbsp;m/s, it starts the robot at the target height with 80% of the commanded speed, lets it hop until the sixth apex, and snapshots the full state there, including a deep copy of the controller. From that snapshot it tries 17 foot placements from &minus;120 to +120&nbsp;mm in 15&nbsp;mm steps. Each probe runs exactly one hop and records the horizontal velocity at the next apex. That's 510 probes per map.</p>
 
-      <p>A probe that tips past 1&nbsp;rad is filled in from its neighbours, and a speed row with more than half its probes failed is dropped. So is any settle whose apex lands more than 0.15&nbsp;m from its target; that gate removed a stunted 0.43&nbsp;m bounce at the 0.85&nbsp;m target. Each row is stored under the speed and apex the robot actually settled at, not the commanded ones. The probes only move the foot in x. The controller uses the same table for y, which assumes the robot is laterally symmetric, and covers negative speeds with \(f(-v,-d) = -f(v,d)\). Last, each row is forced to be non-increasing in \(d\) with a running minimum, so the inverse is well defined where rollout noise leaves a small wiggle.</p>
+      <p>A probe that tips past 1&nbsp;rad is filled in from its neighbours, and a speed row with more than half its probes failed is dropped. So is any settle whose apex lands more than 0.15&nbsp;m from its target. That gate removes a stunted 0.43&nbsp;m bounce at the 0.85&nbsp;m target. Each row is stored under the speed and apex the robot actually settled at, not the commanded ones. The probes only move the foot in x. The controller uses the same table for y, which assumes the robot is laterally symmetric, and covers negative speeds with \(f(-v,-d) = -f(v,d)\). Last, each row is forced to be non-increasing in \(d\) with a running minimum, so the inverse is well defined where rollout noise leaves a small wiggle.</p>
 
-      <p>The builder runs with the triad allocator and with the soft/stock mode switch active, so each row reflects the attitude response and stance law that actually fly at that speed. A map built on the tail plant made the triad's lateral gait diverge.</p>
+      <p>The builder runs with the triad allocator and with the soft/stock mode switch active, so each row reflects the attitude response and stance law that actually fly at that speed. A map built on the tail plant makes the triad's lateral gait diverge.</p>
 
       <h3>Inverting it</h3>
 
@@ -248,7 +248,7 @@ math: yes
 
       \[ f(v, d) \approx f(v, 0) - g(a)\,d \qquad\Rightarrow\qquad d^{*} \approx \frac{f(v, 0) - v^{*}}{g(a)} \]
 
-      <p>The slope \(g\) is the placement gain in the figure. Raibert's heuristic is a hand linearization of the same inverse with a fixed gain, \(d = v\,T_s/2 + k_v\,(v - v_{\text{ref}})\), with \(k_v\) = 0.08&nbsp;s in pitch, 0.05&nbsp;s in roll, and \(T_s\) the last stance time. It is still in the code as the fallback when no map file exists, and it is what the map builder uses to settle.</p>
+      <p>The slope \(g\) is the placement gain in the figure. Raibert's heuristic is a hand linearization of the same inverse with a fixed gain, \(d = v\,T_s/2 + k_v\,(v - v_{\text{ref}})\), with \(k_v\) = 0.08&nbsp;s in pitch, 0.05&nbsp;s in roll, and \(T_s\) the last stance time. It's still in the code as the fallback when no map file exists, and it's what the map builder uses to settle.</p>
 
       <p>For a sense of scale on the current map: stopping a 0.3&nbsp;m/s hop in one bounce needs the foot 54.8&nbsp;mm ahead of the hip at a 0.50&nbsp;m apex and 43.6&nbsp;mm at 0.70&nbsp;m. With \(\lambda\) = 0.6 the controller asks for 0.12&nbsp;m/s at the next apex instead, which at 0.70&nbsp;m is 34.5&nbsp;mm. Holding a steady 0.3&nbsp;m/s needs the foot 20.6&nbsp;mm ahead.</p>
 
@@ -258,11 +258,11 @@ math: yes
 
       \[ d^{*} = (1-w)\,d^{*}_{i} + w\,d^{*}_{i+1}, \qquad w = \frac{a - a_i}{a_{i+1} - a_i} \]
 
-      <p>Apexes outside the measured range clamp to the end rows. A row only joins the blend if it measured a speed within 0.12&nbsp;m/s of \(|v|\); otherwise the controller uses the other row, or the nearest row that did. The July map needed this. Its 0.80&nbsp;m row has no measurements between 0 and 0.49&nbsp;m/s, so for a 0.3&nbsp;m/s hop above 0.64&nbsp;m the controller uses the 0.64&nbsp;m row alone instead of blending across a gap where the two rows came from different stance laws. Moving from a single-apex map to this one took falls from 7 to 3 over a 110-run battery, and sideways falls at 0.40&nbsp;m/s from 4 to 0.</p>
+      <p>Apexes outside the measured range clamp to the end rows. A row only joins the blend if it measured a speed within 0.12&nbsp;m/s of \(|v|\); otherwise the controller uses the other row, or the nearest row that did. The July map needs this. Its 0.80&nbsp;m row has no measurements between 0 and 0.49&nbsp;m/s, so for a 0.3&nbsp;m/s hop above 0.64&nbsp;m the controller uses the 0.64&nbsp;m row alone instead of blending across a gap where the two rows come from different stance laws. Moving from a single-apex map to this one cuts falls from 7 to 3 over a 110-run battery, and sideways falls at 0.40&nbsp;m/s from 4 to 0.</p>
 
       <h3>Following a velocity command</h3>
 
-      <p>The reference passed to the map goes through a few layers. The user's command is slew-limited at 1.2&nbsp;m/s<sup>2</sup>, so a keyboard step does not slam the aim to its cap in one hop. On any axis whose command is zero, the controller anchors the current position estimate and adds a station-keeping term:</p>
+      <p>The reference passed to the map goes through a few layers. The user's command is slew-limited at 1.2&nbsp;m/s<sup>2</sup>, so a keyboard step doesn't slam the aim to its cap in one hop. On any axis whose command is zero, the controller anchors the current position estimate and adds a station-keeping term:</p>
 
       \[ v_{\text{ref}} = v_{\text{cmd}} + \operatorname{clip}\big(0.7\,(x_{\text{anchor}} - \hat x),\ \pm 0.20\,\mathrm{m/s}\big) \]
 
@@ -294,13 +294,13 @@ math: yes
 
       \[ \begin{aligned} F_{\text{push}} &amp;\leftarrow \operatorname{clip}\Big(F_{\text{push}} + k_F\,\big(v_z^{\text{des}} - v_z^{\text{eff}}\big)\Big) \\ v_z^{\text{eff}} &amp;= \sqrt{2 g\,\Big(\big\langle z + \tfrac{v_z |v_z|}{2g} \big\rangle - z_{\text{lo}}\Big)} \end{aligned} \]
 
-      <p>with \(k_F\) = 4.9&nbsp;N per m/s and limits of &minus;24.5 and 85.9&nbsp;N for the 0.92&nbsp;kg robot. (The code writes every force constant per 0.75&nbsp;kg of robot, here 4.0, &minus;20 and 70, and scales by mass.) The angle brackets are an average of the predicted apex over the first 20&nbsp;ms of flight, and at least three ticks. The predicted apex is constant in ballistic flight, so averaging removes noise without adding lag. Using the single liftoff tick put that tick's 0.2&nbsp;m/s of velocity noise, about 5&nbsp;cm of apex, into every hop's energy target. Averaging brought the apex spread from &plusmn;2.3&ndash;6.5&nbsp;cm down to &plusmn;0.7&ndash;3&nbsp;cm.</p>
+      <p>with \(k_F\) = 4.9&nbsp;N per m/s and limits of &minus;24.5 and 85.9&nbsp;N for the 0.92&nbsp;kg robot. (The code writes every force constant per 0.75&nbsp;kg of robot, here 4.0, &minus;20 and 70, and scales by mass.) The angle brackets are an average of the predicted apex over the first 20&nbsp;ms of flight, and at least three ticks. The predicted apex is constant in ballistic flight, so averaging removes noise without adding lag. Using only the liftoff tick puts that tick's 0.2&nbsp;m/s of velocity noise, about 5&nbsp;cm of apex, into every hop's energy target. Averaging brings the apex spread down from &plusmn;2.3&ndash;6.5&nbsp;cm to &plusmn;0.7&ndash;3&nbsp;cm.</p>
 
-      <p>The soft and stock laws need very different push forces, about 30&nbsp;N and 75&nbsp;N on the July build, and the per-hop update only moves about 1&nbsp;N per hop. So each mode keeps its own push: a mode switch saves the outgoing value and restores the incoming one. The current preset starts them at their measured steady values, 40.5&nbsp;N soft and 77.3&nbsp;N stock. Before this, every start of motion sagged for seconds.</p>
+      <p>The soft and stock laws need very different push forces, about 30&nbsp;N and 75&nbsp;N on the July build, and the per-hop update only moves about 1&nbsp;N per hop. So each mode keeps its own push: a mode switch saves the outgoing value and restores the incoming one. The current preset starts them at their measured steady values, 40.5&nbsp;N soft and 77.3&nbsp;N stock. Without this, every start of motion sags for seconds.</p>
 
-      <p>The firm law is a bang-bang on the same predicted apex: full positive torque if the prediction is more than 1&nbsp;cm short of the target, full negative torque if it is more than 1&nbsp;cm over, zero in between. It cannot bottom out, and it is harsh, so it only runs when a stance comes in fast, the command is above 0.45&nbsp;m/s, or the last hop sagged. If the robot ends up standing still on an extended leg with an energy deficit, it crouches to 22% of the stroke and lets the normal law push on the way back up.</p>
+      <p>The firm law is a bang-bang on the same predicted apex: full positive torque if the prediction is more than 1&nbsp;cm short of the target, full negative torque if it is more than 1&nbsp;cm over, zero in between. It can't bottom out, and it's harsh, so it only runs when a stance comes in fast, the command is above 0.45&nbsp;m/s, or the last hop sagged. If the robot ends up standing still on an extended leg with an energy deficit, it crouches to 22% of the stroke and lets the normal law push on the way back up.</p>
 
-      <p>The maximum jump is a separate path. It brakes to below 0.25&nbsp;m/s, then tucks the leg to full compression during a flight with a PD loop on the screw angle (0.5&nbsp;N&middot;m/rad and 0.008&nbsp;N&middot;m&middot;s/rad), lands tucked, waits for the foot switch, and pushes at full torque. The push coasts once the predicted apex reaches the landing cap from the safety section, 2.13&nbsp;m on the current build. In the run below it topped out at 2.11&nbsp;m.</p>
+      <p>The maximum jump is a separate path. It brakes to below 0.25&nbsp;m/s, then tucks the leg to full compression during a flight with a PD loop on the screw angle (0.5&nbsp;N&middot;m/rad and 0.008&nbsp;N&middot;m&middot;s/rad), lands tucked, waits for the foot switch, and pushes at full torque. The push coasts once the predicted apex reaches the landing cap from the safety section, 2.13&nbsp;m on the current build. In the run below it tops out at 2.11&nbsp;m.</p>
 
       <figure>
         <video controls loop muted playsinline preload="metadata" style="max-width:100%;height:auto">
@@ -311,15 +311,15 @@ math: yes
 
       <h2>The soft part of the screw is not the soft part</h2>
 
-      <p>Stock landings measured 8.6&nbsp;g of sustained deceleration. Fine for a simulation, unkind to bearings, boards, and grooves. I wanted softer, and the obvious idea was mechanical: reshape the top of the groove into a low-pitch shelf, so the leg touches down "on the soft part of the screw."</p>
+      <p>Stock landings measure 8.6&nbsp;g of sustained deceleration. That's fine for a simulation and unkind to bearings, boards and grooves. I want softer, and the obvious idea is mechanical: reshape the top of the groove into a low-pitch shelf, so the leg touches down "on the soft part of the screw."</p>
 
-      <p>Measured, the soft shelf landed <em>harder</em>: 23&nbsp;g against 9.5. The villain is reflected rotor inertia, which goes as the rotor inertia divided by the transmission ratio squared. On a 5.5&nbsp;mm/rad shelf the rotor shows up at the foot as roughly 455 grams of equivalent mass slamming through the groove; on the stock high-pitch top it is about 70. The shelf also caps how fast the motor can pay out leg near takeoff, gutting the maximum jump from 3.0 to 1.3 meters. The groove was already the right shape. Softness is a property of the stance law, not the mechanism.</p>
+      <p>Measured, the soft shelf lands <em>harder</em>: 23&nbsp;g against 9.5. The culprit is reflected rotor inertia, which goes as the rotor inertia divided by the transmission ratio squared. On a 5.5&nbsp;mm/rad shelf the rotor shows up at the foot as roughly 455 grams of equivalent mass slamming through the groove. On the stock high-pitch top it's about 70. The shelf also caps how fast the motor can pay out leg near takeoff, which guts the maximum jump from 3.0 to 1.3 meters. The groove is already the right shape, and the softness has to come from the stance law.</p>
 
-      <p>So the soft landing shipped as a controller mode. Ride the catch deeper—135&nbsp;mm of travel instead of 74—and drop the damping that caused the touchdown spike. The damping has to be asymmetric: firm while the leg compresses, light while it extends, because symmetric damping quietly taxes the push until the hop starves and the controller thrashes into its firm rescue mode. A separate light damper holds the leg during flight so it is fully re-extended at touchdown. Landings now measure 5.7&nbsp;g sustained, and the firm-rescue rate went from more than half of all hops to essentially zero.</p>
+      <p>So the soft landing is a controller mode. It rides the catch deeper, 135&nbsp;mm of travel instead of 74, and drops the damping that causes the touchdown spike. The damping has to be asymmetric, firm while the leg compresses and light while it extends. Symmetric damping quietly taxes the push until the hop starves and the controller thrashes into its firm rescue mode. A separate light damper holds the leg during flight so it's fully re-extended at touchdown. Landings now measure 5.7&nbsp;g sustained, and the firm-rescue rate drops from more than half of all hops to essentially zero.</p>
 
-      <p>One more honest hack: the springy liftoff plus sensor latency makes the takeoff regulator overshoot the apex by a systematic tenth of a meter, and no integrator can fix it because the integrator reads the same biased estimate. It is calibrated out as a fixed offset, the way a real robot would do it.</p>
+      <p>One more honest hack. The springy liftoff plus sensor latency makes the takeoff regulator overshoot the apex by a systematic tenth of a meter, and no integrator can fix that, because the integrator reads the same biased estimate. I calibrate it out as a fixed offset, the way a real robot would.</p>
 
-      <p>The soft stance cannot be the only stance—held that long, pitch runs away above about 0.3&nbsp;m/s—so the controller switches per hop at apex: soft when asked to stay put, stock stiffness when asked to move. Even the switch had teeth. It has to key on the <em>user's</em> command, not the controller's internal velocity plan, because station-keeping corrections sit right inside any reasonable hysteresis band and toggle the mode on every drift fix; the robot visibly stumbled until that changed. And the apex calibration has to ramp in over a few hops, or every mode change steps the hop height by ten centimeters.</p>
+      <p>The soft stance can't be the only stance. Held that long, pitch runs away above about 0.3&nbsp;m/s, so the controller switches per hop at apex: soft when asked to stay put, stock stiffness when asked to move. The switch is fussier than it sounds. It has to key on the <em>user's</em> command. The controller's internal velocity plan carries station-keeping corrections that sit right inside any reasonable hysteresis band, so keying on the plan toggles the mode on every drift fix and the robot visibly stumbles. The apex calibration also has to ramp in over a few hops, or every mode change steps the hop height by ten centimeters.</p>
 
       <h3>The stance law</h3>
 
@@ -340,18 +340,18 @@ math: yes
         </tbody>
       </table>
 
-      <p>Damping is in N per m/s. The July soft law ended up with the same damping both ways, 10 each, a cut from the stock law's 22.5. On the star-serial cam those values left a 0.15&nbsp;m/s kick ringing at &plusmn;0.3&nbsp;m/s indefinitely; the reflected rotor inertia at touchdown is 3.3 times lower on that cam, so the same spring was underdamped. The current preset stiffens the spring to 240&nbsp;N/m and the compression damping to 14, and keeps extension at 10. The calibration also changed sign: the stiffer launch undershoots its aim by about 2&nbsp;cm, so the current trim aims 3.5&nbsp;cm high.</p>
+      <p>Damping is in N per m/s. The July soft law ends up with the same damping both ways, 10 each, down from the stock law's 22.5. On the star-serial cam those values leave a 0.15&nbsp;m/s kick ringing at &plusmn;0.3&nbsp;m/s indefinitely. The reflected rotor inertia at touchdown is 3.3 times lower on that cam, so the same spring is underdamped. The current preset stiffens the spring to 240&nbsp;N/m and the compression damping to 14, and keeps extension at 10. The calibration also flips sign: the stiffer launch undershoots its aim by about 2&nbsp;cm, so the current trim aims 3.5&nbsp;cm high.</p>
 
       <p>The mode switch runs at apex. Soft turns off if the user commands more than 0.05&nbsp;m/s or the measured speed is above 0.28&nbsp;m/s, and turns back on when the command is at most 0.05&nbsp;m/s and the speed is below 0.18&nbsp;m/s. The 0.28&nbsp;m/s escape sits below the soft gait's 0.30&nbsp;m/s pitch runaway. The calibration then walks toward the new mode's value by at most 0.03&nbsp;m per hop.</p>
 
       <figure>
         <img src="../../images/hopper-foot/landing.png" alt="Left: leg compression against time from touchdown for one soft and one stock stance; the soft one reaches 91 mm and the stock one 73 mm. Right: commanded leg force against compression for the same stances, forming loops" width="1472" height="592" loading="lazy">
-        <figcaption class="caption">One in-place stance from each law on the current build, same seed and sensor noise. The soft law rides to 91&nbsp;mm and commands at most 47&nbsp;N during the catch; the stock law stops at 73&nbsp;mm with 56&nbsp;N. The vertical step at the deepest point of each loop is the push force switching on as the leg starts to extend, and the stair steps are the 1&nbsp;kHz command hold. Neither run used the firm law.</figcaption>
+        <figcaption class="caption">One in-place stance from each law on the current build, same seed and sensor noise. The soft law rides to 91&nbsp;mm and commands at most 47&nbsp;N during the catch; the stock law stops at 73&nbsp;mm with 56&nbsp;N. The vertical step at the deepest point of each loop is the push force switching on as the leg starts to extend, and the stair steps are the 1&nbsp;kHz command hold. Neither run uses the firm law.</figcaption>
       </figure>
 
       <h2>Guard rails</h2>
 
-      <p>Underneath all of it runs a safety supervisor in the control-barrier-function style, using only encoder signals: it continuously checks that the stopping energy available in the remaining stroke covers the kinetic energy coming in, and clips the motor command when the margin thins. Across every seeded run so far, the leg has never been driven past 85% of its stroke. The same arithmetic caps commanded jump heights at what a landing can actually absorb—about 2.9&nbsp;m with the July drive and 2.1&nbsp;m with the current one—which is the number that matters, because a jump you cannot catch is just a crash with good hang time.</p>
+      <p>Underneath all of it runs a safety supervisor in the control-barrier-function style that uses only encoder signals. It continuously checks that the stopping energy left in the remaining stroke covers the kinetic energy coming in, and clips the motor command when the margin gets thin. Across every seeded run so far, the leg has never been driven past 85% of its stroke. The same arithmetic caps commanded jump heights at what a landing can actually absorb, about 2.9&nbsp;m with the July drive and 2.1&nbsp;m with the current one. That's the number that matters, because a jump you can't catch is just a crash with good hang time.</p>
 
       <h3>The barrier</h3>
 
@@ -384,7 +384,7 @@ math: yes
 
       \[ b_{k+1} = b_k - \frac{b_k}{\tau_b}\,\Delta t + \sigma\sqrt{\frac{2\,\Delta t}{\tau_b}}\;n_k, \qquad n_k \sim \mathcal N(0, 1) \]
 
-      <p>where \(\sigma\) is the bias's standard deviation and \(\tau_b\) its time constant. The realistic preset used for everything in this post:</p>
+      <p>where \(\sigma\) is the bias's standard deviation and \(\tau_b\) its time constant. Here's the realistic preset I use for everything in this post:</p>
 
       <table class="specs">
         <tbody>
@@ -408,7 +408,7 @@ math: yes
 
       \[ e = \hat a \times \hat g(q), \qquad \omega_c = \omega_{\text{gyro}} + k_p\,e + k_i \textstyle\int e\,dt, \qquad \dot q = \tfrac12\,q \otimes (0, \omega_c) \]
 
-      <p>with \(k_p\) = 2.0 and \(k_i\) = 0.1. There is no magnetometer, so yaw drifts at the gyro bias rate. The yaw loop only needs short-term stability, and the foot-placement math rotates through the same yaw estimate either way. The replay test described below cannot check this filter, since the simulation has no accelerometer.</p>
+      <p>with \(k_p\) = 2.0 and \(k_i\) = 0.1. There is no magnetometer, so yaw drifts at the gyro bias rate. The yaw loop only needs short-term stability, and the foot-placement math rotates through the same yaw estimate either way. The replay test described below can't check this filter, since the simulation has no accelerometer.</p>
 
       <h3>Position and velocity</h3>
 
@@ -418,7 +418,7 @@ math: yes
 
       <p>where \(f\) is the foothold, anchored at touchdown from the current estimate with its height set to the foot radius. The kinematic solution overwrites the estimate outright. Any filtering would add lag, and during the push the vertical velocity climbs at about 90&nbsp;m/s<sup>2</sup>, so each millisecond of lag is 0.09&nbsp;m/s of takeoff error.</p>
 
-      <p>Each kinematic sample has to pass gates before it is used: within 1.5&nbsp;m/s and 0.3&nbsp;m of the prediction, and a vertical acceleration since the last accepted sample above &minus;50&nbsp;m/s<sup>2</sup>. The last gate comes from physics. While the foot is loaded nothing pulls the body down faster than gravity, so a sample that implies it comes from the millisecond after liftoff, when the delayed contact flag still says stance and the free leg is snapping back. Before that gate, the glitch could seed a whole flight with a takeoff speed up to 1.6&nbsp;m/s low. More than 8 rejections in a row, outside the liftoff signature, reset the estimate to the kinematic solution. A touchdown less than 30&nbsp;ms after the last liftoff is treated as contact-flag flicker and keeps the old foothold.</p>
+      <p>Each kinematic sample has to pass gates before it is used: within 1.5&nbsp;m/s and 0.3&nbsp;m of the prediction, and a vertical acceleration since the last accepted sample above &minus;50&nbsp;m/s<sup>2</sup>. The last gate comes from physics. While the foot is loaded nothing pulls the body down faster than gravity, so a sample that implies it comes from the millisecond after liftoff, when the delayed contact flag still says stance and the free leg is snapping back. Without that gate, the glitch can seed a whole flight with a takeoff speed up to 1.6&nbsp;m/s low. More than 8 rejections in a row, outside the liftoff signature, reset the estimate to the kinematic solution. A touchdown less than 30&nbsp;ms after the last liftoff is treated as contact-flag flicker and keeps the old foothold.</p>
 
       <p>In flight the estimate pulls weakly toward the drifting velocity measurement (time constant 4&nbsp;s) and more firmly toward the height measurement (0.12&nbsp;s), which on the robot is the downward rangefinder. If the stance average of the kinematic velocity is below 0.15&nbsp;m/s, the next flight starts from that average instead of the liftoff value. An attitude bias turns the large leg-extension rate into a false sideways velocity that changes sign between compression and extension, and the average cancels it. Last, the output is pushed forward by the 1.5&nbsp;ms latency, using a 5&nbsp;ms-smoothed kinematic acceleration in stance and \(-g\) in flight.</p>
 
@@ -448,7 +448,7 @@ math: yes
         <li>the C++ allocator fed the logged wheel speeds and commands, against the logged wheel torques.</li>
       </ul>
 
-      <p>A tick fails if any output differs by more than 10<sup>&minus;6</sup>. When I ran it for this post, the largest differences over the 16,000 ticks were 1.5&times;10<sup>&minus;16</sup> for the cam, 2.2&times;10<sup>&minus;15</sup> for the estimator, 6.7&times;10<sup>&minus;16</sup> for the controller and 1.1&times;10<sup>&minus;16</sup> for the allocator, with no failing ticks. The same replay is meant for bringing up the hardware: log real sensor data in the same format and run it through both versions.</p>
+      <p>A tick fails if any output differs by more than 10<sup>&minus;6</sup>. Running it for this post, the largest differences over the 16,000 ticks are 1.5&times;10<sup>&minus;16</sup> for the cam, 2.2&times;10<sup>&minus;15</sup> for the estimator, 6.7&times;10<sup>&minus;16</sup> for the controller and 1.1&times;10<sup>&minus;16</sup> for the allocator, with no failing ticks. The same replay is meant for hardware bring-up: log real sensor data in the same format and run it through both versions.</p>
 
       <p>On the Teensy an <code>IntervalTimer</code> sets a flag at 1&nbsp;kHz and <code>loop()</code> does one pass per flag, in a fixed order. First the watchdog: if more than 5&nbsp;ms have passed since the previous pass, it clears the armed flag and sends zero torque on all three buses. Then the arm switch, wired with a pull-up so an open or broken switch reads as disarmed. Disarming zeroes the torques and sounds a 440&nbsp;Hz chirp, and arming sounds an 880&nbsp;Hz one. Then the sensors: <code>readSensors()</code> returns false until the IMU, Puck and flow-pod drivers are written, which keeps the torques at zero. Only after all that do the estimator, controller and torque output run. In the current skeleton the watchdog trip does not latch: if the arm switch is still closed, the same pass sets the armed flag again.</p>
 
@@ -456,11 +456,11 @@ math: yes
 
       <h2>What comes next</h2>
 
-      <p>The hardware plan from last time stands—machine the screw, bring up the board, constrained leg tests before free hops. The controls work adds two items to it:</p>
+      <p>The hardware plan from last time still stands: machine the screw, bring up the board, and run constrained leg tests before free hops. The controls work adds two items to it:</p>
 
       <ul>
         <li>Pick the triad wheel motor and build the rim wheels to the spec the simulation converged on.</li>
         <li>Re-measure the deadbeat maps against the real leg on the bench, the same warm-gait way, before trusting them on the floor.</li>
       </ul>
 
-      <p>The simulated robot now hops in place indefinitely, shrugs off shoves in one hop, and lands at two-thirds of the deceleration it used to. The next fall it takes should be on real concrete, for a much better class of reason.</p>
+      <p>The simulated robot now hops in place indefinitely and shrugs off shoves in one hop. It also lands at two-thirds of the deceleration it used to. The next fall it takes should be on real concrete, for a much better class of reason.</p>

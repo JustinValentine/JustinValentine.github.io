@@ -10,63 +10,63 @@
       <link>https://justinvalentine.ca/posts/wrist-test-suite/</link>
       <guid>https://justinvalentine.ca/posts/wrist-test-suite/</guid>
       <pubDate>Mon, 19 Oct 2026 12:00:00 +0000</pubDate>
-      <description>Bench results for the final haptic wrist on all three joints: friction, inertia, bandwidth, large-signal tracking, Z-width and virtual walls, with the WHAM prototype for comparison.</description>
+      <description>I put all three joints of the final haptic wrist through bench tests for friction, inertia, bandwidth, large-signal tracking, Z-width and virtual walls, and compare it with the WHAM prototype.</description>
     </item>
     <item>
       <title>Sisyphus, a bike trainer app for the Mac</title>
       <link>https://justinvalentine.ca/posts/sisyphus/</link>
       <guid>https://justinvalentine.ca/posts/sisyphus/</guid>
       <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
-      <description>Runs a smart trainer in ERG mode from a small overlay that floats over full-screen video.</description>
+      <description>My Mac app for running a smart trainer in ERG mode from a small overlay that floats over full-screen video.</description>
     </item>
     <item>
       <title>A haptic lightsaber game</title>
       <link>https://justinvalentine.ca/posts/haptic-lightsaber/</link>
       <guid>https://justinvalentine.ca/posts/haptic-lightsaber/</guid>
       <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
-      <description>Sword fighting on a WAM with the haptic wrist, where the arm pushes back when the blades meet, harder near the hilt than near the tip. How the force is computed, the opponents, the Meta Quest 3 viewer, and Barrett&amp;rsquo;s booth at IROS 2026.</description>
+      <description>Sword fighting on a WAM with the haptic wrist. When the blades meet, the arm pushes back, harder near the hilt than near the tip. I go through how the force is computed, the opponents, the Meta Quest 3 viewer and Barrett&amp;rsquo;s booth at IROS 2026.</description>
     </item>
     <item>
       <title>The Alberta wrist</title>
       <link>https://justinvalentine.ca/posts/haptic-wrist-barrett/</link>
       <guid>https://justinvalentine.ca/posts/haptic-wrist-barrett/</guid>
       <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
-      <description>The last haptic wrist in the series, designed at Barrett Technology in 2026. From a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and Barrett&amp;rsquo;s booth at IROS in September, with the motor and ratio choices, the FEA and the measured results.</description>
+      <description>The last haptic wrist in the series, which I design at Barrett Technology in 2026. It goes from a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and on to Barrett&amp;rsquo;s booth at IROS in September. I also go through the motor and ratio choices, the FEA and the measured results.</description>
     </item>
     <item>
       <title>A Variable-Pitch Hopper</title>
       <link>https://justinvalentine.ca/posts/variable-pitch-hopper/</link>
       <guid>https://justinvalentine.ca/posts/variable-pitch-hopper/</guid>
       <pubDate>Thu, 09 Jul 2026 12:00:00 +0000</pubDate>
-      <description>A screw cam whose groove sets the gear ratio, and the control board built around it.</description>
+      <description>I&#x27;m building a one-legged hopper around a screw cam whose groove sets the gear ratio, plus the control board that runs it.</description>
     </item>
     <item>
       <title>Teaching the Hopper Where to Put Its Foot</title>
       <link>https://justinvalentine.ca/posts/teaching-the-hopper-where-to-put-its-foot/</link>
       <guid>https://justinvalentine.ca/posts/teaching-the-hopper-where-to-put-its-foot/</guid>
       <pubDate>Thu, 09 Jul 2026 12:00:00 +0000</pubDate>
-      <description>A corner-balanced wheel triad, one-hop foot placement and softer landings, all in simulation.</description>
+      <description>In simulation, I swap the hopper&#x27;s tail for a corner-balanced wheel triad, place its foot with a measured one-hop return map, and soften its landings.</description>
     </item>
     <item>
       <title>Getting this site off the ground</title>
       <link>https://justinvalentine.ca/posts/getting-this-site-off-the-ground/</link>
       <guid>https://justinvalentine.ca/posts/getting-this-site-off-the-ground/</guid>
       <pubDate>Sat, 25 Apr 2026 12:00:00 +0000</pubDate>
-      <description>Why this site is plain static pages.</description>
+      <description>Why I keep this site as plain static pages.</description>
     </item>
     <item>
       <title>Building the WHAM wrist</title>
       <link>https://justinvalentine.ca/posts/wham-wrist/</link>
       <guid>https://justinvalentine.ca/posts/wham-wrist/</guid>
       <pubDate>Tue, 07 Apr 2026 12:00:00 +0000</pubDate>
-      <description>A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&amp;rsquo;s last joint. My biggest machining project so far, from a printed version in January 2026 to the WAM in April.</description>
+      <description>A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&amp;rsquo;s last joint. It&amp;rsquo;s my biggest machining project so far, and it goes from a printed version in January 2026 to the WAM in April.</description>
     </item>
     <item>
       <title>A direct-drive end-effector wrist</title>
       <link>https://justinvalentine.ca/posts/end-effector-wrist/</link>
       <guid>https://justinvalentine.ca/posts/end-effector-wrist/</guid>
       <pubDate>Sat, 01 Nov 2025 12:00:00 +0000</pubDate>
-      <description>A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demoed it at RISEx 2025.</description>
+      <description>A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.</description>
     </item>
     <item>
       <title>The coaxial semi-differential wrist</title>
@@ -80,84 +80,84 @@
       <link>https://justinvalentine.ca/posts/sketch-generation-flow-matching/</link>
       <guid>https://justinvalentine.ca/posts/sketch-generation-flow-matching/</guid>
       <pubDate>Sun, 17 Nov 2024 12:00:00 +0000</pubDate>
-      <description>A course project that generates sketches point by point with flow matching and classifier-free guidance, then has a Barrett WAM draw them on a whiteboard that presses back with a constant force.</description>
+      <description>A course project where we generate sketches point by point with flow matching and classifier-free guidance, then have a Barrett WAM draw them on a whiteboard that presses back with a constant force.</description>
     </item>
     <item>
       <title>Writing DECtalk songs with an RNN</title>
       <link>https://justinvalentine.ca/posts/dectalk-rnn/</link>
       <guid>https://justinvalentine.ca/posts/dectalk-rnn/</guid>
       <pubDate>Tue, 01 Oct 2024 12:00:00 +0000</pubDate>
-      <description>A character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing. A CMPUT 652 course project.</description>
+      <description>My CMPUT 652 course project: a character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing.</description>
     </item>
     <item>
       <title>HAL, a quadruped with an actuated spine</title>
       <link>https://justinvalentine.ca/posts/hal-quadruped/</link>
       <guid>https://justinvalentine.ca/posts/hal-quadruped/</guid>
       <pubDate>Tue, 10 Sep 2024 12:00:00 +0000</pubDate>
-      <description>A quadruped like Solo 8, with a motorized spine added so it might do a backflip, or a double. The figure-skater math behind the spine, a year of building, and HAL Gym for training it to flip.</description>
+      <description>HAL is my quadruped, built like Solo 8 but with a motorized spine so it might do a backflip, or even a double. I go through the figure-skater math behind the spine and a year of building, then HAL Gym, where I&#x27;m training it to flip.</description>
     </item>
     <item>
       <title>A simple direct-drive gimbal wrist</title>
       <link>https://justinvalentine.ca/posts/direct-drive-gimbal-wrist/</link>
       <guid>https://justinvalentine.ca/posts/direct-drive-gimbal-wrist/</guid>
       <pubDate>Mon, 01 Jan 2024 12:00:00 +0000</pubDate>
-      <description>A gimbal wrist for the WAM, driven directly so it was easy to prototype, that we used to test strapping the WAM to an operator&amp;rsquo;s forearm as an approximate exoskeleton.</description>
+      <description>A gimbal wrist for the WAM, driven directly so it&amp;rsquo;s easy to prototype, that we use to test strapping the WAM to an operator&amp;rsquo;s forearm as an approximate exoskeleton.</description>
     </item>
     <item>
       <title>A haptic mobile manipulator</title>
       <link>https://justinvalentine.ca/posts/mobile-manipulator/</link>
       <guid>https://justinvalentine.ca/posts/mobile-manipulator/</guid>
       <pubDate>Sun, 26 May 2024 12:00:00 +0000</pubDate>
-      <description>A 7&amp;#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I designed the mobile base and set up the sensors and ROS. One of eight finalist teams in DND&amp;rsquo;s IDEaS challenge.</description>
+      <description>A 7&amp;#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I design the mobile base and set up the sensors and ROS. We&amp;rsquo;re one of eight finalist teams in DND&amp;rsquo;s IDEaS challenge.</description>
     </item>
     <item>
       <title>A spherical wrist after the Agile Eye</title>
       <link>https://justinvalentine.ca/posts/spherical-wrist-agile-eye/</link>
       <guid>https://justinvalentine.ca/posts/spherical-wrist-agile-eye/</guid>
       <pubDate>Fri, 08 Dec 2023 12:00:00 +0000</pubDate>
-      <description>A three-motor spherical parallel mechanism I built as an idea for a haptic wrist, and why its Jacobian is the identity matrix at the home pose.</description>
+      <description>A three-motor spherical parallel mechanism I&amp;rsquo;m trying out as a haptic wrist, and why its Jacobian is the identity matrix at the home pose.</description>
     </item>
     <item>
       <title>A 360° camera from six $20 action cameras</title>
       <link>https://justinvalentine.ca/posts/six-camera-panorama/</link>
       <guid>https://justinvalentine.ca/posts/six-camera-panorama/</guid>
       <pubDate>Sat, 01 Apr 2023 12:00:00 +0000</pubDate>
-      <description>My CMPUT 428 final project with Justin Rozeboom. Six cheap action cameras in a laser-cut hexagonal housing on an iRobot Create 2, calibrated and stitched into cylindrical panoramas, plus a first try at structure from motion on the reprojected images.</description>
+      <description>My CMPUT 428 final project with Justin Rozeboom: six cheap action cameras in a laser-cut hexagonal housing on an iRobot Create 2. We calibrate them and stitch their frames into cylindrical panoramas, then take a first try at structure from motion on the reprojected images.</description>
     </item>
     <item>
       <title>Tiling the hyperbolic plane</title>
       <link>https://justinvalentine.ca/posts/hyperbolic-tilings/</link>
       <guid>https://justinvalentine.ca/posts/hyperbolic-tilings/</guid>
       <pubDate>Wed, 01 Feb 2023 12:00:00 +0000</pubDate>
-      <description>A Python program that draws regular hyperbolic tilings in the Poincar&amp;eacute; disk, by reflecting one polygon across its own edges over and over.</description>
+      <description>My Python program for drawing regular hyperbolic tilings in the Poincar&amp;eacute; disk. It reflects one polygon across its own edges over and over.</description>
     </item>
     <item>
       <title>A painting robot</title>
       <link>https://justinvalentine.ca/posts/painting-robot/</link>
       <guid>https://justinvalentine.ca/posts/painting-robot/</guid>
       <pubDate>Thu, 01 Dec 2022 12:00:00 +0000</pubDate>
-      <description>My CMPUT 312 final project with Yash Bhandari. A six-servo arm from AliExpress on a wooden stand, painting SVG files onto a slanted canvas with a brush.</description>
+      <description>My CMPUT 312 final project with Yash Bhandari: a six-servo arm from AliExpress on a wooden stand that paints SVG files onto a slanted canvas with a brush.</description>
     </item>
     <item>
       <title>Localizing a Create 2 with two lasers</title>
       <link>https://justinvalentine.ca/posts/two-laser-localization/</link>
       <guid>https://justinvalentine.ca/posts/two-laser-localization/</guid>
       <pubDate>Tue, 01 Mar 2022 12:00:00 +0000</pubDate>
-      <description>An idea from 2022 for finding a robot in a room from two laser ranges to markers on the walls. I worked out the geometry in a pygame simulation and wrote Python to drive an iRobot Create 2 over its serial port.</description>
+      <description>My 2022 idea for finding a robot in a room from two laser ranges to markers on the walls. I work out the geometry in a pygame simulation and write Python to drive an iRobot Create 2 over its serial port.</description>
     </item>
     <item>
       <title>Go on a sphere</title>
       <link>https://justinvalentine.ca/posts/spherical-go/</link>
       <guid>https://justinvalentine.ca/posts/spherical-go/</guid>
       <pubDate>Sat, 01 Jan 2022 12:00:00 +0000</pubDate>
-      <description>Go on a board with no edges or corners. I started it in 2022 while taking a differential geometry course, and finished it in 2026 as a playable game with a Monte Carlo tree search opponent.</description>
+      <description>Go on a board with no edges or corners. I start it in 2022 while taking a differential geometry course and finish it in 2026 as a playable game with a Monte Carlo tree search opponent.</description>
     </item>
     <item>
       <title>A Rubik’s Cube solver</title>
       <link>https://justinvalentine.ca/posts/rubiks-cube-solver/</link>
       <guid>https://justinvalentine.ca/posts/rubiks-cube-solver/</guid>
       <pubDate>Sat, 01 Jan 2022 12:00:00 +0000</pubDate>
-      <description>A Python program that simulates a cube of any size and solves the 3×3 with the beginner’s layer-by-layer method. I also started a webcam scanner for it in OpenCV.</description>
+      <description>A Python program that simulates a cube of any size and solves the 3×3 with the beginner’s layer-by-layer method. I’ve also started a webcam scanner for it in OpenCV.</description>
     </item>
   </channel>
 </rss>

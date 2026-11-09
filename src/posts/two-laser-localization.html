@@ -2,7 +2,7 @@ title: Localizing a Create 2 with two lasers
 date: 2022-03
 topics: simulation, software, control
 math: yes
-summary: An idea from 2022 for finding a robot in a room from two laser ranges to markers on the walls. I worked out the geometry in a pygame simulation and wrote Python to drive an iRobot Create 2 over its serial port.
+summary: My 2022 idea for finding a robot in a room from two laser ranges to markers on the walls. I work out the geometry in a pygame simulation and write Python to drive an iRobot Create 2 over its serial port.
 image: images/two-laser-localization/sim-poster.jpg
 video: images/two-laser-localization/sim.mp4
 ---
@@ -10,10 +10,10 @@ video: images/two-laser-localization/sim.mp4
   <video controls muted loop playsinline preload="none" poster="../../images/two-laser-localization/sim-poster.jpg" width="1068" height="800">
     <source src="../../images/two-laser-localization/sim.mp4" type="video/mp4">
   </video>
-  <figcaption>My simulation of the idea, Pos.py from March 2022. In the original you move the robot (the grey disc) with the mouse. For this post I re-ran it with the mouse replaced by a scripted loop through all four quadrants, with the drawing code unchanged. Green squares are the wall markers, red lines the two laser ranges and white circles every position that fits each range. The yellow dots are where the circles cross. Blue joins the two markers in use, magenta joins the two crossings, and the orange lines project the crossings onto the top and left walls.</figcaption>
+  <figcaption>My simulation of the idea, Pos.py from March 2022. In the original you move the robot (the grey disc) with the mouse. For this post I swap the mouse for a scripted loop through all four quadrants and leave the drawing code unchanged. Green squares are the wall markers, red lines the two laser ranges and white circles every position that fits each range. The yellow dots are where the circles cross. Blue joins the two markers in use, magenta joins the two crossings, and the orange lines project the crossings onto the top and left walls.</figcaption>
 </figure>
 
-<p>In early 2022 I was working with an iRobot Create 2, which the repo&rsquo;s first README called Anton the Robot Vacuum, and I had an idea for how it could find itself in a room. Put a marker at the middle of each wall. If the robot knows its distance to two of them, one on a side wall and one on the top or bottom wall, it knows where it is up to a single ambiguity. Two lasers give the two distances. I worked the geometry out in a small pygame simulation and, separately, wrote the Python that drives the Create 2 over its serial cable. The code, in a private GitHub repo, has commits from February to May 2022.</p>
+<p>In early 2022 I&rsquo;m working with an iRobot Create 2, which the repo&rsquo;s first README calls Anton the Robot Vacuum, and I have an idea for how it could find itself in a room. Put a marker at the middle of each wall. If the robot knows its distance to two of them, one on a side wall and one on the top or bottom wall, it knows where it is up to a single ambiguity. Two lasers give the two distances. I work the geometry out in a small pygame simulation and, separately, write the Python that drives the Create 2 over its serial cable. The code lives in a private GitHub repo, with commits from February to May 2022.</p>
 
 <table class="specs">
   <tr><th>Robot</th><td>iRobot Create 2</td></tr>
@@ -118,7 +118,7 @@ video: images/two-laser-localization/sim.mp4
 <p>The two candidates are \(2h\) apart, twice the robot&rsquo;s distance from \(AB\). They&rsquo;re far apart when the robot is deep in a corner or near the middle of the room, and they merge as it crosses \(AB\). You can see them come together and split again in the video above.</p>
 
 <h2>How sensitive it is</h2>
-<p>The simulation uses exact distances. To see how noise in the lasers would carry into the position, linearize. A small move \(\delta P\) changes each range by the part of \(\delta P\) along that laser:</p>
+<p>The simulation uses exact distances. To see how laser noise would carry into the position, linearize. A small move \(\delta P\) changes each range by the part of \(\delta P\) along that laser:</p>
 \[ \delta r_A = \hat{\mathbf u}_A \cdot \delta P, \qquad \delta r_B = \hat{\mathbf u}_B \cdot \delta P, \]
 <p>where \(\hat{\mathbf u}_A\) and \(\hat{\mathbf u}_B\) are unit vectors from the markers to the robot. Stack them as the rows of a \(2 \times 2\) matrix \(J\), so \(\delta P = J^{-1}\,\delta\mathbf r\). If both ranges have independent errors with standard deviation \(\sigma\), the RMS position error is</p>
 \[ \sigma_P = \sigma\sqrt{\operatorname{tr}\!\big((J^{\mathsf T} J)^{-1}\big)} = \frac{\sqrt{2}\,\sigma}{|\sin\gamma|}, \]
@@ -135,5 +135,5 @@ video: images/two-laser-localization/sim.mp4
 sendCommandRaw(cmd)</code></pre>
 <p>The first test script, from February 2022, plays a single quarter-second note when it connects (opcodes 140 and 141). It then opens a 400 &times; 400 pygame window that stands for a 1&nbsp;m &times; 1&nbsp;m floor, and moving the mouse paints grid cells into a path. For the test drive the script uses four fixed waypoints near the corners of that square instead: a diagonal, one side and the other diagonal. <code>RobotMove</code> covers each leg by turning in place with the wheels at &plusmn;300&nbsp;mm/s and then driving straight at 300&nbsp;mm/s. Both moves are timed, using half the Create 2&rsquo;s wheel spacing, 117.5&nbsp;mm, for the turn. Nothing measures where the robot actually ends up. In May I cut it down to a keyboard drive: 1 forward, 2 back and 3 stop, at 500&nbsp;mm/s, the fastest Drive Direct allows.</p>
 
-<h2>Where it got to</h2>
-<p>The repo stops there. The simulation and the drive code are separate, and there&rsquo;s no code in it that reads real laser ranges or runs <code>FindCirInt</code> on the robot. I used a Create 2 again a year later as the base of the <a href="../six-camera-panorama/index.html">six-camera panorama rig</a> from my CMPUT 428 project with Justin Rozeboom.</p>
+<h2>Where it stands</h2>
+<p>The repo stops there. The simulation and the drive code are separate, and there&rsquo;s no code in it that reads real laser ranges or runs <code>FindCirInt</code> on the robot. A Create 2 shows up again a year later, as the base of the <a href="../six-camera-panorama/index.html">six-camera panorama rig</a> from my CMPUT 428 project with Justin Rozeboom.</p>

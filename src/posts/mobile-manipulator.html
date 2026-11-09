@@ -1,21 +1,21 @@
 title: A haptic mobile manipulator
 date: 2024-05-26
 topics: teleoperation, haptics, machining, vision, electronics, software
-summary: A 7&#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I designed the mobile base and set up the sensors and ROS. One of eight finalist teams in DND&rsquo;s IDEaS challenge.
+summary: A 7&#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I design the mobile base and set up the sensors and ROS. We&rsquo;re one of eight finalist teams in DND&rsquo;s IDEaS challenge.
 image: images/mobile-manipulator.jpg
 ---
 <p class="byline">2022&ndash;2024. Undergraduate research assistant on a lab team.</p>
 
-<p>A teleoperated robot for disaster zones and other places too dangerous to send a person. A 7&#8209;DOF Barrett WAM rides on a Clearpath Husky. The operator drives it from a second WAM fitted with a cable-driven wrist exoskeleton and feels the forces the robot meets. A 360&deg; camera on the robot feeds a VR headset. We demonstrated it to the Department of National Defence as one of eight finalist teams in the IDEaS (Innovation for Defence Excellence and Security) challenge, which funded it with a $500K grant.</p>
+<p>This is a teleoperated robot for disaster zones and other places too dangerous to send a person. A 7&#8209;DOF Barrett WAM rides on a Clearpath Husky. The operator drives it from a second WAM fitted with a cable-driven wrist exoskeleton and feels the forces the robot meets. A 360&deg; camera on the robot feeds a VR headset. We demonstrate it to the Department of National Defence as one of eight finalist teams in the IDEaS (Innovation for Defence Excellence and Security) challenge, which funds it with a $500K grant.</p>
 
-<p>This was my initial concept video for the WAM and the Husky, with the arm sitting on top of the Husky:</p>
+<p>Here&rsquo;s my first concept video for the WAM and the Husky, with the arm sitting on top:</p>
 
 <figure class="short">
   <iframe src="https://www.youtube-nocookie.com/embed/8HoTG0cs--s" referrerpolicy="strict-origin-when-cross-origin" title="Clearpath Husky + WAM" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
   <figcaption>Clearpath Husky + WAM, on YouTube, posted August 17, 2023. The WAM unfolds from its stowed pose and folds back down.</figcaption>
 </figure>
 
-<p>The team, in the Computer Vision and Robotics Group at the University of Alberta, was Dylan Miller, Faezeh Haghverd, Jakub Piwowarczyk, Mark Fiala, Martin Jagersand and me. My part was the mobile base, the sensors and ROS. This video shows the system we ended up with:</p>
+<p>The team, in the Computer Vision and Robotics Group at the University of Alberta, is Dylan Miller, Faezeh Haghverd, Jakub Piwowarczyk, Mark Fiala, Martin Jagersand and me. My part is the mobile base, the sensors and ROS. This video shows the system we end up with:</p>
 
 <figure>
   <iframe src="https://www.youtube-nocookie.com/embed/jsmIGJ1boKs" referrerpolicy="strict-origin-when-cross-origin" title="Husky WAM Remote Teleoperation" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
@@ -23,8 +23,8 @@ image: images/mobile-manipulator.jpg
 </figure>
 
 <h2>Haptic teleoperation</h2>
-<p>The robot&rsquo;s arm is a 7&#8209;DOF WAM. The operator side is a 4&#8209;DOF WAM with our 3&#8209;DOF cable-driven wrist exoskeleton on the end, which matches the robot&rsquo;s seven joints one for one. The wrist is light and runs on low-cost BLDC motor controllers. Because it is cable driven, joint torque is a linear function of motor output, so the force the operator feels is scaled correctly.</p>
-<p>The two arms are coupled joint to joint. Each joint runs a PD position loop with the matching joint on the other arm as its setpoint, so when the robot pushes on something, the operator&rsquo;s arm pushes back. Either arm can act as the leader. How stiff we could make that coupling and still keep it stable depended on the communication latency between the two arms.</p>
+<p>The robot&rsquo;s arm is a 7&#8209;DOF WAM. The operator side is a 4&#8209;DOF WAM with our 3&#8209;DOF cable-driven wrist exoskeleton on the end, which matches the robot&rsquo;s seven joints one for one. The wrist is light and runs on low-cost BLDC motor controllers. Because it&rsquo;s cable driven, joint torque is a linear function of motor output, so the force the operator feels is scaled correctly.</p>
+<p>The two arms are coupled joint to joint. Each joint runs a PD position loop with the matching joint on the other arm as its setpoint, so when the robot pushes on something, the operator&rsquo;s arm pushes back. Either arm can act as the leader. How stiff we can make that coupling and still keep it stable depends on the communication latency between the two arms.</p>
 
 <div class="pair portrait">
   <figure>
@@ -38,12 +38,12 @@ image: images/mobile-manipulator.jpg
 </div>
 
 <h2>The mobile base</h2>
-<p>In the concept video the WAM sits on top of the Husky. For the real robot I redesigned and made the Husky&rsquo;s chassis and body panels so the WAM could sit lower, which brings the robot&rsquo;s centre of mass down. The WAM mounts to the chassis through milled aluminum parts.</p>
+<p>In the concept video the WAM sits on top of the Husky. For the real robot I redesign and build the Husky&rsquo;s chassis and body panels so the WAM can sit lower, which brings the robot&rsquo;s centre of mass down. The WAM mounts to the chassis through milled aluminum parts.</p>
 
 <div class="pair portrait">
   <figure>
     <a href="../../images/mobile-manipulator/chassis-open.jpg"><img src="../../images/mobile-manipulator/chassis-open.jpg" alt="A Clearpath Husky with its top removed, showing a black frame, a plywood bulkhead and two aluminum rails inside" loading="lazy"></a>
-    <figcaption>April 18, 2024. The Husky opened up, with two aluminum rails along the inside of the frame.</figcaption>
+    <figcaption>April 18, 2024. The Husky, opened up, with two aluminum rails along the inside of the frame.</figcaption>
   </figure>
   <figure>
     <a href="../../images/mobile-manipulator/mount-bars.jpg"><img src="../../images/mobile-manipulator/mount-bars.jpg" alt="Two milled aluminum bars with counterbored holes on a sheet of hardboard" loading="lazy"></a>
@@ -63,7 +63,7 @@ image: images/mobile-manipulator.jpg
   <video controls muted loop playsinline preload="none" poster="../../images/mobile-manipulator/first-motion.jpg" width="960" height="540">
     <source src="../../images/mobile-manipulator/first-motion.mp4" type="video/mp4">
   </video>
-  <figcaption>May 15. The WAM moving on the new base, before the camera mast went on.</figcaption>
+  <figcaption>May 15. The WAM moving on the new base, before the camera mast goes on.</figcaption>
 </figure>
 
 <div class="pair portrait">
@@ -96,7 +96,7 @@ image: images/mobile-manipulator.jpg
   <figcaption>A Ladybug2 image projected onto the faces of a cube, from the RISE 2025 poster.</figcaption>
 </figure>
 
-<p>These two photos of the operator&rsquo;s screen were taken a minute apart, both showing the stream labelled &ldquo;In-hand&rdquo;:</p>
+<p>These two photos of the operator&rsquo;s screen are a minute apart, and both show the stream labelled &ldquo;In-hand&rdquo;:</p>
 
 <div class="pair">
   <figure>
@@ -110,7 +110,7 @@ image: images/mobile-manipulator.jpg
 </div>
 
 <h2>Mapping, ROS and Wi&#8209;Fi</h2>
-<p>I integrated the sensors in ROS: the LiDAR, the Ladybug2 and Blackfly cameras, an IMU and GPS, with URDF models of the whole robot. The LiDAR is a Hokuyo UTM&#8209;30LX&#8209;EW, and with SLAM on it the robot can map a floor and drive itself around it. I also got some legacy LiDAR hardware running on ROS Noetic, tracking down hardware and communication faults with an oscilloscope and serial diagnostics.</p>
+<p>I integrate the sensors in ROS: the LiDAR, the Ladybug2 and Blackfly cameras, an IMU and GPS, with URDF models of the whole robot. The LiDAR is a Hokuyo UTM&#8209;30LX&#8209;EW, and with SLAM on it the robot can map a floor and drive itself around it. I also get some legacy LiDAR hardware running on ROS Noetic, tracking down hardware and communication faults with an oscilloscope and serial diagnostics.</p>
 
 <div class="pair">
   <figure>
@@ -119,11 +119,11 @@ image: images/mobile-manipulator.jpg
   </figure>
   <figure>
     <a href="../../images/mobile-manipulator/slam-map.jpg"><img src="../../images/mobile-manipulator/slam-map.jpg" alt="A SLAM occupancy map of a building floor, light grey corridors on a dark green background" width="1137" height="781" loading="lazy"></a>
-    <figcaption>March 11, 2024. The SLAM map it built.</figcaption>
+    <figcaption>March 11, 2024. The SLAM map it builds.</figcaption>
   </figure>
 </div>
 
-<p>We also tested the robot&rsquo;s long-range Wi&#8209;Fi outside.</p>
+<p>We also test the robot&rsquo;s long-range Wi&#8209;Fi outside.</p>
 
 <figure style="max-width: 18rem">
   <a href="../../images/mobile-manipulator/wifi-outside.jpg"><img src="../../images/mobile-manipulator/wifi-outside.jpg" alt="A person in headphones crouching beside the robot on a sidewalk next to a brick and glass building" width="808" height="1400" loading="lazy"></a>
@@ -131,7 +131,7 @@ image: images/mobile-manipulator.jpg
 </figure>
 
 <h2>The IDEaS demonstration</h2>
-<p>For the IDEaS demonstration we ran a search-and-rescue scenario with five tasks: remote tabletop manipulation, zero-tolerance precision manipulation, remote door opening, autonomous room navigation and interactive scene awareness. I helped demonstrate it to DND. This is the door task in our lab:</p>
+<p>For the IDEaS demonstration we run a search-and-rescue scenario with five tasks: remote tabletop manipulation, zero-tolerance precision manipulation, remote door opening, autonomous room navigation and interactive scene awareness. I help demonstrate it to DND. Here&rsquo;s the door task in our lab:</p>
 
 <figure>
   <video controls muted loop playsinline preload="none" poster="../../images/mobile-manipulator/door.jpg" width="960" height="540">
@@ -141,4 +141,4 @@ image: images/mobile-manipulator.jpg
 </figure>
 
 <h2>Posters</h2>
-<p>I presented the project as first author at the Alberta Robotics &amp; Intelligent Systems Expo (RISE) in 2024, as &ldquo;Teleoperation for Mobile Manipulation in Unstructured Environments&rdquo;, and again at RISE 2025 with the poster &ldquo;Increasing Situational Awareness in Robotic Manipulation: A High-Force Haptic System&rdquo; (<a href="../../files/rise-2025-poster.pdf">PDF</a>).</p>
+<p>I present the project as first author at the Alberta Robotics &amp; Intelligent Systems Expo (RISE) in 2024, as &ldquo;Teleoperation for Mobile Manipulation in Unstructured Environments&rdquo;, and again at RISE 2025 with the poster &ldquo;Increasing Situational Awareness in Robotic Manipulation: A High-Force Haptic System&rdquo; (<a href="../../files/rise-2025-poster.pdf">PDF</a>).</p>

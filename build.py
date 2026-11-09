@@ -50,6 +50,13 @@ TOPICS = [
 ]
 TOPIC_NAMES = dict(TOPICS)
 SERIES = {"haptic-wrist": "Haptic wrist prototypes"}
+# Comments with giscus (GitHub Discussions). Turned on once category_id is filled in.
+GISCUS = {
+    "repo": "JustinValentine/JustinValentine.github.io",
+    "repo_id": "R_kgDOVkY93w",
+    "category": "Comments",
+    "category_id": "",
+}
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December"]
 KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/"
@@ -260,7 +267,7 @@ def build_post(p, posts):
         <div class="post-content">
 {p.body}
         </div>
-        <p class="post-contact">Questions or comments? Email me at <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>{nav}
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>{nav}{comments_block()}
       </article>"""
     head = ""
     if p.math:
@@ -271,6 +278,20 @@ def build_post(p, posts):
     out = os.path.join(ROOT, "posts", p.slug)
     os.makedirs(out, exist_ok=True)
     write(os.path.join(out, "index.html"), page(p.title, body, 2, description=re.sub("<[^>]+>", "", p.summary), head_extra=head))
+
+
+def comments_block():
+    if not GISCUS["category_id"]:
+        return ""
+    g = GISCUS
+    return f"""
+        <section class="comments" id="comments">
+          <h2>Comments</h2>
+          <script src="https://giscus.app/client.js" data-repo="{g['repo']}" data-repo-id="{g['repo_id']}"
+            data-category="{g['category']}" data-category-id="{g['category_id']}" data-mapping="pathname" data-strict="1"
+            data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en"
+            data-loading="lazy" crossorigin="anonymous" async></script>
+        </section>"""
 
 
 def build_home(posts):

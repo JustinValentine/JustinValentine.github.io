@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Rubik’s Cube solver | Justin Valentine</title>
-    <meta name="description" content="A Python program that simulates a cube of any size and solves the 3×3 with the beginner’s layer-by-layer method. I also started a webcam scanner for it in OpenCV.">
+    <meta name="description" content="A Python program that simulates a cube of any size and solves the 3×3 with the beginner’s layer-by-layer method. I’ve also started a webcam scanner for it in OpenCV.">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -43,9 +43,9 @@
   <figcaption>January 2022. Mix scrambles the cube, then Solve plays the solution back one move at a time and lists the moves underneath.</figcaption>
 </figure>
 
-<p>This is a Rubik&rsquo;s Cube program in Python, using NumPy and Tkinter. It started as a simulator that draws a cube of any size as a flat net and lets you turn its layers. I uploaded that in November 2021, and at the start of January 2022 I added a solver for the 3&times;3 that uses the beginner&rsquo;s layer-by-layer method. I also wrote two OpenCV scripts for reading a real cube with a webcam, but they never got connected to the solver.</p>
+<p>This is my Rubik&rsquo;s Cube program, written in Python with NumPy and Tkinter. It starts out as a simulator that draws a cube of any size as a flat net and lets you turn its layers, and that&rsquo;s what goes up on GitHub in November 2021. At the start of January 2022 I add a solver for the 3&times;3 that uses the beginner&rsquo;s layer-by-layer method. I also write two OpenCV scripts for reading a real cube with a webcam, but they never get connected to the solver.</p>
 
-<p>The app goes back further than the GitHub history. In March 2021 I made a sprite animation intro for it:</p>
+<p>The app goes back further than its GitHub history. In March 2021 I make a sprite animation intro for it:</p>
 
 <figure>
   <video controls muted loop playsinline preload="none" poster="../../images/rubiks-cube-solver/intro.jpg" width="960" height="452">
@@ -55,16 +55,16 @@
 </figure>
 
 <h2>The simulator</h2>
-<p>The cube is a list of six faces, each an <em>N</em>&times;<em>N</em> grid of numbers from 0 to 5, one number per colour. The window draws the faces as an unfolded cross, with one Tkinter frame per sticker. A move is a short string made of an axis letter and a two-digit layer number, so <code>x00</code> turns the first layer about the x axis and <code>y02</code> turns the third layer about the y axis.</p>
-<p>Turning a layer moves a row or column of stickers on each of the four faces around it over to the next face. If the layer is on the outside, the face itself also turns a quarter turn, which is a transpose plus reversing each row. Every move turns the same way about its axis, so turning the other way means doing the move three times. None of this depends on <em>N</em>, so the same code turns a 10&times;10&times;10. Mix applies random moves, 20 of them on a 3&times;3. On odd sizes it never turns the middle slice, so the centre sticker of each face stays put.</p>
+<p>The cube is a list of six faces, each an <em>N</em>&times;<em>N</em> grid of numbers from 0 to 5, one number per colour. The window draws the faces as an unfolded cross, with one Tkinter frame per sticker. A move is a short string: an axis letter and a two-digit layer number. So <code>x00</code> turns the first layer about the x axis, and <code>y02</code> turns the third layer about the y axis.</p>
+<p>Turning a layer moves a row or column of stickers on each of the four faces around it over to the next face. If the layer is on the outside, the face itself also gets a quarter turn, which is just a transpose and then reversing each row. Every move turns the same way about its axis, so to go the other way you do the move three times. None of this depends on <em>N</em>, so the same code turns a 10&times;10&times;10. Mix applies random moves, 20 of them on a 3&times;3. On odd sizes it never turns the middle slice, so the centre sticker of each face stays put.</p>
 
 <figure>
   <img src="../../images/rubiks-cube-solver/cube-10x10.png" alt="The Cube Solver window showing a scrambled 10 by 10 by 10 cube as an unfolded cross of six faces, with Mix, Size and Move controls along the top" width="1400" height="1141" loading="lazy">
-  <figcaption>A scrambled 10&times;10&times;10, from the first upload in November 2021, before the Solve and Scan buttons existed.</figcaption>
+  <figcaption>A scrambled 10&times;10&times;10 from the first upload in November 2021. The Solve and Scan buttons don&rsquo;t exist yet.</figcaption>
 </figure>
 
 <h2>The solver</h2>
-<p>The solver only handles the 3&times;3. Each step finds the pieces it needs and applies a fixed sequence of turns for whichever case it finds. The net is drawn with orange on top and red on the bottom, and the solver works from the orange side to the red side:</p>
+<p>The solver only handles the 3&times;3. Each step looks for the pieces it needs and applies a fixed sequence of turns for whichever case it finds. The net is drawn with orange on top and red on the bottom, and the solver works from the orange side to the red side:</p>
 <ol>
   <li>Put the four orange edges on the orange face, then line each one up with the centre of its other colour.</li>
   <li>Put in the four orange corners.</li>
@@ -73,16 +73,16 @@
   <li>Swap the last-layer edges until they match their centres.</li>
   <li>Move the last-layer corners to their places, then twist them until all the red stickers are on the red face.</li>
 </ol>
-<p>Solve runs these steps on the cube in memory and records every move. A last pass merges repeats of the same move (four in a row cancel out, and three become one turn the other way) and writes them in cube notation, with <code>i</code> for an inverse turn and a leading <code>2</code> for a half turn. Then it puts the scrambled cube back and replays the moves on screen.</p>
-<p>The README claims it can solve any of the 43 quintillion positions. Nothing in the repo tests that, and a comment I left on the middle-layer step says edges sometimes came out flipped.</p>
+<p>Hitting Solve runs these steps on the cube in memory and records every move. A last pass merges repeats of the same move (four in a row cancel out, and three become one turn the other way) and writes the result in cube notation, with <code>i</code> for an inverse turn and a leading <code>2</code> for a half turn. Then it puts the scrambled cube back and replays the moves on screen.</p>
+<p>The README claims it can solve any of the 43 quintillion positions. Nothing in the repo actually tests that, and my own comment on the middle-layer step says edges sometimes come out flipped.</p>
 
 <h2>How long the solutions are</h2>
 <p>The number of positions comes from counting pieces. The 8 corners can be arranged in \(8!\) ways and twisted 3 ways each, and the 12 edges can be arranged in \(12!\) ways and flipped 2 ways each. The twist of the last corner and the flip of the last edge are fixed by the others. The corner and edge arrangements also have to be both even or both odd, which halves the total:</p>
 \[ 8! \cdot 3^7 \cdot \frac{12!}{2} \cdot 2^{11} = 43{,}252{,}003{,}274{,}489{,}856{,}000 . \]
-<p>In 2010, Tomas Rokicki, Herbert Kociemba, Morley Davidson and John Dethridge used a large computer search to show that every one of these positions can be solved in 20 moves or fewer, counting a half turn as one move (<a href="https://www.cube20.org/">cube20.org</a>). The move list at the end of the clip above is a bit over 200 moves long.</p>
+<p>A large 2010 computer search by Tomas Rokicki, Herbert Kociemba, Morley Davidson and John Dethridge shows that every one of these positions can be solved in 20 moves or fewer, counting a half turn as one move (<a href="https://www.cube20.org/">cube20.org</a>). The move list my solver produces at the end of the clip above is a bit over 200 moves long.</p>
 
 <h2>The scanner</h2>
-<p>The Scan button in the solver window isn&rsquo;t connected to anything. The scanning code is in two separate scripts. The first, from November 2021, reads webcam frames, converts them to HSV and picks out each of the six colours with hand-tuned HSV ranges. It runs Canny edge detection on each colour&rsquo;s mask, with two sliders for the thresholds, and draws a box and a label on every contour bigger than 6000 pixels.</p>
+<p>The Scan button in the solver window isn&rsquo;t wired to anything. The scanning code lives in two separate scripts. The first, from November 2021, reads webcam frames, converts them to HSV and picks out each of the six colours with hand-tuned HSV ranges. It runs Canny edge detection on each colour&rsquo;s mask, with two sliders for the thresholds, and draws a box and a label on every contour bigger than 6000 pixels.</p>
 
 <div class="pair natural">
   <figure>
@@ -95,7 +95,7 @@
   </figure>
 </div>
 
-<p>The second script, from August 2022, asks for the cube size and draws a grid of that size over the camera image. For each cell it runs k-means with a single cluster, which gives the average colour, and prints it. The function meant to turn that colour into a sticker name is still empty, and the script only ever asks for the green face.</p>
+<p>The second script, from August 2022, asks for the cube size and draws a grid of that size over the camera image. For each cell it runs k-means with a single cluster, which just gives the average colour, and prints it. The function that&rsquo;s meant to turn that colour into a sticker name is still empty, and the script only ever asks for the green face.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><span></span><a href="../spherical-go/index.html">Go on a sphere &rarr;</a></nav>

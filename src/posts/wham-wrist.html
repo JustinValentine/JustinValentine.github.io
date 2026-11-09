@@ -3,7 +3,7 @@ date: 2026-04-07
 topics: haptics, mechanisms, machining, electronics
 series: haptic-wrist
 math: yes
-summary: A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&rsquo;s last joint. My biggest machining project so far, from a printed version in January 2026 to the WAM in April.
+summary: A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&rsquo;s last joint. It&rsquo;s my biggest machining project so far, and it goes from a printed version in January 2026 to the WAM in April.
 image: images/wham-wrist/thumb-full.jpg
 thumb_fit: contain
 ---
@@ -12,13 +12,13 @@ thumb_fit: contain
   <figcaption>April 7, 2026. The wrist on the end of the WAM leader.</figcaption>
 </figure>
 
-<p>The WHAM wrist is the haptic wrist I built in the first few months of 2026, before I left for Barrett Technology. It mounts on the forearm of a WAM arm that the operator wears as the leader. It came after the <a href="../coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> I designed at Barrett. It was my biggest machining project to date. I&rsquo;m now writing a paper on it with Martin Jagersand.</p>
-<p>The photos run from a printed version on January 23 to the wrist on the WAM on April 7. Each caption has the date the photo or video was taken.</p>
+<p>The WHAM wrist is the haptic wrist I build in the first few months of 2026, before I leave for Barrett Technology. It mounts on the forearm of a WAM arm that the operator wears as the leader. It comes after the <a href="../coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> I design at Barrett, and it&rsquo;s my biggest machining project to date. I&rsquo;m now writing a paper on it with Martin Jagersand.</p>
+<p>The photos run from a printed version on January 23 to the wrist on the WAM on April 7. Each caption gives the date of the photo or video.</p>
 
 <h2>Two haptic joints and a joystick</h2>
-<p>The coaxial wrist had haptic pronation&ndash;supination (PS), flexion&ndash;extension (FE) and radial&ndash;ulnar deviation (RU), plus a fourth joint that turned the whole wrist. This one has two haptic joints, PS and FE. Their axes cross at the operator&rsquo;s wrist, so a torque on the handle reaches the hand as a pure moment. They map one to one onto the follower WAM&rsquo;s J5 and J6.</p>
+<p>The coaxial wrist has haptic pronation&ndash;supination (PS), flexion&ndash;extension (FE) and radial&ndash;ulnar deviation (RU), plus a fourth joint that turns the whole wrist. This one has two haptic joints, PS and FE. Their axes cross at the operator&rsquo;s wrist, so a torque on the handle reaches the hand as a pure moment. They map one to one onto the follower WAM&rsquo;s J5 and J6.</p>
 <p>The WAM&rsquo;s wrist is roll&ndash;pitch&ndash;roll, and RU has no matching joint on it. RU bends the hand sideways, while the follower&rsquo;s J7 spins the tool about its own axis. J7 turns through 344&deg;, and an operator&rsquo;s roughly 55&deg; of RU would cover about 16% of that. So J7 goes to a thumb joystick on the handle, in rate mode: the stick&rsquo;s deflection sets J7&rsquo;s speed, and letting go holds the angle. Dropping RU also takes a motor and a transmission off the far end of the leader.</p>
-<p>PS turns &plusmn;170&deg; and FE &plusmn;90&deg;, both more than a human wrist can manage. The ranges come from the follower, whose J5 travels 344&deg; between its stops and J6 &plusmn;90&deg;. The coaxial wrist&rsquo;s PS range was &plusmn;90&deg;.</p>
+<p>PS turns &plusmn;170&deg; and FE &plusmn;90&deg;, both more than a human wrist can manage. The ranges come from the follower, whose J5 travels 344&deg; between its stops and J6 &plusmn;90&deg;. The coaxial wrist&rsquo;s PS range is only &plusmn;90&deg;.</p>
 
 <h2>Attaching it to the arm</h2>
 <p>The WAM&rsquo;s upper arm is 550&nbsp;mm long, against about 330&nbsp;mm for a 1.75&nbsp;m adult, so the operator&rsquo;s elbow and the leader&rsquo;s can&rsquo;t line up. In the plane of the arm, the operator and the leader form a closed loop. Kutzbach&rsquo;s formula gives its mobility from the number of links \(n\) and one-DOF joints \(j\):</p>
@@ -40,10 +40,10 @@ thumb_fit: contain
     <figcaption>From the side. The cable runs from the pinion around the drum.</figcaption>
   </figure>
 </div>
-<p>The first version was printed in black plastic. It already has the layout of the aluminum one: a big drum around the forearm for PS, driven by cable from a pinion on a base plate beside it, with the FE drive mounted on the drum.</p>
+<p>The first version is printed in black plastic, and it already has the layout of the aluminum one: a big drum around the forearm for PS, driven by cable from a pinion on a base plate beside it, with the FE drive mounted on the drum.</p>
 
 <h2>Machining the drum</h2>
-<p>The machined parts are 6061-T6 aluminum. The PS drum was the biggest of them, 185&nbsp;mm across, driven by an 18&nbsp;mm pinion in a single cable stage. It started as a round blank on a Tormach PCNC 1100. Four days later one face was pocketed, and by the evening of February 2 the pockets were cut through, leaving the spokes.</p>
+<p>The machined parts are 6061-T6 aluminum. The biggest is the PS drum, 185&nbsp;mm across, driven by an 18&nbsp;mm pinion in a single cable stage. It starts out as a round blank on a Tormach PCNC 1100. Four days later one face is pocketed, and by the evening of February 2 the pockets are cut through, leaving the spokes.</p>
 <div class="pair portrait">
   <figure>
     <a href="../../images/wham-wrist/drum-blank.jpg"><img src="../../images/wham-wrist/drum-blank.jpg" alt="A round aluminum blank clamped in a vise on the table of a Tormach PCNC 1100 mill" loading="lazy"></a>
@@ -92,7 +92,7 @@ thumb_fit: contain
 </figure>
 
 <h2>Tensioners inside the pinions</h2>
-<p>Both joints use 7&times;19 stainless steel cable (18-8), 0.97&nbsp;mm across. Each stage is an antagonistic pair wrapped on its pinion. Pretension keeps both sides taut so there&rsquo;s no backlash, and it has to be high enough that the cable doesn&rsquo;t slip at peak torque. More than that adds bearing friction and torque ripple, so I wanted a way to set it finely, in place, with the wrist assembled.</p>
+<p>Both joints use 7&times;19 stainless steel cable (18-8), 0.97&nbsp;mm across. Each stage is an antagonistic pair wrapped on its pinion. Pretension keeps both sides taut so there&rsquo;s no backlash, and it has to be high enough that the cable doesn&rsquo;t slip at peak torque. Any more than that just adds bearing friction and torque ripple, so I want a way to set it finely, in place, with the wrist assembled.</p>
 <p>The part I&rsquo;m proudest of is that the tensioners are inside the motor pinions. There&rsquo;s no turnbuckle or idler anywhere in the cable run. Each motor pinion is split in two, in a scheme similar to the WAM&rsquo;s own. The fixed half is part of the rotor hub. The tensioning half rides on a one-way needle clutch between two thrust bearings, and a wave spring under the preload screw holds it down. Each half carries eight wraps of one end of the cable.</p>
 
 <figure>
@@ -194,7 +194,7 @@ thumb_fit: contain
 </figure>
 
 <h2>Reductions and torque</h2>
-<p>I kept both reductions near 10:1. Backdriven through a reduction \(N\), the motor&rsquo;s friction feels \(N\) times larger and its rotor inertia \(N^2\) times larger. A low ratio keeps the joints backdrivable enough to estimate torque from motor current.</p>
+<p>I keep both reductions near 10:1. Backdriven through a reduction \(N\), the motor&rsquo;s friction feels \(N\) times larger and its rotor inertia \(N^2\) times larger. A low ratio keeps the joints backdrivable enough to estimate torque from motor current.</p>
 <p>Each ratio is taken at the cable centreline, so every diameter gets one cable diameter, \(d = 0.965\)&nbsp;mm, added to it. PS has one stage, an 18&nbsp;mm pinion on the 185&nbsp;mm drum:</p>
 \[ N_{\text{PS}} = \frac{185 + d}{18 + d} = 9.81 \]
 <p>FE has two, 18 to 36&nbsp;mm and then 15 to 77&nbsp;mm:</p>
@@ -220,4 +220,4 @@ thumb_fit: contain
 </table>
 
 <h2>Testing</h2>
-<p>In October 2026 I ran my <a href="../wrist-test-suite/index.html">test suite</a> on both joints, and the full results are on that post. PS tracks position to 47&nbsp;Hz and FE to 31&nbsp;Hz at &minus;3&nbsp;dB, and FE has about three times the sliding friction of PS, 0.50&nbsp;N&middot;m against 0.15&nbsp;N&middot;m.</p>
+<p>In October 2026 I run my <a href="../wrist-test-suite/index.html">test suite</a> on both joints, and the full results are in that post. PS tracks position to 47&nbsp;Hz and FE to 31&nbsp;Hz at &minus;3&nbsp;dB, and FE has about three times the sliding friction of PS, 0.50&nbsp;N&middot;m against 0.15&nbsp;N&middot;m.</p>
