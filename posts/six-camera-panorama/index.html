@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A 360° camera from six $20 action cameras | Justin Valentine</title>
+    <meta name="description" content="My CMPUT 428 final project with Justin Rozeboom. Six cheap action cameras in a laser-cut hexagonal housing on an iRobot Create 2, calibrated and stitched into cylindrical panoramas, plus a first try at structure from motion on the reprojected images.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>A 360° camera from six $20 action cameras</h1>
+          <p class="post-meta">April 2023 &middot; <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/electronics/index.html">Electronics</a></p>
+        </header>
+        <div class="post-content">
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/six-camera-panorama/robot-spin.jpg" width="960" height="960">
+    <source src="../../images/six-camera-panorama/robot-spin.mp4" type="video/mp4">
+  </video>
+  <figcaption>The finished rig on the iRobot Create 2. This turntable view is the GIF from the project&rsquo;s README.</figcaption>
+</figure>
+
+<p>This was my final project for CMPUT 428, the computer vision course at the University of Alberta, done with Justin Rozeboom in April 2023. We had two goals: build a cheap 360&deg; camera that could drive around on a robot, and adapt structure from motion to a cylindrical camera instead of the usual pinhole one. I built the camera and the robot setup and did the calibration and stitching. Justin led the reprojection and structure-from-motion part. The code is on GitHub at <a href="https://github.com/JustinValentine/panoramic-image-SFM">JustinValentine/panoramic-image-SFM</a>.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/pano-cylindrical.jpg"><img src="../../images/six-camera-panorama/pano-cylindrical.jpg" alt="A full 360 degree panorama of a university quad on an overcast day: brick buildings, bare trees and spruces, a paved path down the middle, and a laptop and bag on the grass" width="2400" height="451"></a>
+  <figcaption>One of the final panoramas: undistorted, projected onto a cylinder and stitched with OpenCV.</figcaption>
+</figure>
+
+<table class="specs">
+  <tr><th>Cameras</th><td>6 &times; Jadfezy Action Camera FHD 1080P 12MP, about $20 each</td></tr>
+  <tr><th>Field of view</th><td>110&deg; advertised, about 70&deg; &times; 40&deg; in practice</td></tr>
+  <tr><th>Frames</th><td>1280 &times; 720 over USB</td></tr>
+  <tr><th>Layout</th><td>Hexagon, one camera per side</td></tr>
+  <tr><th>Housing</th><td>Laser-cut wood, painted</td></tr>
+  <tr><th>Robot</th><td>iRobot Create 2, driven with a PS4 controller through a Raspberry Pi 3B</td></tr>
+  <tr><th>Power</th><td>Powered USB hub for the cameras, two USB power banks</td></tr>
+  <tr><th>Software</th><td>Python and OpenCV</td></tr>
+</table>
+
+<h2>The cameras</h2>
+<p>I already knew action cameras, so I looked for cheap ones and picked the Jadfezy Action Camera FHD 1080P 12MP off AliExpress. They were about $20 each with an advertised 110&deg; field of view. We chose quickly because of the deadline, and after more research they turned out to be a poor fit. The real field of view was about 70&deg; across the sensor and 40&deg; along its height. Each camera also came with a waterproof case, batteries, mounts and a screen on the back, none of which we used, and that money could have gone into a better sensor. Small USB cameras would have suited the project better. They advertise wider fields of view, and being smaller they could sit closer together, which helps with parallax.</p>
+
+<p>The bigger job was getting six separate cameras to behave as one. Each camera has to be switched on and then put into USB camera mode through its menu, 18 button presses for all six. My plan was to wire the on buttons of all six together, then the select buttons, then the down buttons, so one press would do every camera. After more experimenting I found I could have just soldered each on button closed, so the cameras start as soon as they get power. In the final version the on buttons are shorted by twisting together the wires I&rsquo;d spent so long attaching. I also tried to remove a button from one camera and ripped a solder pad off the PCB, so I left the other five alone. Starting all six cameras in USB camera mode now takes 7 presses.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/six-camera-panorama/camera-menu.jpg"><img src="../../images/six-camera-panorama/camera-menu.jpg" alt="The back of an action camera inside the wooden housing, with red and purple wires soldered to its buttons and a USB menu on its screen listing Mass Storage, PC Camera and Charge mode" width="1400" height="1050" loading="lazy"></a>
+    <figcaption>Wires soldered to a camera&rsquo;s buttons. Every camera has to be switched to PC Camera in this menu.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/housing-inside.jpg"><img src="../../images/six-camera-panorama/housing-inside.jpg" alt="Looking down into the open hexagonal wooden housing at six numbered cameras with USB cables and twisted button wires between them" width="1152" height="864" loading="lazy"></a>
+    <figcaption>The six cameras inside the housing, numbered, with the button wires running between them.</figcaption>
+  </figure>
+</div>
+
+<h2>Choosing a layout</h2>
+<p>We tried several layouts first. Each had its own problems, and most needed more cameras to cover the full circle.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/six-camera-panorama/layout-webcams.jpg"><img src="../../images/six-camera-panorama/layout-webcams.jpg" alt="Three webcams on a cardboard plate on top of the Create 2 robot on a lab bench" width="1400" height="1050" loading="lazy"></a>
+    <figcaption>Three webcams on a cardboard plate on the robot.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/layout-ring.jpg"><img src="../../images/six-camera-panorama/layout-ring.jpg" alt="Six small black action cameras standing in a ring on a desk with twisted wires sticking up from each one" width="1400" height="1050" loading="lazy"></a>
+    <figcaption>The six action cameras in a ring, button wires attached.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/layout-box.jpg"><img src="../../images/six-camera-panorama/layout-box.jpg" alt="Three action cameras taped to the sides and top of a cardboard shipping box" width="1152" height="864" loading="lazy"></a>
+    <figcaption>Cameras taped to a shipping box.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/layout-cardboard.jpg"><img src="../../images/six-camera-panorama/layout-cardboard.jpg" alt="A hexagonal cardboard housing with camera holes sitting on the Create 2 on a desk" width="1400" height="1050" loading="lazy"></a>
+    <figcaption>A cardboard hexagon on the robot.</figcaption>
+  </figure>
+</div>
+
+<p>We settled on a hexagon with one camera per side. It approximates a cylindrical camera reasonably well, and neighbouring views overlap enough to stitch. The cameras aren&rsquo;t centred on their sides. Instead, each point where two neighbouring fields of view cross is the same distance from both cameras.</p>
+
+<figure class="tall">
+  <img src="../../images/six-camera-panorama/hexagon-fov.png" alt="Diagram of a small hexagon with red lines for the edges of neighbouring camera views, crossing at two black dots above it" width="1200" height="874" loading="lazy">
+  <figcaption>Camera placement on the hexagon. The black dots are where neighbouring fields of view cross.</figcaption>
+</figure>
+
+<h2>The housing</h2>
+<p>The cameras sit in a laser-cut wood housing on top of the robot. Wood is cheap and easy to work with, and the laser cutter places each camera precisely, which matters for stitching. My first cut file had a big mistake: the laser would have cut off every tab. I fixed it, cut the parts and assembled them, and the result looked like a birdhouse.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/six-camera-panorama/housing-cutfile.png"><img src="../../images/six-camera-panorama/housing-cutfile.png" alt="Laser cut file with red outlines of hexagons, wall panels with camera holes, trapezoids, many small tabbed parts and a large circle" width="1198" height="1200" loading="lazy"></a>
+    <figcaption>The first cut file, the one that would have lost its tabs.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/housing-wood.jpg"><img src="../../images/six-camera-panorama/housing-wood.jpg" alt="The assembled light wood housing, a faceted box with round camera holes, sitting on a desk" width="1152" height="1152" loading="lazy"></a>
+    <figcaption>The assembled housing.</figcaption>
+  </figure>
+</div>
+
+<h2>Power and driving</h2>
+<p>The robot is an iRobot Create 2, a low-cost differential-drive robot made for development, which we already had. All six cameras can stream over one USB cable, but together they draw too much power for it. I put them on a powered USB hub fed by a USB power bank, so the cable going to the computer only carries data. A Raspberry Pi 3B on the robot reads a PS4 controller and sends wheel velocities to the Create 2 over serial. There&rsquo;s also an SSD for the images and video, and two power banks, one for the Pi and one for the cameras.</p>
+
+<figure class="tall">
+  <a href="../../images/six-camera-panorama/robot-electronics.jpg"><img src="../../images/six-camera-panorama/robot-electronics.jpg" alt="Top-down view of the Create 2 with its cover off, showing a Raspberry Pi in a black case, a small blue SSD and white USB cables" width="1152" height="1352" loading="lazy"></a>
+  <figcaption>The top of the Create 2 with the Raspberry Pi and the SSD.</figcaption>
+</figure>
+
+<p>To finish it I painted the wood, put cable sleeves on the USB cables, raised the cameras on a cardboard tube and made four mounting points on the robot for the housing.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/build-collage.jpg"><img src="../../images/six-camera-panorama/build-collage.jpg" alt="Twelve-photo collage of the build: six cameras in a row, cameras with wires, the box prototype, the cardboard hexagon, the wood and painted housings, the electronics, and the finished robot with the cameras raised on a tube" width="1600" height="1015" loading="lazy"></a>
+  <figcaption>The build in order, left to right and top to bottom.</figcaption>
+</figure>
+
+<h2>Calibration</h2>
+<p>The lenses have strong barrel distortion, so every frame has to be undistorted before stitching. We calibrated with OpenCV from photos of a checkerboard (8 &times; 6 inner corners) held at different positions and angles in front of the camera.</p>
+<p>My first attempt used <code>cv.calibrateCamera()</code>, OpenCV&rsquo;s standard model. It threw away a lot of the image around the edges, which would have made stitching impossible. The second used OpenCV&rsquo;s fisheye module: <code>cv2.fisheye.calibrate()</code> for the intrinsics and <code>cv2.fisheye.<wbr>estimateNewCameraMatrix<wbr>ForUndistortRectify()</code> to undistort. It took a lot more effort to set up and worked much better.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/six-camera-panorama/calib-pinhole.jpg"><img src="../../images/six-camera-panorama/calib-pinhole.jpg" alt="A lab frame warped into a bulging oval with a black border, the ceiling and desk edges smeared around the rim" width="1280" height="720" loading="lazy"></a>
+    <figcaption>First try, with <code>cv.calibrateCamera()</code>.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/calib-fisheye.jpg"><img src="../../images/six-camera-panorama/calib-fisheye.jpg" alt="The same lab frame undistorted with straight walls and desks, the corners stretched outward" width="1262" height="711" loading="lazy"></a>
+    <figcaption>The same frame with the fisheye model.</figcaption>
+  </figure>
+</div>
+
+<p>The fisheye model maps a point \((X, Y, Z)\) in the camera frame to a pixel through the angle \(\theta\) between its ray and the optical axis:</p>
+\[ a = \frac{X}{Z}, \qquad b = \frac{Y}{Z}, \]
+\[ r = \sqrt{a^2 + b^2}, \qquad \theta = \arctan r, \]
+\[ \theta_d = \theta\,\big(1 + k_1\theta^2 + k_2\theta^4 + k_3\theta^6 + k_4\theta^8\big), \]
+\[ u = f_x\,\frac{\theta_d}{r}\,a + c_x, \qquad v = f_y\,\frac{\theta_d}{r}\,b + c_y . \]
+<p>Calibration finds the camera matrix \(K\) (focal lengths and principal point, with skew fixed at zero) and the distortion coefficients \(D = (k_1, k_2, k_3, k_4)\). At 1280 &times; 720 we got</p>
+\[ K = \begin{bmatrix} 841.7 & 0 & 649.7 \\ 0 & 843.3 & 345.2 \\ 0 & 0 & 1 \end{bmatrix}, \]
+\[ D = (-0.157,\ 0.657,\ -1.178,\ 0.751). \]
+<p>Undistorting goes the other way. For each pixel of the output image, OpenCV takes the ray through it, runs that ray through the model above to find where it lands in the raw frame, and samples there. The <code>balance</code> setting, 0.9 in our script, controls how much of the original frame is kept versus cropped. The raw frames come out upside down, so the script flips each one first, and it applies the same \(K\) and \(D\) to all six cameras.</p>
+
+<p>To check the result I printed 16 checkerboards, arranged them into one large board and photographed it with one of the cameras. After undistortion the grid lines come out straight.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/six-camera-panorama/board-raw.jpg"><img src="../../images/six-camera-panorama/board-raw.jpg" alt="A large checkerboard filling the frame with its lines bowed outward by barrel distortion" width="1280" height="720" loading="lazy"></a>
+    <figcaption>The large board, raw.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/board-undistorted.jpg"><img src="../../images/six-camera-panorama/board-undistorted.jpg" alt="The same checkerboard undistorted, with straight grid lines and a pinched black border around it" width="1337" height="752" loading="lazy"></a>
+    <figcaption>Undistorted.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <a href="../../images/six-camera-panorama/six-undistorted.jpg"><img src="../../images/six-camera-panorama/six-undistorted.jpg" alt="Three lab frames from neighbouring cameras in a top row, and the same three undistorted in a bottom row with curved black borders" width="1600" height="574" loading="lazy"></a>
+  <figcaption>Frames from three of the cameras, raw (top) and undistorted (bottom).</figcaption>
+</figure>
+
+<h2>Stitching</h2>
+<p>Our first panoramas were lined up by hand in Photoshop, and they came out poorly. By hand there was no consistent way to deal with the distortion and parallax, or to work out how each frame relates to the next.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/stitch-manual.jpg"><img src="../../images/six-camera-panorama/stitch-manual.jpg" alt="A lab panorama made of undistorted frames overlapped by hand, with uneven edges and visible misalignment" width="1600" height="434" loading="lazy"></a>
+  <figcaption>An early panorama, lined up by hand in Photoshop.</figcaption>
+</figure>
+
+<p>Next we used OpenCV&rsquo;s <code>cv2.Stitcher_create()</code> in panorama mode, which gave much better results. It detects and matches features between frames, estimates the transformations between them and blends them with multi-band blending, which hides many of the seams that parallax causes.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/stitch-lab.jpg"><img src="../../images/six-camera-panorama/stitch-lab.jpg" alt="A wide panorama of a cluttered lab with bookshelves, desks and computer monitors" width="2400" height="406" loading="lazy"></a>
+  <figcaption>A lab panorama from <code>cv2.Stitcher_create()</code>.</figcaption>
+</figure>
+
+<p>Parallax is the main limit. The six cameras don&rsquo;t share an optical centre, so nearby objects shift between neighbouring views and can&rsquo;t line up exactly. The Create 2 is built for indoor use, and indoors things tend to be close to the camera, which makes it worse. A simple fix is to turn the robot 30&deg;, half the spacing between cameras, and capture again. That gives twelve views instead of six with much more overlap between them, so the stitcher has more matches to work with, including some that parallax affects less.</p>
+
+<figure>
+  <img src="../../images/six-camera-panorama/rotate-30.png" alt="Diagram: six cameras in a hexagon, plus the same six rotated 30 degrees, combine into twelve overlapping views around a circle" width="899" height="362" loading="lazy">
+  <figcaption>Two captures 30&deg; apart give twelve overlapping views.</figcaption>
+</figure>
+
+<h3>Projecting onto a cylinder</h3>
+<p>The stitcher&rsquo;s output looked good, but I didn&rsquo;t know how geometrically accurate it was compared with a true cylindrical camera. PhotoStitcher, a photo-stitching program, lets you pick a projection type, and that got me thinking about it. I implemented the ProjectOntoCylinder function from Kedia Rahul&rsquo;s &ldquo;Panorama Stitching&rdquo; guide and ran every frame through it before stitching.</p>
+<p>Each column of the output is an angle around the cylinder, \(\theta = (x' - c_x)/f\), and each row is a height on it. A ray at angle \(\theta\) hits the flat image plane at \(f\tan\theta\) from the centre, and at that angle the plane is \(1/\cos\theta\) times farther away than the cylinder, so heights scale by the same factor. For each output pixel \((x', y')\), the code samples the original image at</p>
+\[ x = f\tan\!\left(\frac{x' - c_x}{f}\right) + c_x, \]
+\[ y = \frac{y' - c_y}{\cos\!\big((x' - c_x)/f\big)} + c_y , \]
+<p>with bilinear interpolation, then crops off the empty columns at the sides.</p>
+<p>The warp needs the focal length \(f\) in pixels. Converting from the lens focal length in millimetres takes the sensor width, so I took apart a broken camera and measured its sensor with calipers. It&rsquo;s 3.6&nbsp;mm wide, covering the 1280-pixel image width, so</p>
+\[ f_{\text{px}} = \frac{f_{\text{mm}}}{3.6\ \text{mm}} \times 1280 . \]
+
+<figure class="tall">
+  <a href="../../images/six-camera-panorama/sensor-teardown.jpg"><img src="../../images/six-camera-panorama/sensor-teardown.jpg" alt="A green camera main board, a small orange image sensor module and a black lens laid out on a wooden table" width="1100" height="1100" loading="lazy"></a>
+  <figcaption>The broken camera taken apart: main board, image sensor and lens.</figcaption>
+</figure>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/six-camera-panorama/cyl-before.jpg"><img src="../../images/six-camera-panorama/cyl-before.jpg" alt="A lab frame with a tripod, a stool, desks and a small yellow wheeled robot" width="1280" height="720" loading="lazy"></a>
+    <figcaption>A frame from one camera.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/six-camera-panorama/cyl-after.jpg"><img src="../../images/six-camera-panorama/cyl-after.jpg" alt="The same frame projected onto a cylinder, narrower, with curved top and bottom edges, centred on black" width="1280" height="720" loading="lazy"></a>
+    <figcaption>The same frame projected onto a cylinder, shown at the original frame size.</figcaption>
+  </figure>
+</div>
+
+<p>Here is the same outdoor capture as the panorama at the top of the post, at the two earlier stages. Adding the cylindrical projection on top of calibration gives the version at the top.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/pano-raw.jpg"><img src="../../images/six-camera-panorama/pano-raw.jpg" alt="An upside-down, badly aligned panorama of the quad with the sky along the bottom" width="2048" height="283" loading="lazy"></a>
+  <figcaption>No calibration. The flip happens in the undistort step, so this one is upside down.</figcaption>
+</figure>
+
+<figure>
+  <a href="../../images/six-camera-panorama/pano-calibrated.jpg"><img src="../../images/six-camera-panorama/pano-calibrated.jpg" alt="The quad panorama right side up after calibration, with some visible seams and the ground bowing" width="2048" height="358" loading="lazy"></a>
+  <figcaption>With calibration.</figcaption>
+</figure>
+
+<h3>Testing the cylindrical model</h3>
+<p>To measure how well the panoramas match a cylindrical camera, I marked 45&deg; increments on the floor around the robot and 20&nbsp;cm increments up a board. The plan was to photograph the board at each angle, stitch, and compare where the marks landed with where the model put them, since their real positions were known. The walls in that room were too plain. The stitcher couldn&rsquo;t find enough matching features between frames, and I never got a panorama good enough to measure.</p>
+
+<figure>
+  <a href="../../images/six-camera-panorama/model-setup.jpg"><img src="../../images/six-camera-panorama/model-setup.jpg" alt="An empty room with a board marked in white segments leaning on the wall and the robot with the camera on a tube in the foreground, white tape lines radiating from it on the floor" width="1152" height="864" loading="lazy"></a>
+  <figcaption>The test setup: tape lines every 45&deg; around the robot and a board marked every 20&nbsp;cm.</figcaption>
+</figure>
+
+<figure>
+  <a href="../../images/six-camera-panorama/model-stitch.jpg"><img src="../../images/six-camera-panorama/model-stitch.jpg" alt="A stitched panorama of the plain-walled test room with misaligned segments and a duplicated board" width="2048" height="552" loading="lazy"></a>
+  <figcaption>One of the attempts to stitch the test room.</figcaption>
+</figure>
+
+<h2>Reprojection and structure from motion</h2>
+<p>Justin Rozeboom led this part. The common structure-from-motion algorithms work with flat image planes, so first we map the image points from our roughly cylindrical surface onto a plane. For a true cylinder that just means unrolling it, a linear map of the angle around the axis. Our cross-section is a hexagon, so we used an empirical mapping to lay the six image planes out flat.</p>
+<p>From there we used affine factorization (Hartley and Zisserman). Subtract each view&rsquo;s centroid from its image points and stack them into a measurement matrix \(W\) with the views down the rows and the points across the columns. In the affine model</p>
+\[ W = M X , \]
+<p>where \(M\) stacks the camera matrices and \(X\) holds the 3D points, so \(W\) has rank at most 3. With noise it won&rsquo;t factor exactly, so we take the rank-3 matrix \(\hat W\) closest to \(W\) in the Frobenius norm. That&rsquo;s the truncated SVD:</p>
+\[ \hat W = U_3 D_3 V_3^{\mathsf T}, \]
+\[ M = U_3 D_3, \qquad X = V_3^{\mathsf T}. \]
+<p>The result is only defined up to an affine transform. For any invertible \(3 \times 3\) matrix \(A\),</p>
+\[ \hat W = (M A)(A^{-1} X), \]
+<p>so a metric reconstruction needs extra constraints, such as assuming orthographic cameras or using known distances in the scene.</p>
+
+<p>To test the pipeline we started with synthetic data in a flat world. A camera with a circular image surface moves along a straight line between two rows of squares. Its image is reprojected onto two lines, one above the camera and one below, each covering half the circle. With one dimension dropped, the measurement matrix has rank 2 instead of 3.</p>
+
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/six-camera-panorama/sfm-sim.jpg" width="1280" height="720">
+    <source src="../../images/six-camera-panorama/sfm-sim.mp4" type="video/mp4">
+  </video>
+  <figcaption>The synthetic test. The circular camera moves along the track, and each point is projected onto the line above or below it.</figcaption>
+</figure>
+
+<p>The reconstruction got some of the relative structure right but had severe projective distortion. The distortion depends on each point&rsquo;s depth, so no affine transform can undo it. That calls for projective factorization (Hartley and Zisserman, Algorithm 18.2), which gives each image point an unknown scale \(\lambda_{ij}\),</p>
+\[ \lambda_{ij}\,\mathbf{x}_{ij} = P_i\,\mathbf{X}_j , \]
+<p>and alternates between factoring and re-estimating the scales. We didn&rsquo;t get it working. We started every \(\lambda_{ij}\) at 1, which isn&rsquo;t always a good guess, and the factorization reached rank 3 right away, so the step that updates \(\lambda\) never ran. Lowering the convergence threshold didn&rsquo;t help.</p>
+
+<figure>
+  <img src="../../images/six-camera-panorama/sfm-affine.png" alt="Scatter plot titled Reconstructed: one row of points near y = 12 and another near y = -12, spread from x = -70 to 70" width="805" height="203" loading="lazy">
+  <figcaption>The affine reconstruction from the first test.</figcaption>
+</figure>
+
+<figure style="max-width: 577px">
+  <img src="../../images/six-camera-panorama/sfm-projective.png" alt="Scatter plot titled Reconstructed: two near-vertical columns of points at x = -14 and x = 14" width="577" height="281" loading="lazy">
+  <figcaption>Output of our projective factorization attempt.</figcaption>
+</figure>
+
+<h2>Looking back</h2>
+<p>We took on too much at once. Hardware, calibration, stitching and a new kind of structure from motion could each have filled the whole project, and none of them got as much time as it needed.</p>
+<p>On the structure-from-motion side, the camera positions are known in the synthetic test. Given even a rough pose estimate, bundle adjustment could triangulate the points, refine them and recompute the poses. On the real robot, visual SLAM would be the more serious approach, with the motor data helping to localize the camera. The robot also moves very little, and triangulation needs larger motions to be numerically stable. Driving farther brings its own problems: localization has to be better and objects start to occlude each other.</p>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../painting-robot/index.html">&larr; A painting robot</a><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

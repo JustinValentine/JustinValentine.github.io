@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer vision | Justin Valentine</title>
+    <meta name="description" content="Posts by Justin Valentine about computer vision.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html" aria-current="page">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <p class="crumb"><a href="../index.html">Topics</a></p>
+      <h1>Computer vision</h1>
+      <ul class="work">
+        <li>
+          <a class="thumb" href="../../posts/mobile-manipulator/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/mobile-manipulator.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/mobile-manipulator/index.html">A haptic mobile manipulator</a></h3>
+            <p class="entry-meta">May 26, 2024 &middot; <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/electronics/index.html">Electronics</a>, <a href="../../topics/software/index.html">Software</a></p>
+            <p>A 7&#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I designed the mobile base and set up the sensors and ROS. One of eight finalist teams in DND&rsquo;s IDEaS challenge.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb" href="../../posts/six-camera-panorama/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/six-camera-panorama/robot-spin.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/six-camera-panorama/index.html">A 360° camera from six $20 action cameras</a></h3>
+            <p class="entry-meta">Apr 2023 &middot; <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/electronics/index.html">Electronics</a></p>
+            <p>My CMPUT 428 final project with Justin Rozeboom. Six cheap action cameras in a laser-cut hexagonal housing on an iRobot Create 2, calibrated and stitched into cylindrical panoramas, plus a first try at structure from motion on the reprojected images.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb" href="../../posts/rubiks-cube-solver/index.html" tabindex="-1" aria-hidden="true"><video autoplay muted loop playsinline preload="auto"><source src="../../images/rubiks-cube-solver/solve.mp4" type="video/mp4"></video></a>
+          <div>
+            <h3><a href="../../posts/rubiks-cube-solver/index.html">A Rubik’s Cube solver</a></h3>
+            <p class="entry-meta">Jan 2022 &middot; <a href="../../topics/software/index.html">Software</a>, <a href="../../topics/games/index.html">Games</a>, <a href="../../topics/vision/index.html">Computer vision</a></p>
+            <p>A Python program that simulates a cube of any size and solves the 3×3 with the beginner’s layer-by-layer method. I also started a webcam scanner for it in OpenCV.</p>
+          </div>
+        </li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

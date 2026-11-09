@@ -1,0 +1,54 @@
+title: Drawing sketches with guided flow matching
+date: 2024-11-17
+topics: learning, software, mechanisms
+math: yes
+summary: A course project that generates sketches point by point with flow matching and classifier-free guidance, then has a Barrett WAM draw them on a whiteboard that presses back with a constant force.
+image: images/sketch/wam-drawing.jpg
+---
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/sketch/wam-drawing.jpg" width="960" height="540">
+    <source src="../../images/sketch/wam-drawing.mp4" type="video/mp4">
+  </video>
+  <figcaption>November 17, 2024. The WAM drawing a generated sketch on the whiteboard.</figcaption>
+</figure>
+
+<p>For CMPUT 652, a course on procedural content generation with machine learning, Riley Zilka, Hasti Karamdel and I built a model that draws sketches one point at a time. We trained it on sketches from <a href="https://quickdraw.withgoogle.com/">Quick, Draw!</a>, the TU-Berlin sketch dataset and the Sketchy database, then had a Barrett WAM draw what it generated. The code is on <a href="https://github.com/JustinValentine/Sketch_Generation">GitHub</a>.</p>
+<p>It&rsquo;s built on <a href="https://github.com/real-stanford/diffusion_policy">Diffusion Policy</a>, which generates robot actions with a diffusion model. A sketch has the same shape as a robot trajectory: a sequence of points, each with an \(x\), a \(y\) and whether the pen is down. We replaced the diffusion model with flow matching and conditioned it on the class of sketch to draw, such as apple, bee or star.</p>
+
+<h2>Flow matching</h2>
+<p>A training sketch \(x_1\) is a chunk of 64 points. Pair it with Gaussian noise \(x_0\) of the same shape, pick a time \(t\) between 0 and 1, and slide along the straight line between them:</p>
+\[ x_t = (1 - t)\,x_0 + t\,x_1 . \]
+<p>The network \(v_\theta(x_t, t, c)\), given the class \(c\), learns the velocity along that line:</p>
+\[ \mathcal{L}(\theta) = \mathbb{E}_{t,\,x_0,\,x_1}\big\| v_\theta(x_t, t, c) - (x_1 - x_0) \big\|^2 . \]
+<p>To draw something new, start from fresh noise and integrate \(\dot x = v_\theta(x, t, c)\) from \(t = 0\) to \(t = 1\). We used 100 Euler steps.</p>
+
+<figure>
+  <img src="../../images/sketch/denoising.gif" alt="Three sketches, a smiley face, a pizza slice and a star, forming out of noise. The stroke colour runs from purple to yellow" width="1200" height="400" loading="lazy">
+  <figcaption>Integrating the flow from noise to a smiley face, a pizza slice and a star.</figcaption>
+</figure>
+
+<h2>Guidance</h2>
+<p>During training, the class label is swapped for a null token a small fraction of the time (1% in the final runs), so the same network also learns an unconditional velocity \(v_\theta(x, t, \varnothing)\). At sampling time the two are mixed:</p>
+\[ \tilde v = (1 - w)\,v_\theta(x, t, \varnothing) + w\,v_\theta(x, t, c). \]
+<p>Here \(w\) is the guidance weight. With \(w = 1\) this is the plain conditional model. With \(w &gt; 1\) the sample is pushed further toward the class and away from the unconditional average.</p>
+
+<div class="pair natural">
+  <figure>
+    <img src="../../images/sketch/apples.gif" alt="A five by five grid of generated apple sketches being drawn" width="700" height="700" loading="lazy">
+    <figcaption>Generated apples.</figcaption>
+  </figure>
+  <figure>
+    <img src="../../images/sketch/bees.gif" alt="A five by five grid of generated bee sketches being drawn" width="700" height="700" loading="lazy">
+    <figcaption>Generated bees.</figcaption>
+  </figure>
+</div>
+
+<h2>A whiteboard that pushes back</h2>
+<p>For the WAM to draw, the pen has to stay in contact with the board without digging in. I built a whiteboard on a four-bar linkage that presses up against the pen with a constant force. Four linear rods with bearings at its corners keep it level as it moves.</p>
+
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/sketch/board.jpg" width="960" height="540">
+    <source src="../../images/sketch/board.mp4" type="video/mp4">
+  </video>
+  <figcaption>November 17, 2024. Testing the board by hand.</figcaption>
+</figure>

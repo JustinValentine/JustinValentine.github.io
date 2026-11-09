@@ -1,0 +1,165 @@
+title: The coaxial semi-differential wrist
+date: 2025-10
+topics: haptics, mechanisms, teleoperation, control
+series: haptic-wrist
+math: yes
+summary: A four-joint, cable-driven leader wrist for the WAM. Two of its drives are rings stacked around the forearm, and a fourth motor turns the whole wrist relative to the arm it&rsquo;s mounted on.
+image: images/coaxial-semi-differential-wrist/thumb-full.jpg
+thumb_fit: contain
+---
+<figure class="tall">
+  <img src="../../images/coaxial-semi-differential-wrist/wrist.jpg" alt="The wrist on an optical table: a black handle on top of a gimbal with silver side plates, two stacked black rings below it, and a grey mount on the left" width="1080" height="1440">
+  <figcaption>The wrist on an optical table in the lab.</figcaption>
+</figure>
+
+<p>This wrist goes on the end of a Barrett WAM. The operator straps their forearm into the cuff and holds the handle, and the WAM and the wrist together act as the leader for a second WAM. It came after the <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> from my time at Barrett.</p>
+<p>It has four joints. Three follow the human wrist: pronation&ndash;supination (PS), flexion&ndash;extension (FE) and radial&ndash;ulnar deviation (RU). The fourth, which I called ATT for active attachment, sits between the wrist and its mount and turns the whole thing, cuff included. Every joint is cable driven, and the whole device weighs 4.9&nbsp;kg.</p>
+
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/coaxial-semi-differential-wrist/free-motion.jpg" width="540" height="960">
+    <source src="../../images/coaxial-semi-differential-wrist/free-motion.mp4" type="video/mp4">
+  </video>
+  <figcaption>Free-motion test. I strap my forearm into the cuff, move the handle around, then let go and unstrap.</figcaption>
+</figure>
+
+<h2>How the cables run</h2>
+<figure>
+  <a href="../../images/coaxial-semi-differential-wrist/transmission.jpg"><img src="../../images/coaxial-semi-differential-wrist/transmission.jpg" alt="Three CAD views of the wrist with the drives coloured: PS stages in blue, FE stages in green, the radial-ulnar stages in red and the ATT stage in orange" width="1600" height="585" loading="lazy"></a>
+  <figcaption>The four drives. PS is blue, FE is green, RU is red (labelled UR here) and ATT is orange.</figcaption>
+</figure>
+<p>The PS and FE motors both sit at the bottom of the wrist. Each drives a small first stage, and each second stage is a large ring centred on the PS axis, with the PS ring stacked on top of the FE ring. The forearm passes up through the middle of both rings, so the PS axis runs along the forearm.</p>
+<p>PS ends there, with an overall reduction of 34.3:1. FE has two more stages. Stage 3 is an arc that carries the drive up the side of the gimbal, and stage 4 sits on the FE axis. Its overall reduction is 12.3:1. RU has its own motor and two stages, with a 7.6:1 reduction. The ATT joint is driven by a quasi-direct-drive motor through a large pulley on the mount.</p>
+<p>The PS and FE motors are T-Motor GB54-2 gimbal motors, the RU motor is a CubeMars GL60, and the motors run on mjbots moteus controllers.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/coaxial-semi-differential-wrist/built-front.jpg"><img src="../../images/coaxial-semi-differential-wrist/built-front.jpg" alt="The wrist from the front, showing the handle, the gimbal and the stacked rings above the motors" loading="lazy"></a>
+    <figcaption>From the front.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/coaxial-semi-differential-wrist/built-side.jpg"><img src="../../images/coaxial-semi-differential-wrist/built-side.jpg" alt="The wrist from the side, with the grey mount on the right" loading="lazy"></a>
+    <figcaption>From the side, with the mount on the right.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/coaxial-semi-differential-wrist/built-angle.jpg"><img src="../../images/coaxial-semi-differential-wrist/built-angle.jpg" alt="Three-quarter view from above, looking down into the open forearm ring" loading="lazy"></a>
+    <figcaption>Looking down into the forearm ring.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/coaxial-semi-differential-wrist/built-top.jpg"><img src="../../images/coaxial-semi-differential-wrist/built-top.jpg" alt="Top-down view of the wrist on the optical table" loading="lazy"></a>
+    <figcaption>From above.</figcaption>
+  </figure>
+</div>
+
+<h2>Driving each motor</h2>
+<p>Each clip has one motor driving the wrist. Motors 1, 2 and 3 are the PS, FE and RU motors.</p>
+<div class="pair portrait">
+  <figure>
+    <video autoplay muted loop playsinline width="720" height="960">
+      <source src="../../images/coaxial-semi-differential-wrist/drive-att.mp4" type="video/mp4">
+    </video>
+    <figcaption>The ATT motor tips the whole wrist about the ATT axis.</figcaption>
+  </figure>
+  <figure>
+    <video autoplay muted loop playsinline width="720" height="960">
+      <source src="../../images/coaxial-semi-differential-wrist/drive-m1.mp4" type="video/mp4">
+    </video>
+    <figcaption>Motor 1 (PS).</figcaption>
+  </figure>
+  <figure>
+    <video autoplay muted loop playsinline width="720" height="960">
+      <source src="../../images/coaxial-semi-differential-wrist/drive-m2.mp4" type="video/mp4">
+    </video>
+    <figcaption>Motor 2 (FE).</figcaption>
+  </figure>
+  <figure>
+    <video autoplay muted loop playsinline width="720" height="960">
+      <source src="../../images/coaxial-semi-differential-wrist/drive-m3.mp4" type="video/mp4">
+    </video>
+    <figcaption>Motor 3 (RU).</figcaption>
+  </figure>
+</div>
+
+<h2>Torque at each joint</h2>
+<p>The transmission maps the three wrist motor torques to joint torques like this:</p>
+\[ \begin{bmatrix} \tau_{\text{PS}} \\ \tau_{\text{FE}} \\ \tau_{\text{RU}} \end{bmatrix} = \begin{bmatrix} 34.3 & 0 & 0 \\ 12.3 & 12.3 & 0 \\ -44 & -44 & 7.6 \end{bmatrix} \begin{bmatrix} \tau_{m1} \\ \tau_{m2} \\ \tau_{m3} \end{bmatrix} \]
+<p>PS only sees motor 1. FE sees the sum of motors 1 and 2, so any torque motor 1 puts on PS also lands on FE, and motor 2 has to cancel it if FE is supposed to stay still.</p>
+<p>I measured 0.45&nbsp;N&middot;m continuous and 0.60&nbsp;N&middot;m peak from each GB54-2, and 0.60&nbsp;N&middot;m continuous and 1.75&nbsp;N&middot;m peak from the GL60. Pushing the peak values through the matrix, one joint at a time:</p>
+\[ \begin{aligned} \tau_{\text{PS}} &= 34.3 \times 0.60 = 20.6\ \mathrm{N{\cdot}m} \\ \tau_{\text{FE}} &= 12.3 \times (0.60 + 0.60) = 14.8\ \mathrm{N{\cdot}m} \\ \tau_{\text{RU}} &= 7.6 \times 1.75 = 13.3\ \mathrm{N{\cdot}m} \end{aligned} \]
+<p>The continuous values give 15.4, 11.1 and 4.56&nbsp;N&middot;m the same way. The RU numbers count motor 3 alone.</p>
+<p>The bottom row is the trouble. Each newton-metre from motor 1 or motor 2 puts 44&nbsp;N&middot;m on RU with the opposite sign, almost six times what motor 3 gets through its own 7.6:1 drive. With motor 3 at its 1.75&nbsp;N&middot;m peak, motors 1 and 2 cancel all of it once</p>
+\[ |\tau_{m1} + \tau_{m2}| = \frac{7.6 \times 1.75}{44} \approx 0.30\ \mathrm{N{\cdot}m}, \]
+<p>which is half the peak of one GB54-2.</p>
+
+<figure>
+  <a href="../../images/coaxial-semi-differential-wrist/ru-torque-map.png"><img src="../../images/coaxial-semi-differential-wrist/ru-torque-map.png" alt="Contour map of RU torque against motor 1 and motor 2 torque from minus 0.6 to 0.6 newton-metres. A diagonal coloured band runs from top left to bottom right, with dark grey regions on either side" width="1122" height="720" loading="lazy"></a>
+  <figcaption>Joint 3 is RU, with motor 3 at its peak. Inside the coloured band, motor 3 can still hold RU against motors 1 and 2. In the dark grey regions, motors 1 and 2 overpower it. The yellow line is \(\tau_{m1} = -\tau_{m2}\), where their effect on RU cancels.</figcaption>
+</figure>
+
+<table class="specs">
+  <tr><th>Mass</th><td>4.9&nbsp;kg</td></tr>
+  <tr><th>Range</th><td>ATT &plusmn;90&deg;, PS &plusmn;90&deg;, FE &plusmn;90&deg;, RU &minus;45&deg; to +55&deg;</td></tr>
+  <tr><th>Peak torque</th><td>ATT 80, PS 20.6, FE 14.8, RU 13.3&nbsp;N&middot;m (estimated, under 1&nbsp;s)</td></tr>
+  <tr><th>Continuous torque</th><td>ATT 16.5, PS 15.4, FE 11.1, RU 4.56&nbsp;N&middot;m (estimated)</td></tr>
+  <tr><th>Reductions</th><td>PS 34.3:1, FE 12.3:1, RU 7.6:1</td></tr>
+  <tr><th>PS and FE motors</th><td><a href="https://store.tmotor.com/product/gb54-2-gimbal-type.html">T-Motor GB54-2</a>: K<sub>v</sub> &asymp; 26&nbsp;rpm/V, K<sub>t</sub> &asymp; 0.367&nbsp;N&middot;m/A, about 15&nbsp;&Omega; phase resistance</td></tr>
+  <tr><th>RU motor</th><td><a href="https://www.cubemars.com/product/gl60-kv25-gimbal-motor.html">CubeMars GL60</a>: K<sub>v</sub> &asymp; 21.5&nbsp;rpm/V, K<sub>t</sub> &asymp; 0.45&nbsp;N&middot;m/A, about 5.5&nbsp;&Omega;</td></tr>
+  <tr><th>ATT motor</th><td>Quasi-direct drive</td></tr>
+  <tr><th>Controllers</th><td>mjbots moteus</td></tr>
+</table>
+
+<p>The range covers a typical human wrist: PS &plusmn;85&deg;, FE &plusmn;80&deg; and RU &minus;25&deg; to +50&deg;, from <a href="https://doi.org/10.3390/machines11040458">Pitzalis et al.</a> For comparison, the WAM&rsquo;s own wrist (joints 5 to 7) turns &plusmn;172&deg;, &plusmn;90&deg; and &plusmn;172&deg;, with peak torques of 34.6, 34.6 and 9.16&nbsp;N&middot;m and continuous torques of 6.75, 6.75 and 1.36&nbsp;N&middot;m.</p>
+
+<h2>Why the ATT joint is there</h2>
+<p>A human wrist covers a small part of what the WAM&rsquo;s wrist can do. I mapped both in yaw, pitch and roll. Without the ATT joint, the leader reaches 20.3% of the WAM wrist&rsquo;s orientations. With it, the leader reaches 43.3%.</p>
+<figure>
+  <a href="../../images/coaxial-semi-differential-wrist/orientation-coverage.jpg"><img src="../../images/coaxial-semi-differential-wrist/orientation-coverage.jpg" alt="A 3D scatter plot and three 2D projections in yaw, pitch and roll. Red dots fill the WAM wrist's range, blue dots cover a wider central region and green dots a narrower one" width="1585" height="1130" loading="lazy"></a>
+  <figcaption>Red is the WAM wrist&rsquo;s range. Blue is what the leader reaches with the ATT joint, green without it.</figcaption>
+</figure>
+<p>The ATT joint mostly deals with misalignment between my arm and the WAM. With it active I have to move my body around much less, and it&rsquo;s a lot less tiring to use. It also lets the leader make better use of the follower&rsquo;s wrist. The follower can twist its end effector purely about joint 7, and a human wrist can only make that pure twist when the hand is in line with the forearm. Without fingers, that single-axis twist is what you need for threading tasks.</p>
+<p>It has costs. It makes both the mechanism and the control more complex, and it makes it harder to see by eye that the leader and the follower are in the same pose. It&rsquo;s also part of the orientation control loop. We weight its share of the commanded torque so it doesn&rsquo;t render much of the correction force on the leader, but it&rsquo;s fair to ask why it&rsquo;s in that loop at all.</p>
+
+<h2>On the WAM</h2>
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/coaxial-semi-differential-wrist/wam-side.jpg" width="540" height="960">
+    <source src="../../images/coaxial-semi-differential-wrist/wam-side.mp4" type="video/mp4">
+  </video>
+  <figcaption>Strapped into the wrist on the end of the WAM and moving my arm around.</figcaption>
+</figure>
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/coaxial-semi-differential-wrist/wam-front.jpg" width="942" height="720">
+    <source src="../../images/coaxial-semi-differential-wrist/wam-front.mp4" type="video/mp4">
+  </video>
+  <figcaption>From the front, starting with strapping in.</figcaption>
+</figure>
+
+<h2>What broke on the first build</h2>
+<p>The first build had five mechanical problems that I fixed:</p>
+<ul>
+  <li><strong>Cable sliding off stage 1 on PS and FE.</strong> The cable could slide off the ends of the pulley. I gave those stages a larger range so the mechanism never moves out to the ends, and added dowel pins about 0.5% of a revolution in from each end to keep the cable aligned and stop it slipping. The WAM&rsquo;s wrist does the same thing.</li>
+  <li><strong>Tensioning FE stage 4.</strong> There&rsquo;s very little room there, so the tensioner had little travel, and under higher tension the crimps would get ripped off during use. Laser-cut parts, e-clips and wrapping the cable around made it more reliable and gave it more travel. I also switched to a loop and a double wrap, like joint 1 of the WAM.</li>
+  <li><strong>Bolts backing out of the RU stage 1 pulley.</strong> I didn&rsquo;t have the right hardware when I first built it and tried Loctite as a stopgap. That didn&rsquo;t hold, so I replaced it with an aluminum bolt.</li>
+  <li><strong>Motor controller mounts on PS and FE.</strong> The controllers sat outside the working magnet gap for the encoder, which is 1.5 to 2.5&nbsp;mm with 2&nbsp;mm best, and the mount wasn&rsquo;t very stable. Both made the position reading noisier and less accurate, which hurt the field-oriented control. A thicker, stiffer mount fixed both, with the gap at 2&nbsp;mm.</li>
+  <li><strong>Cable creep on RU stage 2.</strong> That cable is about 1&nbsp;m long and stretched at least 10&nbsp;mm with use, about 1%. The small tensioner couldn&rsquo;t take that up until I gave it more travel.</li>
+</ul>
+
+<p>Other problems come from the kinematics themselves. Moving FE tends to move PS as well, so the handle doesn&rsquo;t always go where the user is pushing it. Related to that, the motors can work against each other, and when you backdrive the wrist you have to hold a counter-torque to stop motion you didn&rsquo;t ask for. FE stage 4 also has an &ldquo;increaser&rdquo; in it that doesn&rsquo;t make sense in a device like this. Getting rid of it would take some rearranging of the parts.</p>
+
+<h2>Control</h2>
+<p>We started with a non-zero kd in the moteus drives&rsquo; own PID loop. Even in torque mode, each drive was applying a hidden inner derivative term, &minus;kd&middot;&omega;, on top of our outer PD controllers. I think that extra term amplified velocity noise and made the system unstable. Setting kd to 0 removed it.</p>
+<p>The orientation controller&rsquo;s gains were very sensitive. I had to run very low gains on the leader, which limited how much force feedback it could give.</p>
+<p>A few changes on the moteus side:</p>
+<ul>
+  <li>I replaced the <a href="https://github.com/mjbots/fdcanusb">fdcanusb</a> adapter with a <a href="https://www.peak-system.com/PCAN-PCI-Express-FD.414.0.html?L=1">PEAK PCAN-PCI Express FD</a> card. The fdcanusb runs at USB 2.0 full speed, 12&nbsp;Mbit/s with 1&nbsp;ms frame scheduling, and shows up as a serial device, so every CAN frame goes through the kernel&rsquo;s USB and TTY layers. The PEAK card sits on PCIe with a native kernel driver and direct CAN frame queues.</li>
+  <li>I raised <code>--cal-bw-hz</code> from the default 200&nbsp;Hz to 800&nbsp;Hz, which stiffens the current loop so torque can change faster.</li>
+  <li>I updated to moteus firmware with the new <a href="https://blog.mjbots.com/2025/07/31/improved-hall-performance/">hall-sensor pipeline</a>. It times transitions at very low speed and uses a PLL at higher speed, and the velocity estimate is much less spiky. Our control loops saw far less derivative noise after that.</li>
+</ul>
+
+<h2>Using it</h2>
+<figure>
+  <iframe src="https://www.youtube-nocookie.com/embed/Z0IoR-FolGo" referrerpolicy="strict-origin-when-cross-origin" title="Wrist teleop test LEGO" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  <figcaption>Wrist teleop test with LEGO, on YouTube.</figcaption>
+</figure>
+
+<p>Range is still the biggest limit. Without your fingers, most tasks are awkward. The ATT joint&rsquo;s extra range does make tabletop tasks possible with the elbow down, which the three-joint wrists couldn&rsquo;t do, but more range on the leader would make it much more usable.</p>
+<p>I&rsquo;m also not sure force feedback on all three anatomical joints helps. It feels a bit awkward, and PS motion often makes the arm slip in the cuff, which throws the user out of line with the WAM. For most tasks, feedback on PS seems less important than on FE and RU, so a later version could drop it there.</p>
+<p>The elbow is the other open problem. Ideally the plane through my upper arm and forearm matches the plane through the WAM&rsquo;s upper arm and forearm. In gravity mode that&rsquo;s easy to keep. In teleoperation the WAM&rsquo;s higher apparent impedance damps the motion, and keeping the two planes together gets much harder. I end up adjusting the elbow with my other arm or moving my body to compensate.</p>

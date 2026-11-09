@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Getting this site off the ground | Justin Valentine</title>
-    <meta name="description" content="A short first post for a small personal blog.">
+    <meta name="description" content="Why this site is plain static pages.">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
   </head>
@@ -13,11 +13,10 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a class="site-title" href="../../index.html">Justin Valentine</a>
         <div class="nav-links">
-          <a href="../../projects/index.html">Projects</a>
-          <a href="../../index.html#publications">Publications</a>
-          <a href="../../posts/index.html" aria-current="page">Notes</a>
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
           <a href="../../about/index.html">About</a>
-          <a class="nav-cv" href="../../cv.pdf">CV</a>
+          <a href="../../cv.pdf">CV</a>
         </div>
       </nav>
     </header>
@@ -26,38 +25,43 @@
       <article class="post">
         <header class="post-header">
           <h1>Getting this site off the ground</h1>
-          <p class="post-meta"><time datetime="2026-04-25">April 25, 2026</time></p>
+          <p class="post-meta">April 25, 2026</p>
         </header>
-
         <div class="post-content">
-          <p>I wanted a place that feels closer to a bench notebook than a feed: dated entries, stable links, small pages, and no machinery between writing something down and putting it online.</p>
-          <p>The first version is almost aggressively plain. That is the point. A static page can be backed up, moved, searched, printed, and ignored by most forms of technological fashion.</p>
-          <blockquote>
-            <p>Good project notes should be boring infrastructure for interesting work.</p>
-          </blockquote>
-          <p>Next up: moving a few old notes into this shape and seeing which rough edges matter after a month of actual use.</p>
+<p>I wanted a place that feels closer to a bench notebook than a feed: dated entries, stable links, small pages, and no machinery between writing something down and putting it online.</p>
+      <p>The first version is almost aggressively plain. That is the point. A static page can be backed up, moved, searched, printed, and ignored by most forms of technological fashion.</p>
+      <blockquote>
+        <p>Good project notes should be boring infrastructure for interesting work.</p>
+      </blockquote>
+      <p>Next up: moving a few old notes into this shape and seeing which rough edges matter after a month of actual use.</p>
         </div>
-
-        <footer class="post-tags">
-          <span>Categories:</span>
-          <a href="../../categories/index.html">Site Notes</a>
-        </footer>
-
-        <nav class="post-nav" aria-label="Post navigation">
-          <a href="../variable-pitch-hopper/index.html">&larr; A Variable-Pitch Hopper</a>
-          <a href="../haptic-wrist-test-notes/index.html">Haptic wrist test notes &rarr;</a>
-        </nav>
-
-        <section class="comments" aria-labelledby="comments">
-          <h2 id="comments">Comments</h2>
-          <p class="no-comments">No comments yet. Email is the comment section for now.</p>
-        </section>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../wham-wrist/index.html">&larr; Building the WHAM wrist</a><a href="../teaching-the-hopper-where-to-put-its-foot/index.html">Teaching the Hopper Where to Put Its Foot &rarr;</a></nav>
       </article>
     </main>
 
     <footer class="site-footer">
-      <p>Justin Valentine &middot; Edmonton, Alberta</p>
-      <p><a href="mailto:jvalenti@ualberta.ca">jvalenti@ualberta.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="../../cv.pdf">CV</a> &middot; <a href="../../index.xml">RSS</a></p>
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
     </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
   </body>
 </html>

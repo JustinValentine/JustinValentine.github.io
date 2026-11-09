@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teleoperation | Justin Valentine</title>
+    <meta name="description" content="Posts by Justin Valentine about teleoperation.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html" aria-current="page">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <p class="crumb"><a href="../index.html">Topics</a></p>
+      <h1>Teleoperation</h1>
+      <ul class="work">
+        <li>
+          <a class="thumb" href="../../posts/end-effector-wrist/index.html" tabindex="-1" aria-hidden="true"><video autoplay muted loop playsinline preload="auto"><source src="../../images/end-effector-wrist/teleop-lab.mp4" type="video/mp4"></video></a>
+          <div>
+            <h3><a href="../../posts/end-effector-wrist/index.html">A direct-drive end-effector wrist</a></h3>
+            <p class="entry-meta">Nov 2025 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/control/index.html">Control</a></p>
+            <p>A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demoed it at RISEx 2025.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb contain" href="../../posts/coaxial-semi-differential-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/coaxial-semi-differential-wrist/thumb-full.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a></h3>
+            <p class="entry-meta">Oct 2025 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/control/index.html">Control</a></p>
+            <p>A four-joint, cable-driven leader wrist for the WAM. Two of its drives are rings stacked around the forearm, and a fourth motor turns the whole wrist relative to the arm it&rsquo;s mounted on.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb contain" href="../../posts/direct-drive-gimbal-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/direct-drive-gimbal-wrist/thumb-full.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a></h3>
+            <p class="entry-meta">2024 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/teleoperation/index.html">Teleoperation</a></p>
+            <p>A gimbal wrist for the WAM, driven directly so it was easy to prototype, that we used to test strapping the WAM to an operator&rsquo;s forearm as an approximate exoskeleton.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb" href="../../posts/mobile-manipulator/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/mobile-manipulator.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/mobile-manipulator/index.html">A haptic mobile manipulator</a></h3>
+            <p class="entry-meta">May 26, 2024 &middot; <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/electronics/index.html">Electronics</a>, <a href="../../topics/software/index.html">Software</a></p>
+            <p>A 7&#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I designed the mobile base and set up the sensors and ROS. One of eight finalist teams in DND&rsquo;s IDEaS challenge.</p>
+          </div>
+        </li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

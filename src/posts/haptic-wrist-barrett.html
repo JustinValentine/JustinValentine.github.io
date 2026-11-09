@@ -1,0 +1,231 @@
+title: The Alberta wrist
+date: 2026-09-30
+topics: haptics, mechanisms, machining, electronics, control
+series: haptic-wrist
+math: yes
+summary: The last haptic wrist in the series, designed at Barrett Technology in 2026. From a cardboard model in May, through printed prototypes, to machined parts for two wrists and a set of spares, and Barrett&rsquo;s booth at IROS in September, with the motor and ratio choices, the FEA and the measured results.
+image: images/wrist-front.jpg
+---
+<p class="byline">2024&ndash;2026. MSc thesis, and four months at Barrett Technology.</p>
+
+<figure>
+  <img src="../../images/wrist-lab.jpg" alt="The aluminum wrist on an optical table in the lab, with a knurled black handle at the top, two sectors and a spoked pulley in the middle, and a blue Puck on a motor module at the side" width="1600" height="1000">
+  <figcaption>October 19, 2026. One of the finished wrists on the bench at the University of Alberta.</figcaption>
+</figure>
+
+<p>The Alberta wrist is the last haptic wrist in this series. It mounts on a 4&#8209;DOF WAM arm on the operator&rsquo;s side. Together they make a 7&#8209;DOF leader for a second WAM, and the operator feels the forces the follower runs into. It&rsquo;s the last stage of a research project in our lab that started in 2014. In my thesis drafts it&rsquo;s the P4 wrist, after the Barrett P4-37 Pucks that drive it.</p>
+<p>During my MSc I designed and built four cable-driven prototypes, including one with a precision cable-tensioning unit. I machined more than a dozen of the aluminum parts on CNC mills and lathes, designed a PCB for the handle around a PS5 trigger module, and wrote the real-time C++ on libbarrett, including a port of Barrett&rsquo;s gravity calibration tools to the new wrist. I also led three undergraduates who worked on it, from mechanical engineering, computing science and computer engineering. The prototype just before this one was the <a href="../wham-wrist/index.html">WHAM wrist</a>.</p>
+<p>In 2026 I spent four months at Barrett Technology near Boston, the company that makes the WAM, designing this wrist with their engineers. I did the mechanical design and drawings, worked with the manufacturers on tolerances and materials, ran FEA under several load cases, and worked through cable stiffness, pulley geometry and reflected inertia. Barrett had the parts machined for three wrists.</p>
+<p>The photos run from a cardboard model on May 26 to Barrett&rsquo;s booth at IROS on September 30. Captions give the date, and the local time for phone photos.</p>
+
+<table class="specs">
+  <tr><th>Joints</th><td>Pronation&ndash;supination (PS), flexion&ndash;extension (FE) and ulnar&ndash;radial deviation (UR)</td></tr>
+  <tr><th>Range</th><td>171.8&deg; / 131.4&deg; / 69.2&deg; (PS, FE, UR), measured</td></tr>
+  <tr><th>Bandwidth</th><td>33&ndash;40 Hz closed loop, per joint</td></tr>
+  <tr><th>Peak torque</th><td>8.4 N&middot;m on PS, set by the drives&rsquo; current limit (not measured at the handle)</td></tr>
+  <tr><th>Control loop</th><td>500 Hz over CANopen, with a 2 ms safety supervisor</td></tr>
+  <tr><th>Motors and drives</th><td>Three TQ ILM50x08 frameless motors, each with a Barrett Puck&reg; P4-37&trade;</td></tr>
+  <tr><th>Transmission</th><td>Cable: 8.75:1 on PS, and 7.51:1 into a cable differential that FE and UR share</td></tr>
+</table>
+
+<h2>Cardboard first</h2>
+<figure>
+  <img src="../../images/alberta-wrist/cardboard.jpg" alt="A hand holding a cardboard model: a round cardboard disc with two sector-shaped cardboard pieces hot-glued to its edge, with pen lines drawn on it, over a wooden desk" width="1350" height="1250" loading="lazy" style="max-width: 32rem">
+  <figcaption>May 26, 2026, 12:41&nbsp;pm. Cardboard and hot glue: a round piece for the differential pulley, two sector-shaped pieces glued to its edge, and angles sketched on in pen.</figcaption>
+</figure>
+<p>The middle of the wrist is a cable differential. Two motors each turn an input sector, and the two sectors drive a pulley that carries the handle. The pulley turns on an axle inside a cage, and the cage pivots on the same axis as the sectors. When both sectors turn the same way, the pulley stays locked in the cage and the whole cage tilts. That&rsquo;s FE. When they turn opposite ways, the cage stays where it is and the pulley turns on its axle. That&rsquo;s UR. The cardboard model is the earliest one I have a photo of.</p>
+
+<h2>Printed prototypes</h2>
+<p>From June to late July I printed versions in black plastic to work on the ergonomics. The handle changed the most from one to the next.</p>
+<div class="pair natural">
+  <figure>
+    <a href="../../images/alberta-wrist/printed-differential.jpg"><img src="../../images/alberta-wrist/printed-differential.jpg" alt="A black printed differential on a desk: a flat pulley strung with steel cable between two upright sectors, with a cylindrical handle on a bracket above" loading="lazy"></a>
+    <figcaption>June 10, 5:58&nbsp;pm. A printed differential strung with steel cable: the two input sectors, the pulley in its cage, and a handle on a bracket above it.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/printed-on-arm.jpg"><img src="../../images/alberta-wrist/printed-on-arm.jpg" alt="A black printed sector and a handle arm held against a forearm, with a purple pivot at the wrist and the handle in the fist" loading="lazy"></a>
+    <figcaption>June 23, 10:21&nbsp;am. A printed sector and handle held against my arm, with the pivot (purple) at my wrist.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/printed-side-handle.jpg"><img src="../../images/alberta-wrist/printed-side-handle.jpg" alt="A complete black printed wrist on a desk: a ring at the bottom, side plates, two sectors, the differential, a round motor housing on the right and a handle on an arm off one side" loading="lazy"></a>
+    <figcaption>July 17, 5:24&nbsp;pm. A whole printed wrist: the PS ring at the bottom, the side plates and sectors, the differential, a motor housing on the right, and the handle on an arm off one side of the pulley.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/printed-final-layout.jpg"><img src="../../images/alberta-wrist/printed-final-layout.jpg" alt="A black printed wrist on a desk next to a digital caliper, with a knurled grip over a spoked pulley and a blue Puck on the motor housing" loading="lazy"></a>
+    <figcaption>July 21, 6:38&nbsp;pm. A later print with a knurled grip and a Puck on its motor housing, close to the final layout.</figcaption>
+  </figure>
+</div>
+<p>The three axes of the wrist meet at one point, the wrist centre. The wrist comes with three handles. Two are wrist-centred, one wide and one narrow, so the operator&rsquo;s own wrist sits where the axes cross, and the third is centred on the hand. With the axes through the operator&rsquo;s wrist, a torque from the motors reaches the hand as a torque, without a sideways push on the forearm. The handle&rsquo;s hub sits on the face of the differential pulley, and its angle is set on a detent plate there: four ball-nose spring plungers in the hub sit in the plate&rsquo;s scallops, with a knurled thumb screw.</p>
+
+<h2>The final design</h2>
+<figure>
+  <img src="../../images/alberta-wrist/cad-render.jpg" alt="CAD render of the final wrist: a round base, two quarter-circle sectors on side plates, a spoked differential pulley in a dark cage between them, a knurled grip on top, and a motor module with a green circuit board on the right" width="1365" height="1400" loading="lazy" style="max-width: 32rem">
+  <figcaption>August 8. The final design in CAD.</figcaption>
+</figure>
+<p>The PS stage is a platform that turns on a large bearing. Inside it is a fixed pulley, and the PS motor, which rides on the platform, drives against that pulley with its cable pinion. Four side plates on the platform carry the FE axis, the two input sectors with their motor modules, and the differential cage between them. Each motor module is a TQ ILM50x08 frameless motor in a machined housing, with a hollow cable pinion for a shaft and a Puck P4-37 on the back. The drive cables are 1.12&nbsp;mm (0.044&nbsp;in) 7&times;7&times;7 tungsten rope, and the differential uses 1.37&nbsp;mm (0.054&nbsp;in) 7&times;7&times;7 stainless. One-way-clutch tensioners take up the slack.</p>
+<figure>
+  <a href="../../images/wrist-cad.jpg"><img src="../../images/wrist-cad.jpg" alt="Exploded CAD view of the wrist: handle, side plates, differential cage and pulley, input sectors, FE/UR motor modules, PS motor module, PS platform and fixed internal pulley" width="1400" height="1219" loading="lazy"></a>
+  <figcaption>The final design exploded by subassembly, drawn from the CAD for my thesis.</figcaption>
+</figure>
+<figure>
+  <a href="../../images/alberta-wrist/differential.png"><img src="../../images/alberta-wrist/differential.png" alt="Two panels of the cable differential. (a) Both blue sectors turned 15 degrees the same way with the green pulley locked in a translucent cage that swings with them. (b) The sectors turned opposite ways and the pulley turned 15 degrees on its axle, with chevrons showing the four colored cables running over the rims" width="2000" height="706" loading="lazy"></a>
+  <figcaption>How the differential works. (a) FE: both sectors (blue) turn 15&deg; the same way, so the cables lock the pulley (green) in its cage and the cage swings. (b) UR: the sectors turn opposite ways, the cables run over the rims, and the pulley turns 15&deg; on its axle while the cage stays put. From my thesis.</figcaption>
+</figure>
+<figure>
+  <a href="../../images/alberta-wrist/ps-drive.png"><img src="../../images/alberta-wrist/ps-drive.png" alt="Plan section of the PS drive: the rotating PS platform inside the fixed internal pulley, the drive cable from a cable anchor around the pulley to the PS motor pinion and on to a tensioner, with the two FE/UR motor modules cut at top and bottom" width="1400" height="953" loading="lazy" style="max-width: 32rem"></a>
+  <figcaption>Section through the PS drive. The motor on the rotating platform drives itself around the fixed pulley on a cable that&rsquo;s held to the pulley by a ball crimp at one end and a tensioner at the other. From my thesis.</figcaption>
+</figure>
+
+<h2>Machined parts</h2>
+<p>The parts came from an outside machine shop and were on a bench at Barrett by August 24. The cage, platform, side plates, differential pulley and handle are 6061-T6 aluminum, and the pinion shafts are 7075-T6.</p>
+<figure>
+  <a href="../../images/alberta-wrist/parts-bench.jpg"><img src="../../images/alberta-wrist/parts-bench.jpg" alt="A blue workbench covered in white foam sheet with rows of matte aluminum parts: three spoked pulleys and six cage arms on the left, and plates, sectors, shafts and housings on the right" width="1400" height="565" loading="lazy"></a>
+  <figcaption>August 24, 2:22&nbsp;pm. Parts for three wrists: two to assemble and a set of spares. Three differential pulleys and their cage arms are on the left.</figcaption>
+</figure>
+<figure>
+  <a href="../../images/alberta-wrist/parts-laid-out.jpg"><img src="../../images/alberta-wrist/parts-laid-out.jpg" alt="Rows of aluminum parts on white foam: twelve flat side plates, six quarter-circle sectors, nine grooved pinion shafts, round motor housings and caps, and small shims in bags" width="1380" height="760" loading="lazy"></a>
+  <figcaption>The right side of the same bench: twelve side plates (four per wrist), six input sectors, nine pinion shafts, the motor housings and caps, and shims.</figcaption>
+</figure>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/alberta-wrist/diff-pulley.jpg"><img src="../../images/alberta-wrist/diff-pulley.jpg" alt="A hand holding a thin aluminum pulley with a round rim, four spokes in an X and a large centre bore" loading="lazy"></a>
+    <figcaption>August 24, 4:03&nbsp;pm. A differential pulley.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/detent-plate.jpg"><img src="../../images/alberta-wrist/detent-plate.jpg" alt="The face of an aluminum differential pulley on white foam, with a bearing in its centre bore, and beside it a small plate with two rows of red-marked scallops" loading="lazy"></a>
+    <figcaption>August 26, 1:57&nbsp;pm. The face of a differential pulley, with the handle&rsquo;s detent plate beside it.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/ps-platform.jpg"><img src="../../images/alberta-wrist/ps-platform.jpg" alt="A hand holding a large aluminum ring with two slotted uprights and a tab with a round hole" loading="lazy"></a>
+    <figcaption>August 28, 12:01&nbsp;pm. The PS platform, which carries the PS motor and the side plates.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/fixed-pulley.jpg"><img src="../../images/alberta-wrist/fixed-pulley.jpg" alt="A hand inside a large flanged aluminum ring with a lug on one side" loading="lazy"></a>
+    <figcaption>August 26, 8:54&nbsp;pm. The fixed internal pulley that the PS motor drives against.</figcaption>
+  </figure>
+</div>
+<p>The motor modules went together over August 24 and 25.</p>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/alberta-wrist/rotor-shaft.jpg"><img src="../../images/alberta-wrist/rotor-shaft.jpg" alt="Fingers holding a small grooved aluminum shaft with a ring of rotor magnets on it" loading="lazy"></a>
+    <figcaption>August 24, 4:27&nbsp;pm. A rotor on its hollow pinion shaft. The cable wraps in the grooves.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/motor-housing.jpg"><img src="../../images/alberta-wrist/motor-housing.jpg" alt="A palm holding a round aluminum motor housing with a scalloped flange and a bearing seated inside" loading="lazy"></a>
+    <figcaption>August 24, 5:13&nbsp;pm. A motor housing with its front bearing in.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/motor-module.jpg"><img src="../../images/alberta-wrist/motor-module.jpg" alt="A hand holding an assembled motor module from the front, with a grooved pinion sticking out of the flange" loading="lazy"></a>
+    <figcaption>August 25, 9:20&nbsp;am. A module from the front, with the pinion sticking out.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/stator-hall-board.jpg"><img src="../../images/alberta-wrist/stator-hall-board.jpg" alt="A motor housing in a palm with the stator inside and a green ring-shaped circuit board on top of it, with black wires coming off" loading="lazy"></a>
+    <figcaption>August 25, 1:11&nbsp;pm. A stator in its housing, with the Hall-sensor board on it.</figcaption>
+  </figure>
+</div>
+<figure>
+  <a href="../../images/alberta-wrist/motor-section.png"><img src="../../images/alberta-wrist/motor-section.png" alt="Labelled section through the motor module: Puck at the top, interface board and board adapter, bearing cap, two ball bearings, stator and rotor, Hall-sensor board, encoder magnet, wave spring and shim, motor housing and the hollow cable pinion" width="1400" height="887" loading="lazy" style="max-width: 34rem"></a>
+  <figcaption>Section through a motor module, from my thesis: the stator and rotor between two bearings, the hollow cable pinion, the encoder magnet at the end of the shaft, and the interface board and Puck on the back.</figcaption>
+</figure>
+
+<h2>Putting them together</h2>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/alberta-wrist/first-assembled.jpg"><img src="../../images/alberta-wrist/first-assembled.jpg" alt="A hand holding an assembled aluminum wrist with a knurled grip, the spoked pulley, an aluminum sector on one side and a black printed sector on the other" loading="lazy"></a>
+    <figcaption>August 26, 2:35&nbsp;pm. The first wrist together, still with a printed sector on one side.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/ps-stage.jpg"><img src="../../images/alberta-wrist/ps-stage.jpg" alt="An aluminum PS ring stage on top of a black U-shaped forearm link with a blue Puck on its pivot, standing on a plate on a cluttered workbench in front of a brick wall" loading="lazy"></a>
+    <figcaption>August 26, 10:02&nbsp;pm. A PS stage on its forearm link.</figcaption>
+  </figure>
+</div>
+<p>The wrist sits on a forearm link that attaches at the WAM&rsquo;s elbow. I designed the link and printed it in PLA. The link has a passive joint with a Puck on it, which is J5 in the control software, and the wrist&rsquo;s PS, FE and UR are J6 to J8.</p>
+<figure class="tall">
+  <a href="../../images/alberta-wrist/two-units.jpg"><img src="../../images/alberta-wrist/two-units.jpg" alt="Two wrist assemblies on black forearm links on a workbench in a brick-walled shop: the left one complete with sectors and a handle, the right one only the aluminum PS ring" loading="lazy"></a>
+  <figcaption>August 28, 3:24&nbsp;pm. Two wrists on the bench at Barrett: the first with its handle on, and the second with just its PS stage on its forearm link.</figcaption>
+</figure>
+
+<h2>On the WAM</h2>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/alberta-wrist/on-wam.jpg"><img src="../../images/alberta-wrist/on-wam.jpg" alt="Looking down on the aluminum wrist mounted on a white WAM arm, with the knurled handle, an arm marked J7 in marker, and a Puck on a motor module" loading="lazy"></a>
+    <figcaption>September 23, 7:19&nbsp;pm. The wrist on a WAM at Barrett.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/alberta-wrist/on-wam-j5.jpg"><img src="../../images/alberta-wrist/on-wam-j5.jpg" alt="The wrist on the WAM from the side: the black forearm link coming off the WAM's elbow, a Puck on its pivot with J5 and its directions written on tape, and the wrist above" loading="lazy"></a>
+    <figcaption>September 23, 9:25&nbsp;pm. From the side, with J5&rsquo;s Puck on the forearm link and its directions marked on tape.</figcaption>
+  </figure>
+</div>
+<p>The arm and the wrist run from an external control PC on the CANopen version of libbarrett. The Pucks take a torque command on every 500&nbsp;Hz cycle.</p>
+
+<h2>At IROS</h2>
+<p>IROS 2026 was in Pittsburgh at the end of September, and the wrist went to Barrett&rsquo;s booth running a <a href="../haptic-lightsaber/index.html">lightsaber game</a> I made for it.</p>
+<figure>
+  <img src="../../images/alberta-wrist/iros-booth.jpg" alt="A trade show booth under a Barrett Drive Systems banner, with two white WAM arms on tripods, a large screen, and a table with a Barrett tablecloth; a person sits with an arm in the left WAM" width="1400" height="1050" loading="lazy">
+  <figcaption>September 27, 4:21&nbsp;pm. Barrett&rsquo;s booth at IROS 2026, with me in the WAM at the left.</figcaption>
+</figure>
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/alberta-wrist/iros-saber.jpg" width="540" height="960">
+    <source src="../../images/alberta-wrist/iros-saber.mp4" type="video/mp4">
+  </video>
+  <figcaption>September 30, 2:52&nbsp;pm. Me playing the <a href="../haptic-lightsaber/index.html">lightsaber game</a> at the booth. The wrist&rsquo;s handle is the hilt.</figcaption>
+</figure>
+
+<h2>Motors and ratios</h2>
+<p>Three motors drive three joints. PS has its own, and FE and UR share two through the differential. The cable ratios in the commissioned configuration are \(N_2 = 8.7456\) on PS and \(N_1 = 7.5077\) from each differential motor to its sector. With the sign conventions in the control software, the motor angles are</p>
+\[ \theta_6 = -N_2\,q_{PS}, \qquad \theta_7 = N_1\,(q_{FE} + q_{UR}), \qquad \theta_8 = N_1\,(q_{UR} - q_{FE}) \]
+<p>so FE is the difference of the two differential motors and UR their sum, each divided by \(2N_1\). By virtual work, the joint torques are</p>
+\[ \tau_{PS} = -N_2\,\tau_6, \qquad \tau_{FE} = N_1\,(\tau_7 - \tau_8), \qquad \tau_{UR} = N_1\,(\tau_7 + \tau_8) \]
+<p>If each motor is limited to \(|\tau_i| \le \tau_m\), FE and UR share a diamond of reachable torques,</p>
+\[ |\tau_{FE}| + |\tau_{UR}| \le 2N_1\tau_m \]
+<p>so either joint alone gets both motors, and pushing hard on one leaves less for the other. A rotor inertia \(J_r\) shows up at the joints as</p>
+\[ J_{PS} = N_2^2 J_r, \qquad J_{FE} = J_{UR} = 2N_1^2 J_r \]
+<p>and the cross terms between FE and UR cancel.</p>
+<p>The drives are configured with \(K_t = 58\)&nbsp;mN&middot;m/A, a peak current of 16.6&nbsp;A rms and a continuous 5.17&nbsp;A rms, about 0.96 and 0.30&nbsp;N&middot;m per motor. Through the ratios that&rsquo;s 8.4&nbsp;N&middot;m peak and 2.6&nbsp;N&middot;m continuous on PS. FE or UR alone gets 14.5&nbsp;N&middot;m peak and 4.5&nbsp;N&middot;m continuous, or 7.2&nbsp;N&middot;m each when both are at peak together. These numbers come from the drive settings, which haven&rsquo;t been checked against TQ&rsquo;s datasheet, and no torque has been measured at the handle yet. On the bench, PS ran out of drive voltage at about 855&nbsp;&deg;/s, or 1250&nbsp;rpm at the motor.</p>
+<p>The drive configuration lists 56&nbsp;g&middot;cm&sup2; for the rotor. That puts 4.3&nbsp;kg&middot;cm&sup2; on PS, against the 138&nbsp;kg&middot;cm&sup2; measured for the whole joint, and 6.3&nbsp;kg&middot;cm&sup2; on each of FE and UR, against 31.5 and 22.5 measured. The rotors are about 3% of PS&rsquo;s inertia, a fifth of FE&rsquo;s and more than a quarter of UR&rsquo;s.</p>
+
+<h3>The July study</h3>
+<p>In early July, before the motors were settled, I wrote a study on choosing the two differential motors and their ratio \(n\), in motor turns per joint turn. Its argument is that reflected rotor inertia, \(2n^2J_r\) on each axis, is the one parasitic a controller can&rsquo;t remove, while cogging and friction grow only as \(n\) and can be partly compensated. So \(n\) should be as small as the torque requirements allow. Peak and continuous torque set a floor, and a limit on how much inertia can be added to the operator&rsquo;s hand without them noticing sets a ceiling:</p>
+\[ n_{\min} = \max\left\{\frac{\hat\tau}{2\tau_{pk}},\ \frac{\bar\tau_{FE} + \bar\tau_{UR}}{2\tau_{rated}}\right\}, \qquad n_{\max} = \sqrt{\frac{\beta\, I_{hand}}{2J_r}} \]
+<p>The requirements were a peak \(\hat\tau\) of 7&nbsp;N&middot;m per axis, which the study took from Delp et al. (1996) as the mean maximum wrist moment in extension, the weakest direction, and 2.5&nbsp;N&middot;m continuous on both axes at once. It took the hand&rsquo;s inertia about the wrist as \(I_{hand} = 2.5\times10^{-3}\)&nbsp;kg&middot;m&sup2; and kept the added inertia to \(\beta = 0.10\) of it, under the Weber fraction of about 0.11 for moment of inertia reported by Kreifeldt and Chuang (1979).</p>
+<p>Of the four CubeMars motors it compared, only the frameless RI50 and RI60 had a window. For the RI50 (1.67&nbsp;N&middot;m peak, 0.58&nbsp;N&middot;m rated, 22.8&nbsp;g&middot;cm&sup2;) the continuous-torque floor is 4.31 and the ceiling 7.40, and the study picked \(n = 5\), where the two rotors add \(1.14\times10^{-4}\)&nbsp;kg&middot;m&sup2;, 4.6% of the hand. The GL60 gimbal motor&rsquo;s 355&nbsp;g&middot;cm&sup2; rotor puts its ceiling at 1.88, under its own peak-torque floor of 2.00, and the smaller GL40 needed \(n = 10\) for the continuous torque. The study left two checks for hardware: cogging, which CubeMars didn&rsquo;t publish for the RI motors, and whether their currents suit the Puck. The wrist that was built uses TQ ILM50x08 frameless motors at the ratios above.</p>
+
+<p>The final wrist doesn&rsquo;t use the RI50, though. The RI50 can&rsquo;t be controlled by the Puck because of its winding topology, so the wrist uses TQ ILM50x08 frameless motors, which the P4-37 Puck drives.</p>
+
+<h2>FEA and a simulated wrist</h2>
+<p>I checked the structure with linear FEA, first in a July design study and again on the final parts for my thesis. The thesis runs put five loads on the wrist centre: 100&nbsp;N down, 100&nbsp;N along the FE axis, 100&nbsp;N along the UR axis, and 9.1&nbsp;N&middot;m about the FE axis and about the PS axis. The cage, platform and side plates are 6061-T6, with a yield strength of 276&nbsp;MPa.</p>
+<figure>
+  <a href="../../images/alberta-wrist/cage-fea.jpg"><img src="../../images/alberta-wrist/cage-fea.jpg" alt="Five finite-element stress plots of the differential cage under different loads, colored from pale yellow to dark purple, and a bar chart of wrist-centre displacement for each case" width="2000" height="930" loading="lazy"></a>
+  <figcaption>The differential cage under the five loads, from my thesis. Away from the supports the peak stresses are 64, 49, 28, 67 and 54&nbsp;MPa, safety factors of 4.1 to 9.9. The wrist centre moves 0.55&nbsp;mm under the 100&nbsp;N push down and 0.65&nbsp;mm under the FE torque.</figcaption>
+</figure>
+<p>The PS platform and its four side plates peak at 39&nbsp;MPa, a safety factor of 7, under the push along the FE axis, which bends the plates across their 5.5&nbsp;mm thickness and moves the wrist centre 355&nbsp;&micro;m. In the other cases it moves 15&nbsp;&micro;m or less. The pinion shafts are 7075-T6. Under a 116&nbsp;N cable load, a shaft&rsquo;s peak stress is about 12&nbsp;MPa, some 40 times under its yield strength, and the tip of the pinion deflects 3.8&nbsp;&micro;m. A steel shaft would deflect 1.4&nbsp;&micro;m and weigh 98&nbsp;g, against 35&nbsp;g for the aluminum one.</p>
+<figure>
+  <a href="../../images/alberta-wrist/pinion-fea.png"><img src="../../images/alberta-wrist/pinion-fea.png" alt="FEA of the cable-drive pinion shaft: a von Mises stress plot along the shaft on top, and a plot of radial deflection along the shaft below, with the two bearing journals shaded" loading="lazy"></a>
+  <figcaption>The 7075-T6 pinion shaft under the 116&nbsp;N radial cable load, spread over the pinion, the worst case for bending at the bearings. The pinion-end journal floats on a wave-spring-preloaded bearing and the other is fixed. Top: von Mises stress, about 12&nbsp;MPa away from the supports. Bottom: radial deflection, 3.8&nbsp;&micro;m at the pinion tip.</figcaption>
+</figure>
+<p>The handle is the weak part. Its two side arms are 10&nbsp;mm deep but only 1.8&nbsp;mm thick where they run diagonally to the hub, so they twist as well as bend. Under the same five loads the peaks in the arms are 199, 381, 317, 348 and 408&nbsp;MPa. Only the 100&nbsp;N push down stays under the 276&nbsp;MPa yield strength of 6061-T6, with a safety factor of 1.4. The analysis is linear, so where it passes yield it shows the trend and not what the part would actually do.</p>
+<figure>
+  <a href="../../images/alberta-wrist/handle-fea.png"><img src="../../images/alberta-wrist/handle-fea.png" alt="Five FEA stress plots of the handle bolted to the differential pulley, with the stress concentrated in the two thin side arms, and a plot of wrist-centre displacement for each load case" loading="lazy"></a>
+  <figcaption>The handle and the differential pulley it bolts to, under the five loads, with stress on one scale that saturates at 300&nbsp;MPa. The last panel is the motion of the wrist centre, 4.6 to 10&nbsp;mm.</figcaption>
+</figure>
+<p>The test code has a simulated wrist too. Each experiment in the <a href="../wrist-test-suite/index.html">test suite</a> can run first against emulated Pucks on a virtual CAN bus, with the real control library, before it touches the hardware.</p>
+
+<h2>Measured results</h2>
+<figure>
+  <img src="../../images/wrist-side.jpg" alt="The aluminum wrist mounted sideways on a black bracket on an optical table, with the handle pointing left and two Pucks on the motor modules" width="1600" height="1000" loading="lazy">
+  <figcaption>October 18, 2026. A wrist on its bench mount at the University of Alberta.</figcaption>
+</figure>
+<p>In October I measured one of the wrists on a bench with my <a href="../wrist-test-suite/index.html">test suite</a>, which has the details. Moved by hand into its stops, PS turns 171.8&deg;, FE 131.4&deg; and UR 69.2&deg;. The inertia at the joints is 138.0, 31.5 and 22.5&nbsp;kg&middot;cm&sup2;, and the position loop&rsquo;s &minus;3&nbsp;dB bandwidth is 33.2, 37.7 and 40.4&nbsp;Hz. PS has the most friction, 361&nbsp;mN&middot;m once it&rsquo;s sliding, against 65 on FE and 143 on UR. On PS the cable shows up as an anti-resonance at 98&nbsp;Hz, from a cable stiffness of 5327&nbsp;N&middot;m/rad.</p>
+
+<h2>Other work at Barrett</h2>
+<p>At Barrett I also worked on the software and tools around the wrist:</p>
+<ul>
+  <li>Python interfaces for Barrett&rsquo;s motor controllers, and tools for gravity calibration, dynamics identification and friction compensation.</li>
+  <li>Automated motor tests on a dynamometer: load sweeps, efficiency curves, and thermal and peak-torque tests.</li>
+  <li>Work on porting the WAM from Barrett&rsquo;s own CAN protocol to standard CANopen, from the control library down to the safety-board firmware.</li>
+  <li>The <a href="../haptic-lightsaber/index.html">lightsaber game</a> for Barrett&rsquo;s booth at IROS 2026.</li>
+</ul>
+<p>For the wrist I also wrote a real-time C++ CANopen driver, and the <a href="../wrist-test-suite/index.html">test suite</a> to measure it.</p>
+
+<p>Before grad school, as an undergraduate, I designed and tested <a href="../spherical-wrist-agile-eye/index.html">spherical-parallel</a> and serial-gimbal wrist mechanisms with researchers at Johns Hopkins University, under a $500K CFI JELF grant.</p>
+<p>More: <a href="https://www.linkedin.com/feed/update/urn:li:activity:7503904034324365312/">four months at Barrett</a> and <a href="https://www.linkedin.com/feed/update/urn:li:activity:7511937046878433280/">the IROS lightsaber duels</a> on LinkedIn, the <a href="../wrist-test-suite/index.html">test suite</a> results, and the <a href="https://arxiv.org/abs/2607.01201">sensorless four-channel teleoperation paper</a> (submitted to IROS 2026).</p>

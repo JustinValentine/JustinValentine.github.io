@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A painting robot | Justin Valentine</title>
+    <meta name="description" content="My CMPUT 312 final project with Yash Bhandari. A six-servo arm from AliExpress on a wooden stand, painting SVG files onto a slanted canvas with a brush.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>A painting robot</h1>
+          <p class="post-meta">December 2022 &middot; <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/control/index.html">Control</a>, <a href="../../topics/electronics/index.html">Electronics</a>, <a href="../../topics/software/index.html">Software</a></p>
+        </header>
+        <div class="post-content">
+<p class="byline">CMPUT 312 final project at the University of Alberta, fall 2022, with Yash Bhandari. Code and report: <a href="https://github.com/JustinValentine/painting-robot">JustinValentine/painting-robot</a>.</p>
+
+<figure>
+  <img src="../../images/painting-robot/robot.jpg" alt="A small aluminum robot arm with red servos on a raised wooden block, holding a paintbrush over a tilted white canvas with a black painted face on it. Three white cups sit in a holder at the front." width="1600" height="1063">
+  <figcaption>The arm on its stand, with a face it painted. Paint goes in the white cups at the front.</figcaption>
+</figure>
+
+<p>This was one of the first robotics projects I worked on. For our CMPUT 312 final project, Yash Bhandari and I set out to take an off-the-shelf 6-DOF arm and have it paint Scalable Vector Graphics (SVG) images onto a slanted canvas with a brush.</p>
+<p>The report splits the work by section. I set up the arm and its controller, built the stand, measured the arm and wrote the forward kinematics. Yash wrote the inverse kinematics and everything on the SVG side, from parsing the file to mapping it onto the canvas. While we were working on it the code lived in Yash&rsquo;s course repo, <a href="https://github.com/Yash-Bhandari/C312-Labs/tree/main/project">C312-Labs</a>. I copied it off the Pi into my own repo in April 2023 and added <a href="https://github.com/JustinValentine/painting-robot/blob/main/resources/Project%20Report.pdf">the report</a> in October 2024.</p>
+
+<h2>The arm</h2>
+<p>There aren&rsquo;t many inexpensive robot arms you can buy outside of China, so we took the risk and ordered one from AliExpress. We liked the design of the <a href="https://www.kickstarter.com/projects/1128055363/7bot-a-powerful-desktop-robot-arm-for-future-inven">7bot</a>. Its elbow is driven through a parallel linkage from a servo down at the shoulder, which takes a lot of weight out of the upper arm. Pindar Van Arman had also used a 7bot in his <a href="https://www.cloudpainter.com/">Cloudpainter</a> project. We ended up with a <a href="https://www.aliexpress.com/item/1005004345468261.html">Thanksbuyer ARM-21N3</a>, a 7bot clone. Its joints turn on bearings and the main parts are laser-cut aluminum, so it&rsquo;s light and stiff.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/painting-robot/kit-arrived.jpg"><img src="../../images/painting-robot/kit-arrived.jpg" alt="Bags of screws and parts, an aluminum tube and several boxed servos spread on a wooden floor" loading="lazy"></a>
+    <figcaption>The kit as it arrived.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/arm-assembled.jpg"><img src="../../images/painting-robot/arm-assembled.jpg" alt="The assembled arm propped on a stack of books on a plywood board, with three white cups in front of it, in a lab" loading="lazy"></a>
+    <figcaption>Assembled, and propped on a stack of books for a first try.</figcaption>
+  </figure>
+</div>
+
+<p>To drive it we used a Raspberry Pi 4. At first we thought the Pi&rsquo;s own software PWM would be enough, but in early tests the signals weren&rsquo;t accurate enough for this, so we added Adafruit&rsquo;s 16-channel PWM servo HAT.</p>
+
+<table class="specs">
+  <tr><th>Arm</th><td>Thanksbuyer ARM-21N3, a 7bot clone with six servos</td></tr>
+  <tr><th>Servos</th><td>4 &times; TD-8120MG (20&nbsp;kg) and 2 &times; MG90S. Listed at 4.8&nbsp;V, 210&nbsp;mA no-load and 2100&nbsp;mA &plusmn;10% stall</td></tr>
+  <tr><th>Controller</th><td>Raspberry Pi 4 Model B, 8&nbsp;GB (BCM2711, four Cortex-A72 cores at 1.5&nbsp;GHz)</td></tr>
+  <tr><th>Servo driver</th><td>Adafruit 16-channel 12-bit PWM servo HAT</td></tr>
+  <tr><th>Power</th><td>A 5&nbsp;V 3&nbsp;A supply for the servos. The Pi ran off a laptop over USB-C</td></tr>
+  <tr><th>Software</th><td>Python on the Pi, with <code>adafruit_servokit</code> for the servos</td></tr>
+</table>
+
+<h2>The stand</h2>
+<p>We had to design the stand before the arm arrived. We had rough ideas about where the arm should sit relative to the canvas and how it would get to the paint cups, but nothing exact, so we tried to keep the design easy to adjust once the real arm showed up.</p>
+
+<figure>
+  <a href="../../images/painting-robot/stand-sketch.jpg"><img src="../../images/painting-robot/stand-sketch.jpg" alt="A sheet of paper covered in pencil sketches of the stand from several views, with dimensions and a short schedule written in the corners" width="1600" height="1232" loading="lazy"></a>
+  <figcaption>Sketches for the stand.</figcaption>
+</figure>
+
+<p>Then it was time to test my middle school woodshop skills. I cut the wood down on a table saw and a miter saw and did the finer work on a drill press and a bandsaw. It&rsquo;s put together with a nail gun and wood glue.</p>
+
+<figure>
+  <a href="../../images/painting-robot/stand-assembled.jpg"><img src="../../images/painting-robot/stand-assembled.jpg" alt="The finished wooden stand on a desk: the arm on its raised block at the back, three cups in front, and a white canvas tilted on a wooden frame" width="1600" height="1257" loading="lazy"></a>
+  <figcaption>The assembled stand with the arm mounted.</figcaption>
+</figure>
+
+<p>The arm bolts down through countersunk holes on a raised block, and the Pi lives in a housing underneath it. In front are holders for six removable paint cups, three on each side. The canvas sits on a frame whose front and rear legs drop into notched blocks, and a row of holes and dowels sets the height of the mount.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/painting-robot/cup-holders.jpg"><img src="../../images/painting-robot/cup-holders.jpg" alt="A hand lifting a white plastic cup out of a round hole in a wooden block, with two more cups beside it" loading="lazy"></a>
+    <figcaption>Paint cup holders with removable cups.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/controller-housing.jpg"><img src="../../images/painting-robot/controller-housing.jpg" alt="A wooden platform with the arm's base on top and an open space underneath holding a black box and wires" loading="lazy"></a>
+    <figcaption>The housing for the Pi, under the arm.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/arm-mount.jpg"><img src="../../images/painting-robot/arm-mount.jpg" alt="The aluminum base of the arm screwed to a wooden block, with a bundle of servo cables going down through a round hole beside it" loading="lazy"></a>
+    <figcaption>Countersunk mounting holes and a hole for the cables.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/canvas-height.jpg"><img src="../../images/painting-robot/canvas-height.jpg" alt="A hand fitting a wooden crossbar with dowels into holes on the canvas mount" loading="lazy"></a>
+    <figcaption>Height adjustment on the canvas mount.</figcaption>
+  </figure>
+</div>
+
+<h2>Measuring the arm</h2>
+<p>The forward kinematics needed accurate joint measurements, so we asked the seller for anything that might help. They sent a product photo with three dimensions marked on it, which wasn&rsquo;t much use, though we appreciated the effort.</p>
+<p>Next we tried measuring from photos. I printed cards with a known scale and taped them to the arm, and we used Photoshop&rsquo;s ruler tool to set the scale from the cards and measure the parts. It didn&rsquo;t work well. The cards were at a different distance from the camera than the parts we were measuring, and the camera wasn&rsquo;t square to them. A lot of the points we needed were also hidden behind other parts. In the end we measured the joints with calipers, which was good enough.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/painting-robot/measure-cards-1.jpg"><img src="../../images/painting-robot/measure-cards-1.jpg" alt="Side view of the arm in front of a whiteboard, with a printed scale card standing next to its base" loading="lazy"></a>
+    <figcaption>A scale card next to the base.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/measure-cards-2.jpg"><img src="../../images/painting-robot/measure-cards-2.jpg" alt="The arm with its forearm held level, a strip of scale cards taped along the forearm and another card at the elbow" loading="lazy"></a>
+    <figcaption>Cards along the forearm and at the elbow.</figcaption>
+  </figure>
+</div>
+
+<p>We also needed to know where each servo&rsquo;s zero sat relative to its joint&rsquo;s axis in the model. For four of the six joints we could eyeball it. That didn&rsquo;t work for the shoulder and elbow, so we measured those angles in Photoshop too.</p>
+
+<figure>
+  <img src="../../images/painting-robot/servo-axes.jpg" alt="Two close-up photos of black servos on the arm, with blue lines marking the joint's coordinate axes and red lines marking the servo's axis" width="710" height="303" loading="lazy">
+  <figcaption>Blue lines are the joint&rsquo;s coordinate axes and red is the servo&rsquo;s axis.</figcaption>
+</figure>
+
+<h2>Forward kinematics</h2>
+<p>I wanted to model the arm as a serial chain so the forward kinematics could be a product of homogeneous transforms. That means keeping two sets of angles. The physical angles are what we send to the servos. The logical angles are the joint angles in the serial model.</p>
+<p>The brush tip is at</p>
+\[ \mathbf{p} = T_b\,R_z(\theta_0)\,T_0\,R_y(\theta_1)\,T_1\,R_y(\theta_2)\,T_2\,R_x(\theta_3)\,T_3\,R_y(\theta_4)\,T_4\,R_x(\theta_5)\,T_5 \begin{bmatrix}0\\0\\0\\1\end{bmatrix}, \]
+<p>where each \(R\) rotates by a logical joint angle about the axis in its subscript and each \(T\) is a fixed translation from the caliper measurements. \(T_b\) places the base in the world frame. The upper arm \(T_1\) is 9&nbsp;cm and the forearm \(T_3\) is 15.8&nbsp;cm. \(T_5 = (0.8, 0, -7.5)\)&nbsp;cm runs from the last joint to the brush tip.</p>
+
+<figure>
+  <a href="../../images/painting-robot/linkage.png"><img src="../../images/painting-robot/linkage.png" alt="Line diagram of the arm as a chain of green segments labelled Tb and T0 to T5, with small red and blue axes at each joint and a quadrilateral at the shoulder with angles beta and gamma marked" width="1186" height="1038" loading="lazy" style="background: #fff"></a>
+  <figcaption>The serial model. \(T_b\) and \(T_0\) to \(T_5\) are the translations, and \(\beta\) and \(\gamma\) are two angles of the elbow linkage.</figcaption>
+</figure>
+
+<p>To get from physical to logical angles, each servo angle first gets lined up with its axis in the model by adding a constant and, for some joints, flipping the direction. In the code the base is offset by 90&deg;, the shoulder by 26.4&deg; and the elbow by 56.5&deg;.</p>
+
+<figure>
+  <a href="../../images/painting-robot/servo-zero.png"><img src="../../images/painting-robot/servo-zero.png" alt="Two copies of a tall quadrilateral with sides labelled a=2, b=9, c=3.3 and d=9.7. At its bottom right corner, the left copy shows a servo's 0 and plus or minus 90 degree directions in blue and the right copy in red, against orange x and y axes" width="1544" height="1145" loading="lazy" style="background: #fff"></a>
+  <figcaption>The 0&deg; and &plusmn;90&deg; directions of the two servos at the shoulder, against the model&rsquo;s x and y axes in orange.</figcaption>
+</figure>
+
+<h3>The elbow linkage</h3>
+<p>Most of the arm is already a serial chain. The exception is the shoulder and elbow, which form a four-bar linkage driven by two servos. Side \(b\) is the upper arm, and the elbow servo turns the short crank \(a\). The long link \(d\) connects the crank to \(c\), a short lever on the forearm.</p>
+
+<figure>
+  <a href="../../images/painting-robot/four-bar.png"><img src="../../images/painting-robot/four-bar.png" alt="Two drawings of the quadrilateral linkage with angles alpha, beta, gamma and delta marked in green. In the right drawing the quadrilateral is tilted, with its previous position outlined in grey" width="1600" height="1234" loading="lazy" style="background: #fff"></a>
+  <figcaption>Left, the linkage. Right, how it moves when the shoulder turns. The grey outline is where it started.</figcaption>
+</figure>
+
+<p>For the shoulder to behave as it does in the serial model, the angle \(\beta\) between the crank and the upper arm has to stay constant as the shoulder moves. So whenever the shoulder turns, I add its change in angle to the elbow servo too.</p>
+<p>The serial model wants the elbow angle \(\gamma\), between the upper arm and the forearm lever, but the elbow servo can only set \(\beta\). The diagonal \(e\) from the end of the crank to the elbow splits the quadrilateral into two triangles. The law of cosines on the triangle with sides \(a\) and \(b\) gives</p>
+\[ e^2 = a^2 + b^2 - 2ab\cos\beta, \]
+<p>and adding the angles that \(e\) makes with \(b\) and with \(c\) at the elbow gives</p>
+\[ \gamma = \cos^{-1}\!\left(\frac{b^2 + e^2 - a^2}{2be}\right) + \cos^{-1}\!\left(\frac{c^2 + e^2 - d^2}{2ce}\right). \]
+<p>The figure labels the sides \(a = 2\), \(b = 9\), \(c = 3.3\) and \(d = 9.7\)&nbsp;cm. The code uses \(a = 2.5\), \(b = 9\), \(c = 3.275\) and \(d = 9.825\)&nbsp;cm, which gives \(\gamma \approx 104^\circ\) at \(\beta = 90^\circ\).</p>
+<p>Going the other way, from a target \(\gamma\) to the \(\beta\) the servo needs, I used a binary search. With the lengths in the code, \(\gamma\) falls steadily as \(\beta\) goes from about 10&deg; to 180&deg;, so bisecting on \(\beta\) gets as close as you like. The search runs between \(\pi/32\) and \(\pi\) and stops once \(\gamma\) is within 0.001&nbsp;rad.</p>
+<p>The last piece is joint limits. Every joint except the elbow has fixed limits. The elbow&rsquo;s upper and lower limits depend on where the shoulder is.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/painting-robot/elbow-limits-1.png"><img src="../../images/painting-robot/elbow-limits-1.png" alt="A grey sector and an overlapping purple sector around one centre point, with a red line and a green line through the centre" loading="lazy"></a>
+    <figcaption>The grey sector is the elbow&rsquo;s range and the purple one is the shoulder&rsquo;s. Red is the elbow&rsquo;s upper limit and green its lower limit.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/elbow-limits-2.png"><img src="../../images/painting-robot/elbow-limits-2.png" alt="The same sectors with the red and green limit lines at different angles" loading="lazy"></a>
+    <figcaption>The elbow&rsquo;s limits at another shoulder angle.</figcaption>
+  </figure>
+</div>
+
+<h2>Inverse kinematics</h2>
+<p>Yash wrote the inverse kinematics. It runs Newton&rsquo;s method on the forward model and works directly in servo angles. The Jacobian comes from finite differences: nudge each of the six servo angles by a small \(h\), run the forward kinematics again, and see how far the brush tip moves.</p>
+\[ J_{:,j} \approx \frac{\mathbf{p}(\boldsymbol\theta + h\,\mathbf{e}_j) - \mathbf{p}(\boldsymbol\theta)}{h}, \qquad h = 10^{-4}\ \text{rad} \]
+<p>The target is a point with no orientation, so \(J\) is 3&nbsp;&times;&nbsp;6. Each step uses its pseudo-inverse,</p>
+\[ \Delta\boldsymbol\theta = J^{+}\big(\mathbf{x}_{\text{goal}} - \mathbf{p}(\boldsymbol\theta)\big), \]
+<p>scaled down if its norm is over 0.6&nbsp;rad and kept inside the joint limits. The solver starts from the arm&rsquo;s current pose and stops when the tip is within 0.1&nbsp;cm of the goal. If it hasn&rsquo;t converged after 100 steps, it restarts from a random pose. All of this happens in the model, and the arm doesn&rsquo;t move until there&rsquo;s an answer.</p>
+<p>At first every joint could range from 0 to 180&deg;, which each one can do on its own. The shoulder and elbow get in each other&rsquo;s way, though, and many poses in that range were impossible. The fix was to let the shoulder move freely and bound the elbow based on the shoulder, using the limits above. As the search space got tighter, automated tests checked that the solver still converged on points spread across the workspace. The test file has twelve targets, and each coordinate of the result has to come out within 0.1&nbsp;cm. When a point failed, the constraints were loosened.</p>
+
+<h2>From SVG to points on the canvas</h2>
+<p>Yash also wrote the SVG side. SVG is based on XML, so Python&rsquo;s built-in XML parser turns the file into a tree, and the parser walks the tree and reads each shape. Regular expressions handle the shortcuts SVG files use to save space, like dropping delimiters and leading digits where they aren&rsquo;t needed.</p>
+<p>Each shape then becomes a list of points along its outline, in image pixels. The renderer handles lines, circles, ellipses and paths made of cubic B&eacute;zier curves. It generates a lot of points and then prunes any that fall too close to the last one kept, which leaves them roughly evenly spaced. More points means a smoother line and a slower painting. A circle starts with 50 points and each B&eacute;zier segment with 80, and the pruning distance is 20 SVG units.</p>
+<p>To get from the image to the canvas, the points are divided by the image width and height to put them in \([0, 1]\). Image x maps to the robot&rsquo;s y axis, across the width of the canvas. Image y maps to the robot&rsquo;s x and z together, up the slope. Then the points are scaled up to the size of the canvas and shifted by the offset from the robot&rsquo;s origin to the canvas&rsquo;s bottom-left corner. The settings in <code>config.py</code> are a 15&nbsp;&times;&nbsp;15&nbsp;cm area tilted at 0.565&nbsp;rad, about 32&deg;.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/painting-robot/face-points-2d.png"><img src="../../images/painting-robot/face-points-2d.png" alt="A plot of coloured dots tracing a face: a large circle, two small circles for eyes, a mouth and three lines of hair" loading="lazy"></a>
+    <figcaption>The face SVG as points, in image pixels.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/face-points-3d.png"><img src="../../images/painting-robot/face-points-3d.png" alt="A 3D scatter plot of the same face points lying on a tilted plane" loading="lazy"></a>
+    <figcaption>The same points mapped onto the canvas, in robot coordinates (cm).</figcaption>
+  </figure>
+</div>
+
+<h2>Painting</h2>
+<p>The painting loop is short. It parses the SVG, and then for each shape it turns the shape into 2D points, maps them onto the canvas, dips the brush and moves to every point in order. The dip is three fixed servo poses played forward and then back. After every move the code waits 0.4&nbsp;s before sending the next one. The stand has six cup holders, but both paintings here only use one cup of black paint.</p>
+
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/painting-robot/painting-face.jpg" width="540" height="960">
+      <source src="../../images/painting-robot/painting-face.mp4" type="video/mp4">
+    </video>
+    <figcaption>December 8, 2022. Painting the face.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/painting-robot/painting-duck.jpg" width="540" height="960">
+      <source src="../../images/painting-robot/painting-duck.mp4" type="video/mp4">
+    </video>
+    <figcaption>Later the same day, the duck. The brush goes back to the cup before each shape.</figcaption>
+  </figure>
+</div>
+
+<p>Both drawings are simple SVGs made of circles, ellipses, lines and one B&eacute;zier path for the face&rsquo;s mouth. The <a href="https://github.com/JustinValentine/painting-robot/tree/main/svg_files">SVG files</a> are in the repo with the code.</p>
+
+<div class="pair natural">
+  <figure>
+    <a href="../../images/painting-robot/result-face.jpg"><img src="../../images/painting-robot/result-face.jpg" alt="A white canvas with a black painted face: a round outline, two eyes, a wide mouth and three strokes of hair" loading="lazy"></a>
+    <figcaption>The face.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/painting-robot/result-duck.jpg"><img src="../../images/painting-robot/result-duck.jpg" alt="A hand holding a sheet with a black painted duck: an oval head with a round eye, two lines for the beak and a body below" loading="lazy"></a>
+    <figcaption>The duck.</figcaption>
+  </figure>
+</div>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../spherical-go/index.html">&larr; Go on a sphere</a><a href="../six-camera-panorama/index.html">A 360° camera from six $20 action cameras &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

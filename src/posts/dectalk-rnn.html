@@ -1,0 +1,79 @@
+title: Writing DECtalk songs with an RNN
+date: 2024-10
+topics: learning, software
+math: yes
+image: images/dectalk-rnn/piano-roll.png
+summary: A character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing. A CMPUT 652 course project.
+thumb_fit: contain
+---
+<p class="byline">A course project for CMPUT 652, Procedural Content Generation via Machine Learning, at the University of Alberta.</p>
+
+<p>DECtalk is a speech synthesizer from the 1980s, and it can also sing. You give it phonemes, each with a length and a pitch, and it holds each sound for that long on that note. People have written a lot of songs for it this way. I trained a recurrent neural network on about a thousand of these song files and had it write new ones. The idea came from the video <a href="https://youtu.be/8AwSZdNknIE">AI learns to sing CREEPY music</a>. The code, the trained weights and the samples are on <a href="https://github.com/JustinValentine/DECtalk_RNN">GitHub</a>.</p>
+
+<figure>
+  <img src="../../images/dectalk-rnn/piano-roll.png" alt="Two piano rolls of pitch number against time: Deck the Halls from the training data on top, and a song written by the network below" width="1440" height="920">
+  <figcaption>The first 12 seconds of a training song and of a generated one, as pitch over time. Each bar is a phoneme held on one note, and the longer ones are labelled.</figcaption>
+</figure>
+
+<figure>
+  <audio controls preload="none" src="../../images/dectalk-rnn/good-song-3.m4a" style="width: 100%"></audio>
+  <figcaption>One of the generated songs. The text of its first two lines is further down.</figcaption>
+</figure>
+
+<h2>The song format</h2>
+<p>A DECtalk song is a plain text file. This is the start of Deck the Halls from the training set:</p>
+
+<pre><code>[:PHONE ON] [:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]
+[DEH&lt;350,25&gt;K&lt;150&gt;DHAX&lt;150,23&gt;HXAO&lt;150,22&gt;LX&lt;100&gt;Z&lt;50&gt;
+WIH&lt;200,20&gt;TH&lt;100&gt;BAW&lt;200,18&gt;Z&lt;100&gt;AH&lt;200,20&gt;V&lt;100&gt;HXAO&lt;300,22&gt;LIY&lt;300,18&gt;
+FAO&lt;150,20&gt;LAO&lt;150,22&gt;LAO&lt;150,23&gt;LAO&lt;125,20&gt;LAO&lt;450,22&gt;LAO&lt;150,20&gt;
+LAO&lt;300,18&gt;LAO&lt;300,17&gt;LAO&lt;450,18&gt;_&lt;150&gt;</code></pre>
+
+<p>The bracketed commands at the top set things up. <code>[:PHONE ON]</code> turns on phoneme input, <code>[:nv]</code> picks one of DECtalk&rsquo;s voices, <code>[:ra 180]</code> sets the speaking rate, and <code>[:dv ...]</code> changes settings of the voice. After that come the phonemes. <code>DEH&lt;350,25&gt;</code> is the &ldquo;de&rdquo; in &ldquo;deck&rdquo;, held for 350&nbsp;ms at pitch 25. Consonants at the end of a syllable usually get a length and no pitch, and <code>_</code> is a rest. The run of <code>LAO</code> is &ldquo;fa la la la la la la la la&rdquo;.</p>
+
+<h2>The data</h2>
+<p>The training songs come from <a href="https://theflameofhope.co/SONGS%20FOR%20PC'.html">theflameofhope.co</a>, which has pages of DECtalk songs sorted by category. A short script, <code>scrape.py</code>, downloads every <code>.txt</code> file linked from the Christmas, children&rsquo;s, country, gospel and rock pages. That gave 1,085 songs, from hymns and worship songs to Christmas carols and DECtalk versions of Madonna and Beatles songs. Joined into one string, it&rsquo;s about 4.3 million characters, using 81 distinct characters.</p>
+
+<h2>The model</h2>
+<p>The network is a character-level LSTM in PyTorch. It reads the song text one character at a time and predicts the next one. It&rsquo;s told nothing about phonemes or pitches. To the model, <code>DEH&lt;350,25&gt;</code> is eleven characters in a row.</p>
+
+<table class="specs">
+  <tr><th>Input</th><td>One-hot vector over the 81 characters</td></tr>
+  <tr><th>Network</th><td>2 LSTM layers of 512 units with dropout 0.5, then a linear layer back to 81 outputs</td></tr>
+  <tr><th>Parameters</th><td>About 3.4 million</td></tr>
+  <tr><th>Training</th><td>Text split into 64 parallel streams and fed in 70-character chunks, cross-entropy loss, Adam at a learning rate of 0.001, gradient norm clipped at 5, 20 epochs</td></tr>
+  <tr><th>Sampling</th><td>Start from <code>[:</code>, temperature 0.8, 1,000 characters</td></tr>
+</table>
+
+<p>At each step the network takes the current character as a one-hot vector \(\mathbf{x}_t\), updates its state and scores every possible next character:</p>
+\[ \mathbf{h}_t = \operatorname{LSTM}(\mathbf{x}_t,\ \mathbf{h}_{t-1}), \qquad \mathbf{z}_t = W\mathbf{h}_t + \mathbf{b} . \]
+<p>Here \(\mathbf{h}_t\) stands for the state of both layers, and \(W\) and \(\mathbf{b}\) are the linear layer applied to the top layer&rsquo;s output. Training minimizes the cross-entropy between the softmax of \(\mathbf{z}_t\) and the character that actually comes next. To generate a song, I feed in <code>[:</code>, which is how every DECtalk command starts, and then sample each next character from</p>
+\[ p(c_{t+1} = i) = \frac{\exp(z_{t,i}/T)}{\sum_j \exp(z_{t,j}/T)} \]
+<p>with temperature \(T = 0.8\). The sampled character goes back in as the next input. A temperature below 1 shifts probability toward the characters the model already rates highest.</p>
+
+<h2>What it wrote</h2>
+<p>In every sample the brackets and the <code>&lt;length,pitch&gt;</code> tags open and close in pairs, except at the very end, where the 1,000 characters run out partway through a phoneme. The samples run between 23 and 53 seconds. In all twenty I kept, the settings line at the top appears word for word in the training songs. The one in the sample below, <code>[:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]</code>, shows up in 412 of the 1,085 songs. This is the start of the sample at the top of the post, with line breaks added:</p>
+
+<pre><code>[:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]
+[AY&lt;200,25&gt;MAH&lt;125,22&gt;ST&lt;75&gt;LAY&lt;300,25&gt;F&lt;100&gt;IH&lt;300,20&gt;Z&lt;100&gt;
+YXOR&lt;200&gt;LAH&lt;125,18&gt;V&lt;75&gt;IH&lt;125&gt;Z&lt;75&gt;TUW&lt;200,20&gt;MIY&lt;400,20&gt;_&lt;800&gt;
+YU&lt;200,22&gt;HXAE&lt;125,20&gt;V&lt;75&gt;GAO&lt;125,27&gt;T&lt;75&gt;LIY&lt;200,25&gt;SIY&lt;400,27&gt;
+DXIH&lt;125&gt;D&lt;75&gt;SAO&lt;125&gt;NX&lt;75&gt;IH&lt;125&gt;N&lt;75&gt;MAY&lt;200,25&gt;HXAR&lt;125,25&gt;T&lt;75&gt;</code></pre>
+
+<p>Read out, that&rsquo;s roughly &ldquo;I must life is your love is to me. You have got lee seeded song in my heart.&rdquo;</p>
+
+<p>Another sample has a line made of 48 &ldquo;la&rdquo;s with one rest in the middle.</p>
+
+<figure>
+  <audio controls preload="none" src="../../images/dectalk-rnn/good-song-5.m4a" style="width: 100%"></audio>
+  <figcaption>The &ldquo;la&rdquo; sample.</figcaption>
+</figure>
+
+<p>I kept twenty samples in the repo, each with a WAV, and split them into a good folder and a bad folder. This one is from the bad folder:</p>
+
+<figure>
+  <audio controls preload="none" src="../../images/dectalk-rnn/bad-song-5.m4a" style="width: 100%"></audio>
+  <figcaption>A sample from the bad folder, in the Betty voice (<code>[:nb]</code>).</figcaption>
+</figure>
+
+<p>The README links <a href="https://webspeak.terminal.ink/">webspeak.terminal.ink</a> for playing generated text in a browser.</p>

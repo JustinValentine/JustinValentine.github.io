@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Go on a sphere | Justin Valentine</title>
+    <meta name="description" content="Go on a board with no edges or corners. I started it in 2022 while taking a differential geometry course, and finished it in 2026 as a playable game with a Monte Carlo tree search opponent.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>Go on a sphere</h1>
+          <p class="post-meta">January 2022 &middot; <a href="../../topics/games/index.html">Games</a>, <a href="../../topics/software/index.html">Software</a></p>
+        </header>
+        <div class="post-content">
+<figure>
+  <video autoplay muted loop playsinline preload="metadata" poster="../../images/spherical-go/gameplay.jpg" width="600" height="334" style="max-width: 37.5rem">
+    <source src="../../images/spherical-go/gameplay.mp4" type="video/mp4">
+  </video>
+  <figcaption>The computer playing itself on the small board. The globe on the left shows the far side of the ball, and the stereographic map on the right shows the near side.</figcaption>
+</figure>
+
+<p>I started this in early 2022, while I was taking MATH&nbsp;348, Differential Geometry of Curves and Surfaces, at the University of Alberta. The idea is to play Go on a sphere. A flat Go board has edges and corners, and a lot of the game&rsquo;s strategy comes from them. A sphere has neither.</p>
+<p>In 2022 I got as far as drawing a latitude&ndash;longitude grid through a stereographic projection in OpenGL. I came back to it in October 2026 and finished it: a playable game with a computer opponent, six ways of viewing the board, and tests for the rules. It&rsquo;s written in C++17 with OpenGL 3.3.</p>
+
+<figure style="max-width: 24rem">
+  <video autoplay muted loop playsinline preload="metadata" poster="../../images/spherical-go/stereotiles.jpg" width="540" height="540">
+    <source src="../../images/spherical-go/stereotiles.mp4" type="video/mp4">
+  </video>
+  <figcaption>The 2022 version: a latitude&ndash;longitude grid, stereographically projected, with the two poles in orange and green.</figcaption>
+</figure>
+
+<h2>The board</h2>
+<p>The board is a latitude&ndash;longitude grid. A number of rings, evenly spaced between the poles, cross a number of meridians. Every crossing is a point, and so are the two poles.</p>
+<table class="specs">
+  <tr><th>Small</th><td>6 rings &times; 14 meridians + 2 poles = 86 points (9&times;9 has 81)</td></tr>
+  <tr><th>Medium</th><td>9 &times; 20 + 2 = 182 points (13&times;13 has 169)</td></tr>
+  <tr><th>Large</th><td>13 &times; 28 + 2 = 366 points (19&times;19 has 361)</td></tr>
+</table>
+<p>Each ring wraps all the way around, so every ring point has exactly four neighbours: two along its ring and two along its meridian. The poles are the odd ones out. A pole touches every point of the nearest ring, so a stone on the pole has as many liberties as there are meridians, 20 on the medium board, and it takes a whole ring of stones to capture it.</p>
+<p>The board still knows it&rsquo;s a sphere. Count the points, the lines between neighbours and the cells they enclose. With \(R\) rings and \(M\) meridians there are \(V = RM + 2\) points, \(E = (2R + 1)M\) edges (along the rings, between neighbouring rings, and out to the poles), and \(F = (R + 1)M\) faces (quadrilaterals between rings, triangles around the poles). Then</p>
+\[ V - E + F = (RM + 2) - (2R + 1)M + (R + 1)M = 2, \]
+<p>the Euler characteristic of a sphere, for every board size.</p>
+
+<h2>Drawing a sphere on a screen</h2>
+<p>The course is where the main problem comes from. Gauss&rsquo;s Theorema Egregium says Gaussian curvature only depends on distances measured within a surface. A sphere of radius \(r\) has curvature \(1/r^2\) everywhere and a plane has zero, so no flat map of a sphere can keep every distance right. Every view of the board has to distort something.</p>
+<p>The main view is the stereographic projection. Put the sphere at the origin and project from the north pole \((0, 0, 1)\) onto the plane \(z = 0\). A point \((X, Y)\) on the plane comes from the point</p>
+\[ (x, y, z) = \frac{\big(2X,\; 2Y,\; X^2 + Y^2 - 1\big)}{X^2 + Y^2 + 1} \]
+<p>on the sphere. In these coordinates the sphere&rsquo;s metric is</p>
+\[ ds^2 = \frac{4\,(dX^2 + dY^2)}{\big(1 + X^2 + Y^2\big)^2}, \]
+<p>a single scale factor times the flat metric. That means stereographic projection preserves angles, and it sends circles to circles, so stones stay round on the map. What it gives up is size: the scale grows without bound towards the north pole, which lands at infinity. That&rsquo;s why the default view puts a globe of the far side next to the map.</p>
+<p>The game has six views in all: globe plus stereographic map, two globes (front and back), the stereographic map alone, Peirce&rsquo;s quincuncial projection (which also preserves angles and fits the whole sphere into a square), equirectangular, and Mercator. Dragging rotates the sphere in every view, so you can bring the part of the board you care about into the least distorted region.</p>
+
+<h2>Rules</h2>
+<p>It uses the Tromp&ndash;Taylor rules, which only talk about points and which points are adjacent, so they carry over to the sphere without changes. Stones are captured when their group can&rsquo;t reach an empty point, a move can&rsquo;t repeat an earlier position (positional superko), and the game ends after two passes. The score is stones plus surrounded territory, with 7.5 komi for White.</p>
+
+<h2>The computer opponent</h2>
+<p>The computer uses Monte Carlo tree search with RAVE. Each move it plays tens of thousands of quick random games from the current position, on every core but one, and steers them towards the moves that have won most often. Each candidate move is scored as</p>
+\[ (1 - \beta)\,\frac{w}{n} + \beta\,\tilde q + c\,\sqrt{\frac{\ln N}{n + 1}}, \qquad \beta = \sqrt{\frac{k}{3n + k}}, \]
+<p>where \(w/n\) is the move&rsquo;s own win rate over \(n\) visits, \(\tilde q\) is its RAVE win rate (counted whenever that player played the point at any later time in a random game), \(N\) is the parent&rsquo;s visit count, \(k = 1000\) and \(c = 0.1\). Early on, when \(n\) is small, the move leans on its RAVE estimate. At \(n = 1000\) visits, \(\beta = 1/2\), and after that its own results count for more. The search only needs to know which points neighbour which, so it plays on the sphere, poles and all, with no special rules.</p>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../rubiks-cube-solver/index.html">&larr; A Rubik’s Cube solver</a><a href="../painting-robot/index.html">A painting robot &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

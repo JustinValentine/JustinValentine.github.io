@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Machine learning | Justin Valentine</title>
+    <meta name="description" content="Posts by Justin Valentine about machine learning.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html" aria-current="page">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <p class="crumb"><a href="../index.html">Topics</a></p>
+      <h1>Machine learning</h1>
+      <ul class="work">
+        <li>
+          <a class="thumb" href="../../posts/sketch-generation-flow-matching/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/sketch/wam-drawing.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/sketch-generation-flow-matching/index.html">Drawing sketches with guided flow matching</a></h3>
+            <p class="entry-meta">Nov 17, 2024 &middot; <a href="../../topics/learning/index.html">Machine learning</a>, <a href="../../topics/software/index.html">Software</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a></p>
+            <p>A course project that generates sketches point by point with flow matching and classifier-free guidance, then has a Barrett WAM draw them on a whiteboard that presses back with a constant force.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb contain" href="../../posts/dectalk-rnn/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/dectalk-rnn/piano-roll.png" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/dectalk-rnn/index.html">Writing DECtalk songs with an RNN</a></h3>
+            <p class="entry-meta">Oct 2024 &middot; <a href="../../topics/learning/index.html">Machine learning</a>, <a href="../../topics/software/index.html">Software</a></p>
+            <p>A character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing. A CMPUT 652 course project.</p>
+          </div>
+        </li>
+        <li>
+          <a class="thumb" href="../../posts/hal-quadruped/index.html" tabindex="-1" aria-hidden="true"><img src="../../images/hal/hal-first-legs.jpg" alt="" loading="lazy"></a>
+          <div>
+            <h3><a href="../../posts/hal-quadruped/index.html">HAL, a quadruped with an actuated spine</a></h3>
+            <p class="entry-meta">Sep 10, 2024 &middot; <a href="../../topics/legged-robots/index.html">Legged robots</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/simulation/index.html">Simulation</a>, <a href="../../topics/learning/index.html">Machine learning</a></p>
+            <p>A quadruped like Solo 8, with a motorized spine added so it might do a backflip, or a double. The figure-skater math behind the spine, a year of building, and HAL Gym for training it to flip.</p>
+          </div>
+        </li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Building the WHAM wrist | Justin Valentine</title>
+    <meta name="description" content="A two-joint, cable-driven haptic wrist for the WAM leader, with a thumb joystick for the follower&amp;rsquo;s last joint. My biggest machining project so far, from a printed version in January 2026 to the WAM in April.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>Building the WHAM wrist</h1>
+          <p class="post-meta">April 7, 2026 &middot; <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/electronics/index.html">Electronics</a></p>
+        </header>
+        <aside class="series">
+          <p>Haptic wrist prototypes, in order:</p>
+          <ol>
+          <li><a href="../spherical-wrist-agile-eye/index.html">A spherical wrist after the Agile Eye</a> <span class="year">(Dec 8, 2023)</span></li>
+          <li><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist</a> <span class="year">(2024)</span></li>
+          <li><a href="../coaxial-semi-differential-wrist/index.html">The coaxial semi-differential wrist</a> <span class="year">(Oct 2025)</span></li>
+          <li><a href="../end-effector-wrist/index.html">A direct-drive end-effector wrist</a> <span class="year">(Nov 2025)</span></li>
+          <li>Building the WHAM wrist <span class="year">(Apr 7, 2026)</span></li>
+          <li><a href="../haptic-wrist-barrett/index.html">The Alberta wrist</a> <span class="year">(Sep 30, 2026)</span></li>
+          </ol>
+        </aside>
+        <div class="post-content">
+<figure>
+  <img src="../../images/wham-wrist/worn.jpg" alt="A man in a green cap and dark T-shirt with his forearm through an aluminum wrist on the end of a grey WAM arm, holding a black handle, in front of a black curtain" width="1400" height="788">
+  <figcaption>April 7, 2026. The wrist on the end of the WAM leader.</figcaption>
+</figure>
+
+<p>The WHAM wrist is the haptic wrist I built in the first few months of 2026, before I left for Barrett Technology. It mounts on the forearm of a WAM arm that the operator wears as the leader. It came after the <a href="../coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a> and before the <a href="../haptic-wrist-barrett/index.html">final version</a> I designed at Barrett. It was my biggest machining project to date. I&rsquo;m now writing a paper on it with Martin Jagersand.</p>
+<p>The photos run from a printed version on January 23 to the wrist on the WAM on April 7. Each caption has the date the photo or video was taken.</p>
+
+<h2>Two haptic joints and a joystick</h2>
+<p>The coaxial wrist had haptic pronation&ndash;supination (PS), flexion&ndash;extension (FE) and radial&ndash;ulnar deviation (RU), plus a fourth joint that turned the whole wrist. This one has two haptic joints, PS and FE. Their axes cross at the operator&rsquo;s wrist, so a torque on the handle reaches the hand as a pure moment. They map one to one onto the follower WAM&rsquo;s J5 and J6.</p>
+<p>The WAM&rsquo;s wrist is roll&ndash;pitch&ndash;roll, and RU has no matching joint on it. RU bends the hand sideways, while the follower&rsquo;s J7 spins the tool about its own axis. J7 turns through 344&deg;, and an operator&rsquo;s roughly 55&deg; of RU would cover about 16% of that. So J7 goes to a thumb joystick on the handle, in rate mode: the stick&rsquo;s deflection sets J7&rsquo;s speed, and letting go holds the angle. Dropping RU also takes a motor and a transmission off the far end of the leader.</p>
+<p>PS turns &plusmn;170&deg; and FE &plusmn;90&deg;, both more than a human wrist can manage. The ranges come from the follower, whose J5 travels 344&deg; between its stops and J6 &plusmn;90&deg;. The coaxial wrist&rsquo;s PS range was &plusmn;90&deg;.</p>
+
+<h2>Attaching it to the arm</h2>
+<p>The WAM&rsquo;s upper arm is 550&nbsp;mm long, against about 330&nbsp;mm for a 1.75&nbsp;m adult, so the operator&rsquo;s elbow and the leader&rsquo;s can&rsquo;t line up. In the plane of the arm, the operator and the leader form a closed loop. Kutzbach&rsquo;s formula gives its mobility from the number of links \(n\) and one-DOF joints \(j\):</p>
+\[ M = 3(n-1) - 2j \]
+<p>With the cuff bolted straight to the leader&rsquo;s forearm, the loop is a four-bar: ground, the operator&rsquo;s upper arm, the joined forearms and the leader&rsquo;s upper arm. That gives \(M = 3 \cdot 3 - 2 \cdot 4 = 1\). The operator&rsquo;s shoulder and elbow are then stuck on one path, and moving off it means leaning or hunching against the cuff.</p>
+<p>The WHAM wrist has a passive revolute joint between the leader&rsquo;s forearm and the wrist&rsquo;s forearm cuff, parallel to the leader&rsquo;s elbow. That adds a link and a joint:</p>
+\[ M = 3(5-1) - 2 \cdot 5 = 2 \]
+<p>Two is what the operator&rsquo;s shoulder and elbow have in that plane, so the operator&rsquo;s arm sets the leader&rsquo;s pose. The cost is that the leader&rsquo;s elbow angle no longer equals the operator&rsquo;s. The passive joint has an MA600 magnetic encoder, so its angle is known and the wrist&rsquo;s weight can be compensated in any pose.</p>
+<p>There&rsquo;s a forearm cuff on the wrist and an upper-arm cuff on the biceps. Both are lined with 2&nbsp;mm of high-density EVA foam and 2&nbsp;mm of neoprene, with silicone strips that grip the arm, and they slide along carbon-fibre rods to fit different arm lengths.</p>
+
+<h2>A printed version first</h2>
+<div class="pair">
+  <figure>
+    <a href="../../images/wham-wrist/printed-1.jpg"><img src="../../images/wham-wrist/printed-1.jpg" alt="A black plastic wrist on a desk: a large spoked ring, a base plate with steel cable wound on a pinion, and a housing with pulleys on top of the ring" loading="lazy"></a>
+    <figcaption>January 23, 2026. The printed version: the PS drum, the base plate with cable wound on the motor pinion, and the FE drive on top of the drum.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/printed-2.jpg"><img src="../../images/wham-wrist/printed-2.jpg" alt="Side view of the black plastic wrist, with a steel cable running from the pinion on the base plate around the rim of the ring" loading="lazy"></a>
+    <figcaption>From the side. The cable runs from the pinion around the drum.</figcaption>
+  </figure>
+</div>
+<p>The first version was printed in black plastic. It already has the layout of the aluminum one: a big drum around the forearm for PS, driven by cable from a pinion on a base plate beside it, with the FE drive mounted on the drum.</p>
+
+<h2>Machining the drum</h2>
+<p>The machined parts are 6061-T6 aluminum. The PS drum was the biggest of them, 185&nbsp;mm across, driven by an 18&nbsp;mm pinion in a single cable stage. It started as a round blank on a Tormach PCNC 1100. Four days later one face was pocketed, and by the evening of February 2 the pockets were cut through, leaving the spokes.</p>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/wham-wrist/drum-blank.jpg"><img src="../../images/wham-wrist/drum-blank.jpg" alt="A round aluminum blank clamped in a vise on the table of a Tormach PCNC 1100 mill" loading="lazy"></a>
+    <figcaption>January 27. The drum blank in the vise on a Tormach PCNC 1100.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/drum-pockets.jpg"><img src="../../images/wham-wrist/drum-pockets.jpg" alt="An aluminum disc held in one hand, with shallow pockets around a large centre opening and small bolt holes" loading="lazy"></a>
+    <figcaption>January 31. One face pocketed, with the centre bore and bolt holes cut.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/drum-pad.jpg"><img src="../../images/wham-wrist/drum-pad.jpg" alt="A round aluminum drum on a steel bench with a black 3D-printed plug pressed into it, next to an orange dead-blow hammer and hex keys" loading="lazy"></a>
+    <figcaption>February 2, afternoon. A 3D-printed plug pressed into the drum. The walls are thin by now, and the plug keeps them from chattering while I machine the second side.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/drum-done.jpg"><img src="../../images/wham-wrist/drum-done.jpg" alt="A finished aluminum ring with open spokes, held up so a hand shows through the windows" loading="lazy"></a>
+    <figcaption>February 2, evening. The pockets cut through to leave the spokes.</figcaption>
+  </figure>
+</div>
+
+<h2>The FE drive</h2>
+<p>A single-stage FE drive with the same ratio as PS would need a drum of about 180&nbsp;mm beside the wrist. So FE reduces in two stages. An 18&nbsp;mm motor pinion drives a 36&nbsp;mm drum, and a 15&nbsp;mm pinion on the same shaft drives the 77&nbsp;mm output pulley. There are two of these intermediate shafts, one on each side of the joint.</p>
+<p>The motor sits on the FE axis inside the output pulley. The pulley turns on its own bearings around the fixed motor housing, with about 1&nbsp;mm of radial clearance. The first-stage cables run over the top of the motor pinion and the second-stage cables along the bottom to the output pulley, so the two stages form one closed, preloaded cable loop. Nesting the motor this way shortens the joint, so the wrist can sit lower on the forearm, nearer the operator&rsquo;s own wrist.</p>
+<div class="pair">
+  <figure>
+    <a href="../../images/wham-wrist/fe-front.jpg"><img src="../../images/wham-wrist/fe-front.jpg" alt="The spoked aluminum drum held up in one hand, with a motor between two short aluminum pulleys mounted across the top" loading="lazy"></a>
+    <figcaption>February 9. The FE drive on the drum, from the front, with the motor between the two intermediate pulleys.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/fe-back.jpg"><img src="../../images/wham-wrist/fe-back.jpg" alt="The back of the drum, showing a pocketed aluminum bracket across the top behind the spokes" loading="lazy"></a>
+    <figcaption>From the back.</figcaption>
+  </figure>
+</div>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/wham-wrist/fe-on-drum.jpg"><img src="../../images/wham-wrist/fe-on-drum.jpg" alt="Close view of the FE drive on the drum: a grey motor between aluminum side plates, two hollow pulleys and a small black controller board below the motor" loading="lazy"></a>
+    <figcaption>February 9. The moteus-c1 controller sits below the motor.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/base-plate.jpg"><img src="../../images/wham-wrist/base-plate.jpg" alt="An aluminum plate held in one hand, with a large ball bearing set into a round opening at one end and a bore for the pinion lower down" loading="lazy"></a>
+    <figcaption>February 11. The base plate, with the big ball bearing for the drum in place.</figcaption>
+  </figure>
+</div>
+<figure class="tall">
+  <a href="../../images/wham-wrist/assembled.jpg"><img src="../../images/wham-wrist/assembled.jpg" alt="The aluminum wrist held up by a window: the base plate with the pinion, the spoked drum, the FE drive with its pulleys and a black rubber grip on a bracket" width="1050" height="1400" loading="lazy"></a>
+  <figcaption>February 19. The drum on the base plate and the FE drive on the drum, with a bike grip on the handle mount.</figcaption>
+</figure>
+
+<h2>Tensioners inside the pinions</h2>
+<p>Both joints use 7&times;19 stainless steel cable (18-8), 0.97&nbsp;mm across. Each stage is an antagonistic pair wrapped on its pinion. Pretension keeps both sides taut so there&rsquo;s no backlash, and it has to be high enough that the cable doesn&rsquo;t slip at peak torque. More than that adds bearing friction and torque ripple, so I wanted a way to set it finely, in place, with the wrist assembled.</p>
+<p>The part I&rsquo;m proudest of is that the tensioners are inside the motor pinions. There&rsquo;s no turnbuckle or idler anywhere in the cable run. Each motor pinion is split in two, in a scheme similar to the WAM&rsquo;s own. The fixed half is part of the rotor hub. The tensioning half rides on a one-way needle clutch between two thrust bearings, and a wave spring under the preload screw holds it down. Each half carries eight wraps of one end of the cable.</p>
+
+<figure>
+  <img src="../../images/wham-wrist/pinion-section.png" alt="Section drawing of the split pinion on the GL60 motor: the fixed half of the pinion is part of the rotor hub, and the tensioning half sits above it on a one-way clutch between two thrust bearings, held down by a wave spring, washer and preload screw. Cable wraps both halves" width="1400" height="1022" loading="lazy">
+  <figcaption>Section through the tensioning pinion on the GL60 motor. Each half of the pinion carries one end of the cable.</figcaption>
+</figure>
+
+<p>To tension a drive, I turn the tensioning half against the fixed half. That winds cable onto it and pulls the whole loop tighter. The clutch only lets it turn one way, so it holds whatever tension I reach, and I can add a little at a time until it&rsquo;s right. Because the clutch sits on the motor shaft, the one adjustment sets the pretension of the whole loop, including both stages of the FE drive.</p>
+<p>How much pretension is enough comes from the capstan equation. With a pretension \(T_0\) in both branches, a torque \(\tau\) on a pinion of radius \(r\) raises one branch and lowers the other by \(\tau/2r\). The cable can&rsquo;t slip as long as the ratio of the two stays under \(e^{\mu\beta}\), where \(\mu\) is the friction coefficient and \(\beta\) the wrap angle:</p>
+\[ \frac{T_0 + \tau/2r}{T_0 - \tau/2r} \le e^{\mu\beta} \quad\Longrightarrow\quad T_0 \ge \frac{\tau}{2r}\,\coth\!\left(\frac{\mu\beta}{2}\right). \]
+<p>Eight wraps is \(\beta = 16\pi\), so for any friction coefficient of 0.1 or more the \(\coth\) term is within about 1.5% of 1. The wraps make slip a non-issue, and the pretension only has to keep the slack side from going slack. For the PS drive, with the GL60&rsquo;s 1.75&nbsp;N&middot;m peak on the 18&nbsp;mm pinion (9.48&nbsp;mm to the cable centreline), that&rsquo;s about 92&nbsp;N.</p>
+<figure class="tall">
+  <a href="../../images/wham-wrist/fe-cabled.jpg"><img src="../../images/wham-wrist/fe-cabled.jpg" alt="The FE drive on a white box, with steel cable wrapped on the motor pinion, the two intermediate pulleys and the large output pulley, and copper crimps on the cable ends" width="1050" height="1400" loading="lazy"></a>
+  <figcaption>March 6. The FE drive cabled up, sitting on a motor box. The cable ends have copper crimps on them.</figcaption>
+</figure>
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/drum-turning.jpg" width="540" height="960">
+      <source src="../../images/wham-wrist/drum-turning.mp4" type="video/mp4">
+    </video>
+    <figcaption>March 5. The PS motor turning the drum through its cable, with a plot running on the laptop behind.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/fe-by-hand.jpg" width="540" height="960">
+      <source src="../../images/wham-wrist/fe-by-hand.mp4" type="video/mp4">
+    </video>
+    <figcaption>March 6. Turning the FE motor pinion by hand.</figcaption>
+  </figure>
+</div>
+
+<h2>The handle</h2>
+<p>The handle has a two-axis thumb joystick with a click, a bumper button and the adaptive-trigger module from a PlayStation 5 DualSense controller. Inside the module, a small brushed DC motor sets the trigger&rsquo;s resistance through a worm gear. A Teensy 4 in the handle reads the stick and the button and drives the trigger&rsquo;s motor. When it isn&rsquo;t driving J7, the joystick moves the computer&rsquo;s mouse pointer, so the operator can use the PC without taking the wrist off.</p>
+<p>The grip slides on a miniature linear guide along the FE output pulley&rsquo;s tang, with 25&nbsp;mm of free travel. That lets the operator centre their wrist on the joint axes, and it keeps the loop through the forearm, wrist and hand from over-constraining.</p>
+<figure>
+  <a href="../../images/wham-wrist/dualsense.jpg"><img src="../../images/wham-wrist/dualsense.jpg" alt="A PlayStation controller taken apart on a desk: the green main board with a black trigger unit at each end, and the blue shell behind it" width="1400" height="1050" loading="lazy"></a>
+  <figcaption>January 26. A DualSense controller taken apart. The trigger modules are the black units at each end of the board.</figcaption>
+</figure>
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/trigger.jpg" width="540" height="960">
+    <source src="../../images/wham-wrist/trigger.mp4" type="video/mp4">
+  </video>
+  <figcaption>February 13. Pressing the trigger on a wired-up trigger module, over a hand-drawn wiring sketch.</figcaption>
+</figure>
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/wham-wrist/handle-teensy.jpg"><img src="../../images/wham-wrist/handle-teensy.jpg" alt="A black printed handle shell with a Teensy board in the grip and a thumbstick and trigger module at the top" loading="lazy"></a>
+    <figcaption>February 18. The Teensy, the trigger module and the thumbstick in the printed handle.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/handle-grip.jpg"><img src="../../images/wham-wrist/handle-grip.jpg" alt="A hand holding the closed black handle with the thumb near the stick, and a laptop showing the handle in CAD" loading="lazy"></a>
+    <figcaption>Holding the printed handle, with its CAD on the laptop.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/handle-board-1.jpg"><img src="../../images/wham-wrist/handle-board-1.jpg" alt="A narrow hand-wired perfboard with coloured jumper wires and a white connector, held over a black plate" loading="lazy"></a>
+    <figcaption>March 2. The hand-wired board for the handle.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/wham-wrist/handle-board-2.jpg"><img src="../../images/wham-wrist/handle-board-2.jpg" alt="The other side of the perfboard, with a small chip on an adapter, a green module and resistors" loading="lazy"></a>
+    <figcaption>The other side.</figcaption>
+  </figure>
+</div>
+<figure class="tall">
+  <a href="../../images/wham-wrist/handle-open.jpg"><img src="../../images/wham-wrist/handle-open.jpg" alt="The handle shell open on a desk, with the thumbstick at the top, the trigger module and its small motor, and the perfboard in the grip" width="1050" height="1400" loading="lazy"></a>
+  <figcaption>March 14. The handle opened up, with the board in the grip.</figcaption>
+</figure>
+
+<h2>With an arm in it</h2>
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/arm-in.jpg" width="540" height="960">
+      <source src="../../images/wham-wrist/arm-in.mp4" type="video/mp4">
+    </video>
+    <figcaption>March 10. From above, a forearm through the drum, moving the handle through PS and FE.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/fe-close.jpg" width="540" height="960">
+      <source src="../../images/wham-wrist/fe-close.mp4" type="video/mp4">
+    </video>
+    <figcaption>March 10. Moving the handle through FE by hand, with a forearm resting in the drum.</figcaption>
+  </figure>
+</div>
+<figure>
+  <a href="../../images/wham-wrist/on-stand.jpg"><img src="../../images/wham-wrist/on-stand.jpg" alt="The wrist on a black stand on an optical table, tilted up, with a black forearm cuff and straps on top and the handle at the lower left" width="1400" height="1050" loading="lazy"></a>
+  <figcaption>March 14. The wrist on its stand on the optical table, with the forearm cuff on top.</figcaption>
+</figure>
+<figure class="tall">
+  <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/strapped-in.jpg" width="540" height="960">
+    <source src="../../images/wham-wrist/strapped-in.mp4" type="video/mp4">
+  </video>
+  <figcaption>March 14. Strapped in on the stand, moving through PS and FE.</figcaption>
+</figure>
+
+<h2>On the WAM</h2>
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/wham-wrist/on-wam.jpg" width="1280" height="720">
+    <source src="../../images/wham-wrist/on-wam.mp4" type="video/mp4">
+  </video>
+  <figcaption>April 7. On the end of the WAM leader, with straps on the forearm and upper arm, moving the arm around.</figcaption>
+</figure>
+
+<h2>Reductions and torque</h2>
+<p>I kept both reductions near 10:1. Backdriven through a reduction \(N\), the motor&rsquo;s friction feels \(N\) times larger and its rotor inertia \(N^2\) times larger. A low ratio keeps the joints backdrivable enough to estimate torque from motor current.</p>
+<p>Each ratio is taken at the cable centreline, so every diameter gets one cable diameter, \(d = 0.965\)&nbsp;mm, added to it. PS has one stage, an 18&nbsp;mm pinion on the 185&nbsp;mm drum:</p>
+\[ N_{\text{PS}} = \frac{185 + d}{18 + d} = 9.81 \]
+<p>FE has two, 18 to 36&nbsp;mm and then 15 to 77&nbsp;mm:</p>
+\[ N_{\text{FE}} = \frac{36 + d}{18 + d} \cdot \frac{77 + d}{15 + d} = 1.95 \times 4.88 = 9.52 \]
+<p>Both joints use a CubeMars GL60 KV25, an outer-rotor gimbal motor rated at 0.6&nbsp;N&middot;m continuous and 1.75&nbsp;N&middot;m peak. Through the reductions:</p>
+\[ \begin{aligned} \text{PS:}\quad & 9.81 \times 0.6 = 5.9\ \mathrm{N{\cdot}m}\ \text{rated}, \qquad 9.81 \times 1.75 = 17.2\ \mathrm{N{\cdot}m}\ \text{peak} \\ \text{FE:}\quad & 9.52 \times 0.6 = 5.7\ \mathrm{N{\cdot}m}\ \text{rated}, \qquad 9.52 \times 1.75 = 16.7\ \mathrm{N{\cdot}m}\ \text{peak} \end{aligned} \]
+<p>The rotor&rsquo;s 355&nbsp;g&middot;cm&sup2; reflects to \(9.81^2 \times 355 \approx 34\) and \(9.52^2 \times 355 \approx 32\)&nbsp;kg&middot;cm&sup2; at the joints. The GL60 has 24 slots and 28 poles, so its cogging repeats 168 times per revolution, the least common multiple of the two. At the joint that&rsquo;s a period of about 0.22&deg;, and the 2.4&nbsp;cN&middot;m of cogging torque CubeMars gives scales to about 0.23&ndash;0.24&nbsp;N&middot;m.</p>
+
+<table class="specs">
+  <tr><th>Haptic joints</th><td>Pronation&ndash;supination (PS) and flexion&ndash;extension (FE)</td></tr>
+  <tr><th>Range</th><td>PS &plusmn;170&deg;, FE &plusmn;90&deg;</td></tr>
+  <tr><th>Reductions</th><td>PS 9.81:1, one cable stage (18 to 185&nbsp;mm); FE 9.52:1, two stages (18 to 36&nbsp;mm, 15 to 77&nbsp;mm)</td></tr>
+  <tr><th>Motors</th><td>CubeMars GL60 KV25, 0.6&nbsp;N&middot;m rated, 1.75&nbsp;N&middot;m peak</td></tr>
+  <tr><th>Joint torque</th><td>PS 5.9 rated, 17.2 peak; FE 5.7 rated, 16.7 peak (N&middot;m)</td></tr>
+  <tr><th>Controllers</th><td>mjbots moteus-c1, one per joint</td></tr>
+  <tr><th>Position sensing</th><td>Motor side: AS5047P on the controller (PS), off-axis MPS MA600 on the rotor (FE)</td></tr>
+  <tr><th>Cable</th><td>0.97&nbsp;mm 7&times;19 stainless steel (18-8)</td></tr>
+  <tr><th>Passive joints</th><td>Attachment revolute with an MA600 encoder; 25&nbsp;mm handle slide</td></tr>
+  <tr><th>Handle</th><td>Teensy 4, two-axis thumb joystick with click, PS5 adaptive trigger, bumper button</td></tr>
+  <tr><th>Material</th><td>6061-T6 aluminum</td></tr>
+  <tr><th>Mass</th><td>3.6&nbsp;kg, within the 4&nbsp;kg payload of a four-joint WAM</td></tr>
+  <tr><th>Supply</th><td>36&nbsp;V nominal</td></tr>
+</table>
+
+<h2>Testing</h2>
+<p>In October 2026 I ran my <a href="../wrist-test-suite/index.html">test suite</a> on both joints, and the full results are on that post. PS tracks position to 47&nbsp;Hz and FE to 31&nbsp;Hz at &minus;3&nbsp;dB, and FE has about three times the sliding friction of PS, 0.50&nbsp;N&middot;m against 0.15&nbsp;N&middot;m.</p>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../end-effector-wrist/index.html">&larr; A direct-drive end-effector wrist</a><a href="../getting-this-site-off-the-ground/index.html">Getting this site off the ground &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

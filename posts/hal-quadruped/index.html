@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HAL, a quadruped with an actuated spine | Justin Valentine</title>
+    <meta name="description" content="A quadruped like Solo 8, with a motorized spine added so it might do a backflip, or a double. The figure-skater math behind the spine, a year of building, and HAL Gym for training it to flip.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>HAL, a quadruped with an actuated spine</h1>
+          <p class="post-meta">September 10, 2024 &middot; <a href="../../topics/legged-robots/index.html">Legged robots</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/simulation/index.html">Simulation</a>, <a href="../../topics/learning/index.html">Machine learning</a></p>
+        </header>
+        <div class="post-content">
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-standing.jpg" width="540" height="960" style="max-width: 26rem">
+    <source src="../../images/hal/hal-standing.mp4" type="video/mp4">
+  </video>
+  <figcaption>April 7, 2024. HAL standing on its own legs.</figcaption>
+</figure>
+
+<p>HAL started with a simple goal: build a quadruped similar to <a href="https://open-dynamic-robot-initiative.github.io/">Solo 8</a>, the open-source robot from the Open Dynamic Robot Initiative, but able to do a backflip, or even a double backflip. The big change from Solo is an articulated spine. HAL&rsquo;s body is two halves joined by a QDD100 actuator, and each half carries two legs. Each leg has two joints driven through belts from motors on the body, eight LA8308 motors in all.</p>
+
+<h2>Why a spine</h2>
+<p>My reasoning was the figure skater. Once the robot leaves the ground, nothing can change its angular momentum about its centre of mass, because gravity acts at that point. So in flight</p>
+\[ L = I(t)\,\omega(t) = \text{constant}, \]
+<p>and the robot turns through</p>
+\[ \Delta\theta = \int_0^{T} \frac{L}{I(t)}\,dt, \qquad T = \frac{2v_z}{g}, \]
+<p>where \(T\) is the flight time for a takeoff speed \(v_z\). A rigid robot turns through \(LT/I\). A skater who pulls their arms in lowers \(I\) and spins faster, and opens up again to slow down for the landing. A spine gives the robot a way to do the same: fold to spin faster in the middle of the flip, then straighten out before the feet come down.</p>
+<p>A flip of \(n\) full turns needs \(\Delta\theta = 2\pi n\). For a rigid body that means a takeoff angular momentum of</p>
+\[ L = \frac{2\pi n\, I}{T}. \]
+<p>For example, a jump that peaks 0.5&nbsp;m above takeoff gives \(v_z = \sqrt{2gh} = 3.1\) m/s and \(T = 0.64\) s. A double flip (\(n = 2\)) then needs an average pitch rate of about 20 rad/s for the whole flight.</p>
+<p>How much the spine helps depends on how much mass it can move. In HAL&rsquo;s MuJoCo model, where for now only the motors have mass (3.3&nbsp;kg in all), the pitch inertia about the centre of mass is 0.047&nbsp;kg&middot;m&sup2; with the spine straight and 0.044&nbsp;kg&middot;m&sup2; with it at its 0.6&nbsp;rad stop. That&rsquo;s about 7%, because the motors sit close to the spine axis. The real robot&rsquo;s legs and pulleys will change that number.</p>
+<p>The spine also lets the robot turn without any angular momentum at all. If it flexes in the air, the two halves rotate in opposite directions so that the total stays zero. In the same model, flexing from straight to the 0.6&nbsp;rad stop pitches the rear half back by 0.30&nbsp;rad (17&deg;) and the front half forward by the same amount. That&rsquo;s a way to trim the landing angle after the flip is already committed.</p>
+<p>On the real robot, the spine can make HAL jump:</p>
+<figure>
+  <iframe src="https://www.youtube-nocookie.com/embed/1ys1p49WGNA" referrerpolicy="strict-origin-when-cross-origin" title="Spine test #1" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  <figcaption>Spine test #1, on YouTube.</figcaption>
+</figure>
+
+<h2>The first build</h2>
+<p>I started with mostly 3D-printed parts (carbon-fibre nylon) on an aluminum chassis that I milled on a Tormach.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/hal/hal-motors.jpg"><img src="../../images/hal/hal-motors.jpg" alt="A stack of flat gold brushless motors on a binder in a machine shop" loading="lazy"></a>
+    <figcaption>October 26, 2023. The leg motors.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-chassis-mill.jpg"><img src="../../images/hal/hal-chassis-mill.jpg" alt="A Tormach CNC mill with an aluminum plate on the table" loading="lazy"></a>
+    <figcaption>November 22. Milling the chassis.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <img src="../../images/hal/hal-first-legs.jpg" alt="Two black legs with ball feet and gold motors standing on a desk" loading="lazy">
+  <figcaption>December 10. The first two legs.</figcaption>
+</figure>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/hal/hal-chassis.jpg"><img src="../../images/hal/hal-chassis.jpg" alt="A milled aluminum chassis plate held up in one hand" loading="lazy"></a>
+    <figcaption>The milled chassis plate.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-leg-bench.jpg"><img src="../../images/hal/hal-leg-bench.jpg" alt="One leg with a large black pulley mounted on a tripod, wired to a controller" loading="lazy"></a>
+    <figcaption>January 14, 2024. One leg on a tripod for testing.</figcaption>
+  </figure>
+</div>
+
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-leg-tripod.jpg" width="540" height="960">
+      <source src="../../images/hal/hal-leg-tripod.mp4" type="video/mp4">
+    </video>
+    <figcaption>January 16. The leg swinging on the tripod.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-leg-rail.jpg" width="540" height="960">
+      <source src="../../images/hal/hal-leg-rail.mp4" type="video/mp4">
+    </video>
+    <figcaption>February 12. A leg on a vertical guide rod.</figcaption>
+  </figure>
+</div>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/hal/hal-assembled.jpg"><img src="../../images/hal/hal-assembled.jpg" alt="Top-down view of the assembled robot on a workbench, legs folded" loading="lazy"></a>
+    <figcaption>February 11. All four legs on the chassis.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-floor.jpg"><img src="../../images/hal/hal-floor.jpg" alt="Top-down view of the robot on the floor with its legs stretched out" loading="lazy" style="aspect-ratio: auto"></a>
+    <figcaption>February 20. Legs stretched out.</figcaption>
+  </figure>
+</div>
+
+<h2>Milling the pulleys</h2>
+<p>Each leg joint is driven through a small pulley on the motor and a big pulley on the joint, eight of each, plus eight top knee pulleys. They started as printed parts. Over the summer of 2024 I milled all of them in aluminum.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/hal/hal-pulley-blank.jpg"><img src="../../images/hal/hal-pulley-blank.jpg" alt="A round aluminum blank clamped on a mill table" loading="lazy"></a>
+    <figcaption>June 20. A pulley blank on the mill.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-pulley-milling.jpg" width="540" height="960">
+      <source src="../../images/hal/hal-pulley-milling.mp4" type="video/mp4">
+    </video>
+    <figcaption>Cutting the spokes.</figcaption>
+  </figure>
+</div>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/hal/hal-pulley.jpg"><img src="../../images/hal/hal-pulley.jpg" alt="A finished aluminum pulley with spokes and belt teeth, held in one hand" loading="lazy"></a>
+    <figcaption>June 20. The first big pulley.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-small-pulley.jpg"><img src="../../images/hal/hal-small-pulley.jpg" alt="A small aluminum toothed pulley held between two fingers" loading="lazy"></a>
+    <figcaption>August 12. A small pulley.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-pulley-batch.jpg"><img src="../../images/hal/hal-pulley-batch.jpg" alt="A fixture plate holding a batch of small toothed pulleys and four flat round parts" loading="lazy"></a>
+    <figcaption>August 13. A batch of small pulleys.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-pulleys.jpg"><img src="../../images/hal/hal-pulleys.jpg" alt="Four large spoked pulleys and eight small pulleys on a wooden table" loading="lazy"></a>
+    <figcaption>August 16. Big and small pulleys.</figcaption>
+  </figure>
+</div>
+
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-crouch.jpg" width="540" height="960">
+      <source src="../../images/hal/hal-crouch.mp4" type="video/mp4">
+    </video>
+    <figcaption>August 23. Pushing up from a crouch.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/hal/hal-metal-pulleys.jpg"><img src="../../images/hal/hal-metal-pulleys.jpg" alt="The robot lying on a mat, showing aluminum pulleys and belts on its legs" loading="lazy"></a>
+    <figcaption>September 10. The aluminum pulleys on the legs.</figcaption>
+  </figure>
+</div>
+
+<h2>HAL Gym</h2>
+<p>To train it to flip, I wrote HAL Gym, a set of MuJoCo environments for jumping, flipping, walking and running. Vincent Zhang later tidied it into an installable Gymnasium package.</p>
+<p>After that I rebuilt the full 3D model from the CAD for MuJoCo MJX, with motor models that limit torque by current and back-EMF, and set up a backflip task trained with Brax PPO on thousands of simulated robots in parallel, with domain randomization. The training isn&rsquo;t finished.</p>
+
+<figure>
+  <img src="../../images/hal-sim.jpg" alt="The HAL quadruped's MuJoCo model standing on a plain floor" width="1200" height="750" loading="lazy" style="background: #fff">
+  <figcaption>HAL&rsquo;s MuJoCo model, rebuilt from the CAD.</figcaption>
+</figure>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../direct-drive-gimbal-wrist/index.html">&larr; A simple direct-drive gimbal wrist</a><a href="../dectalk-rnn/index.html">Writing DECtalk songs with an RNN &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

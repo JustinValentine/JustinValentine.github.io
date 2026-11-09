@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A haptic mobile manipulator | Justin Valentine</title>
+    <meta name="description" content="A 7&amp;#8209;DOF WAM on a Clearpath Husky, driven from a second WAM so the operator feels what the robot touches. I designed the mobile base and set up the sensors and ROS. One of eight finalist teams in DND&amp;rsquo;s IDEaS challenge.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>A haptic mobile manipulator</h1>
+          <p class="post-meta">May 26, 2024 &middot; <a href="../../topics/teleoperation/index.html">Teleoperation</a>, <a href="../../topics/haptics/index.html">Haptics</a>, <a href="../../topics/machining/index.html">Machining</a>, <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/electronics/index.html">Electronics</a>, <a href="../../topics/software/index.html">Software</a></p>
+        </header>
+        <div class="post-content">
+<p class="byline">2022&ndash;2024. Undergraduate research assistant on a lab team.</p>
+
+<p>A teleoperated robot for disaster zones and other places too dangerous to send a person. A 7&#8209;DOF Barrett WAM rides on a Clearpath Husky. The operator drives it from a second WAM fitted with a cable-driven wrist exoskeleton and feels the forces the robot meets. A 360&deg; camera on the robot feeds a VR headset. We demonstrated it to the Department of National Defence as one of eight finalist teams in the IDEaS (Innovation for Defence Excellence and Security) challenge, which funded it with a $500K grant.</p>
+
+<p>This was my initial concept video for the WAM and the Husky, with the arm sitting on top of the Husky:</p>
+
+<figure class="short">
+  <iframe src="https://www.youtube-nocookie.com/embed/8HoTG0cs--s" referrerpolicy="strict-origin-when-cross-origin" title="Clearpath Husky + WAM" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  <figcaption>Clearpath Husky + WAM, on YouTube, posted August 17, 2023. The WAM unfolds from its stowed pose and folds back down.</figcaption>
+</figure>
+
+<p>The team, in the Computer Vision and Robotics Group at the University of Alberta, was Dylan Miller, Faezeh Haghverd, Jakub Piwowarczyk, Mark Fiala, Martin Jagersand and me. My part was the mobile base, the sensors and ROS. This video shows the system we ended up with:</p>
+
+<figure>
+  <iframe src="https://www.youtube-nocookie.com/embed/jsmIGJ1boKs" referrerpolicy="strict-origin-when-cross-origin" title="Husky WAM Remote Teleoperation" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  <figcaption>Husky WAM Remote Teleoperation, on YouTube, posted November 2024. The robot opens a door and drives down a hallway with its map on screen. Then it turns the valve on a pipe that is venting vapour.</figcaption>
+</figure>
+
+<h2>Haptic teleoperation</h2>
+<p>The robot&rsquo;s arm is a 7&#8209;DOF WAM. The operator side is a 4&#8209;DOF WAM with our 3&#8209;DOF cable-driven wrist exoskeleton on the end, which matches the robot&rsquo;s seven joints one for one. The wrist is light and runs on low-cost BLDC motor controllers. Because it is cable driven, joint torque is a linear function of motor output, so the force the operator feels is scaled correctly.</p>
+<p>The two arms are coupled joint to joint. Each joint runs a PD position loop with the matching joint on the other arm as its setpoint, so when the robot pushes on something, the operator&rsquo;s arm pushes back. Either arm can act as the leader. How stiff we could make that coupling and still keep it stable depended on the communication latency between the two arms.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/mobile-manipulator.jpg"><img src="../../images/mobile-manipulator.jpg" alt="A Barrett WAM arm on a Clearpath Husky with a camera mast, reaching into an elevator shaft door" loading="lazy" style="object-position: 50% 60%"></a>
+    <figcaption>Opening an elevator shaft door by teleoperation. The red housing on the mast is the Ladybug2 360&deg; camera.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/setup.jpg"><img src="../../images/mobile-manipulator/setup.jpg" alt="A WAM arm with a grey wrist exoskeleton on a tripod stand, next to the robot, in an empty carpeted conference room" loading="lazy"></a>
+    <figcaption>May 30, 2024. The leader WAM and wrist on its stand (left) and the robot (right), set up in a conference room.</figcaption>
+  </figure>
+</div>
+
+<h2>The mobile base</h2>
+<p>In the concept video the WAM sits on top of the Husky. For the real robot I redesigned and made the Husky&rsquo;s chassis and body panels so the WAM could sit lower, which brings the robot&rsquo;s centre of mass down. The WAM mounts to the chassis through milled aluminum parts.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/mobile-manipulator/chassis-open.jpg"><img src="../../images/mobile-manipulator/chassis-open.jpg" alt="A Clearpath Husky with its top removed, showing a black frame, a plywood bulkhead and two aluminum rails inside" loading="lazy"></a>
+    <figcaption>April 18, 2024. The Husky opened up, with two aluminum rails along the inside of the frame.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/mount-bars.jpg"><img src="../../images/mobile-manipulator/mount-bars.jpg" alt="Two milled aluminum bars with counterbored holes on a sheet of hardboard" loading="lazy"></a>
+    <figcaption>April 22. Two milled aluminum bars for mounting the WAM.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/chassis-floor.jpg"><img src="../../images/mobile-manipulator/chassis-floor.jpg" alt="The chassis with a plywood floor and aluminum bars bolted across it" loading="lazy"></a>
+    <figcaption>April 22. A plywood floor in the chassis, with the bars bolted across it.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/chassis-plate.jpg"><img src="../../images/mobile-manipulator/chassis-plate.jpg" alt="The chassis with a black plate with four round cut-outs between two aluminum bars, and a front bumper" loading="lazy"></a>
+    <figcaption>April 25. A black plate with four round cut-outs between the bars, and the front bumper fitted.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/mobile-manipulator/first-motion.jpg" width="960" height="540">
+    <source src="../../images/mobile-manipulator/first-motion.mp4" type="video/mp4">
+  </video>
+  <figcaption>May 15. The WAM moving on the new base, before the camera mast went on.</figcaption>
+</figure>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/mobile-manipulator/wam-mounted.jpg"><img src="../../images/mobile-manipulator/wam-mounted.jpg" alt="Looking down into the robot: the white WAM base at one end and a bay of computers and wiring next to it, between yellow side panels with stop buttons" loading="lazy"></a>
+    <figcaption>May 26. Looking down on the WAM&rsquo;s base and the electronics bay next to it.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/by-door.jpg"><img src="../../images/mobile-manipulator/by-door.jpg" alt="The robot with its arm raised next to an open lab door; the side panel reads Husky A200, University of Alberta" loading="lazy"></a>
+    <figcaption>May 26. The robot with the arm raised, next to an open door.</figcaption>
+  </figure>
+</div>
+
+<h2>Cameras and the headset</h2>
+<p>The operator sees the scene through a FLIR Ladybug2 spherical camera on a mast. It captures 360&deg; images at 10&nbsp;Hz and sends them to the operator over UDP. We project each spherical image onto a virtual cube and show it in an Oculus Rift headset. Two FLIR Blackfly cameras give higher-resolution views to the front and rear.</p>
+
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/mobile-manipulator/ladybug.jpg"><img src="../../images/mobile-manipulator/ladybug.jpg" alt="A red cylindrical Ladybug2 spherical camera held in one hand" loading="lazy"></a>
+    <figcaption>April 16, 2024. The Ladybug2.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/mast.jpg"><img src="../../images/mobile-manipulator/mast.jpg" alt="The robot with the WAM folded flat over the body and the red Ladybug2 on a mast at the back" loading="lazy"></a>
+    <figcaption>May 26. The Ladybug2 on its mast, with the arm folded down over the body.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <img src="../../images/mobile-manipulator/cube-map.jpg" alt="Six camera views of a lab laid out as the unfolded faces of a cube" width="1400" height="1051" loading="lazy">
+  <figcaption>A Ladybug2 image projected onto the faces of a cube, from the RISE 2025 poster.</figcaption>
+</figure>
+
+<p>These two photos of the operator&rsquo;s screen were taken a minute apart, both showing the stream labelled &ldquo;In-hand&rdquo;:</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/mobile-manipulator/stream-clean.jpg"><img src="../../images/mobile-manipulator/stream-clean.jpg" alt="A window titled Live Streams showing a clear camera view of the robot's hand and the red Ladybug2 in a tall atrium" loading="lazy"></a>
+    <figcaption>July 29, 2024, 10:25 pm. The stream on the operator&rsquo;s screen.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/stream-broken.jpg"><img src="../../images/mobile-manipulator/stream-broken.jpg" alt="The same window with the background of the camera view broken up into coloured blocks" loading="lazy"></a>
+    <figcaption>10:26 pm. The same stream, broken up into blocks.</figcaption>
+  </figure>
+</div>
+
+<h2>Mapping, ROS and Wi&#8209;Fi</h2>
+<p>I integrated the sensors in ROS: the LiDAR, the Ladybug2 and Blackfly cameras, an IMU and GPS, with URDF models of the whole robot. The LiDAR is a Hokuyo UTM&#8209;30LX&#8209;EW, and with SLAM on it the robot can map a floor and drive itself around it. I also got some legacy LiDAR hardware running on ROS Noetic, tracking down hardware and communication faults with an oscilloscope and serial diagnostics.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/mobile-manipulator-nav.jpg"><img src="../../images/mobile-manipulator-nav.jpg" alt="The robot driving itself down an aisle between office cubicles" width="1273" height="570" loading="lazy"></a>
+    <figcaption>Mapping and driving the fourth floor of the ECERF building on its own.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/mobile-manipulator/slam-map.jpg"><img src="../../images/mobile-manipulator/slam-map.jpg" alt="A SLAM occupancy map of a building floor, light grey corridors on a dark green background" width="1137" height="781" loading="lazy"></a>
+    <figcaption>March 11, 2024. The SLAM map it built.</figcaption>
+  </figure>
+</div>
+
+<p>We also tested the robot&rsquo;s long-range Wi&#8209;Fi outside.</p>
+
+<figure style="max-width: 18rem">
+  <a href="../../images/mobile-manipulator/wifi-outside.jpg"><img src="../../images/mobile-manipulator/wifi-outside.jpg" alt="A person in headphones crouching beside the robot on a sidewalk next to a brick and glass building" width="808" height="1400" loading="lazy"></a>
+  <figcaption>May 21, 2024. Testing the long-range Wi&#8209;Fi outside.</figcaption>
+</figure>
+
+<h2>The IDEaS demonstration</h2>
+<p>For the IDEaS demonstration we ran a search-and-rescue scenario with five tasks: remote tabletop manipulation, zero-tolerance precision manipulation, remote door opening, autonomous room navigation and interactive scene awareness. I helped demonstrate it to DND. This is the door task in our lab:</p>
+
+<figure>
+  <video controls muted loop playsinline preload="none" poster="../../images/mobile-manipulator/door.jpg" width="960" height="540">
+    <source src="../../images/mobile-manipulator/door.mp4" type="video/mp4">
+  </video>
+  <figcaption>August 1, 2024. The operator at left moves the leader WAM and wrist. The robot drives to the door at right and opens it.</figcaption>
+</figure>
+
+<h2>Posters</h2>
+<p>I presented the project as first author at the Alberta Robotics &amp; Intelligent Systems Expo (RISE) in 2024, as &ldquo;Teleoperation for Mobile Manipulation in Unstructured Environments&rdquo;, and again at RISE 2025 with the poster &ldquo;Increasing Situational Awareness in Robotic Manipulation: A High-Force Haptic System&rdquo; (<a href="../../files/rise-2025-poster.pdf">PDF</a>).</p>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../spherical-wrist-agile-eye/index.html">&larr; A spherical wrist after the Agile Eye</a><a href="../direct-drive-gimbal-wrist/index.html">A simple direct-drive gimbal wrist &rarr;</a></nav>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>

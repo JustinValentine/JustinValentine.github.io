@@ -1,0 +1,132 @@
+title: A simple direct-drive gimbal wrist
+date: 2024
+topics: haptics, mechanisms, teleoperation
+series: haptic-wrist
+math: yes
+summary: A gimbal wrist for the WAM, driven directly so it was easy to prototype, that we used to test strapping the WAM to an operator&rsquo;s forearm as an approximate exoskeleton.
+image: images/direct-drive-gimbal-wrist/thumb-full.jpg
+thumb_fit: contain
+---
+<div class="pair portrait">
+  <figure>
+    <a href="../../images/direct-drive-gimbal-wrist/gimbal-bench.jpg"><img src="../../images/direct-drive-gimbal-wrist/gimbal-bench.jpg" alt="A dark grey C-shaped gimbal holding a black rubber grip, standing on a bench beside an aluminum tube with two black cuffs and green Velcro straps"></a>
+    <figcaption>The gimbal on the bench. The two black cuffs on the aluminum tube strap to the operator&rsquo;s forearm.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/direct-drive-gimbal-wrist/gimbal-cad.jpg"><img src="../../images/direct-drive-gimbal-wrist/gimbal-cad.jpg" alt="CAD render of the same gimbal: a curved grey frame, a black grip, a vertical tube and two cuffs"></a>
+    <figcaption>The same parts in CAD.</figcaption>
+  </figure>
+</div>
+
+<p>This is a simple gimbal wrist for the WAM leader arm. Its joints are driven directly, with no cables, because that made it easy to prototype. J5 and J6 use quasi-direct-drive (QDD) actuators for extra torque. A final design would swap those for capstans, and the <a href="../haptic-wrist-barrett/index.html">later wrists in this series</a> are cable-driven.</p>
+
+<p>The wrist was a means to a bigger question. Up to then we had run the WAM in end-effector mode, where the operator holds a handle at the end of the arm. Could it instead work as an approximate exoskeleton, with the operator&rsquo;s forearm strapped to it? We wrote down these questions:</p>
+
+<ol>
+  <li>Is an approximate exoskeleton with a forearm attachment feasible? Does that attachment need passive joints, or can it stay rigid? Can the WAM sit on a flat base, or does it need to be mounted vertically? How should the operator&rsquo;s arm be attached?</li>
+  <li>How does limiting the wrist to a human&rsquo;s range of motion affect task completion?</li>
+  <li>Should there be an upper-arm attachment as well, and how should the work be split between it and the forearm attachment?</li>
+  <li>Do we need a passive prismatic joint at the operator&rsquo;s hand?</li>
+</ol>
+
+<h2>Strapping on the forearm</h2>
+<p>We started with a single rigid semicircle, 80&nbsp;mm tall, padded with dense foam. It didn&rsquo;t work well. The forearm is conical, so the straps slid down the arm. Moving the WAM through the forearm took enough force to be quite uncomfortable, and most of it went through two points where the bones pressed against the semicircle. A second semicircle spread the load out. That helped, but it was still uncomfortable.</p>
+
+<p>Those first tests ran with imperfect gravity compensation. Once that was fixed we tested again, in both bidirectional and one-way teleoperation, and got the same results.</p>
+
+<p>The cleanest arm mount I found was ETH Z&uuml;rich&rsquo;s <a href="https://youtu.be/-FB6mMNV_14">self-adapting attachment mechanism</a> for exoskeletons. It&rsquo;s mechanically simple, and it centres arms of different sizes on the same axis. We 3D printed a small version and tested it. It would suit a finished product, but we didn&rsquo;t need it for testing wrist prototypes.</p>
+
+<figure style="max-width: 28rem">
+  <img src="../../images/direct-drive-gimbal-wrist/arm-mount-cad.jpg" alt="CAD of a printed arm mount: two curved arms joined at the bottom by a small linkage" width="1200" height="1035" loading="lazy">
+  <figcaption>CAD of the small printed version.</figcaption>
+</figure>
+
+<h2>An upper-arm attachment</h2>
+<p>The forearm attachment has to position J4, and it also sets the pose of J5. I wondered whether some of that work could move to an upper-arm attachment, or even to the hand. The idea was an attachment on the WAM&rsquo;s upper-arm link that keeps the operator&rsquo;s upper arm in the plane of the WAM&rsquo;s J3 and J4 joints. That should still leave the operator plenty of freedom, and it would let them drive the WAM&rsquo;s shoulder abduction and adduction with their upper arm.</p>
+
+<div class="pair">
+  <figure>
+    <a href="../../images/direct-drive-gimbal-wrist/upper-arm-cad.jpg"><img src="../../images/direct-drive-gimbal-wrist/upper-arm-cad.jpg" alt="CAD of a ring on two wooden dowels above a cylinder labelled WAM upper arm link, with blue arrows on the passive joints and a red arrow along the cylinder" style="aspect-ratio: auto" loading="lazy"></a>
+    <figcaption>The idea in CAD. Passive joints in blue, the WAM&rsquo;s J3 in red.</figcaption>
+  </figure>
+  <figure>
+    <a href="../../images/direct-drive-gimbal-wrist/upper-arm-mockup.jpg"><img src="../../images/direct-drive-gimbal-wrist/upper-arm-mockup.jpg" alt="A hand holding a frame of two wooden dowels and a black ring, clamped to the upper arm of a WAM in the lab" style="aspect-ratio: auto" loading="lazy"></a>
+    <figcaption>A mockup on the WAM&rsquo;s upper arm.</figcaption>
+  </figure>
+</div>
+
+<p>It would go with a forearm attachment of a similar design that has only two passive axes, one along the forearm and one across it. The force to bend the elbow could then go through both attachments, with a sizable lever arm. Flexion could be handled two ways: through the forearm attachment, as proposed, or through the handle at the wrist if we added another passive joint. Internal and external rotation would go through the forearm attachment, which has a good lever arm when the operator&rsquo;s elbow is bent and none at all when the arm is straight.</p>
+
+<p>Testing showed that with this kind of exoskeleton the operator used their arm about as much as in end-effector mode, maybe more. We wanted to cut that down as far as possible.</p>
+
+<h2>Long links and offset joints</h2>
+<p>More testing with only the forearm attachment showed the setup is very tiring to use. The worst problems were the long link at J3, and joint centres that don&rsquo;t line up with the operator&rsquo;s: J4 against the elbow, and J3 against internal and external rotation at the shoulder. The operator ends up contorting or shifting their body to line back up with the WAM&rsquo;s kinematics, and all that adjusting makes them drift around inside the cuffs.</p>
+
+<p>A human wrist can get away with a limited range because the fingers are flexible. Strapped to the WAM, the operator loses that, so the WAM and the operator&rsquo;s arm both end up in awkward poses for easy tasks like picking something up off a table.</p>
+
+<figure style="max-width: 22rem">
+  <img src="../../images/direct-drive-gimbal-wrist/link-lengths.png" alt="Diagram of two L-shaped links. Human: 11.5 inch upper arm and 11.5 inch forearm. WAM: 22.5 inch upper arm and 15.5 inch forearm" width="1058" height="970" loading="lazy">
+  <figcaption>Link lengths seen from above: the WAM&rsquo;s J3 and J4 links against my upper arm and forearm. I&rsquo;m 6&prime;4&Prime;.</figcaption>
+</figure>
+
+<p>A simple top-down simulation shows what those lengths do. Both arms are planar two-link chains, and the only constraint is that their end points coincide. A two-link arm with links \(\ell_1\) and \(\ell_2\) can put its end point anywhere at a distance \(r\) from its shoulder with</p>
+\[ |\ell_1 - \ell_2| \le r \le \ell_1 + \ell_2 . \]
+<p>For my arm that gives \(0 \le r \le 23\ \text{in}\). For the WAM it gives \(7 \le r \le 38\ \text{in}\), an annulus with a 7&nbsp;in hole around its base. In the plot my shoulder sits 14&nbsp;in from the WAM&rsquo;s, so my hand never gets more than \(14 + 23 = 37\ \text{in}\) from the WAM base, inside its 38. Since \(14 + 7 \le 23\), the hole sits entirely inside my reach, and the WAM covers all of my workspace except the \(7^2/23^2 \approx 9\%\) right around its own base.</p>
+
+<p>Reach is fine, then. With links this different, though, the two elbows land in different places for the same hand position, as in the plot.</p>
+
+<figure>
+  <img src="../../images/direct-drive-gimbal-wrist/workspace-sim.png" alt="Plot titled Interactive 2-Arm Simulation with Workspaces. A large red annulus around the WAM base and a smaller blue disk around the human base. The human arm and WAM arm reach the same target with their elbows in different places" width="1400" height="1093" loading="lazy">
+  <figcaption>The WAM&rsquo;s workspace (red) runs from 7 to 38&nbsp;in; mine (blue) is a 23&nbsp;in disk. Units are inches.</figcaption>
+</figure>
+
+<p>A second version lets my shoulder shift up to 5&nbsp;in either way along each axis. That sweeps the 23&nbsp;in disk over a 10&nbsp;in square, so the reach grows to 28&nbsp;in along the axes and \(23 + 5\sqrt{2} \approx 30.1\ \text{in}\) along the diagonals. The colour shows how far the shoulder has to move to reach each point. The most any point needs is a corner of the square, \(5\sqrt{2} \approx 7.1\ \text{in}\), which matches the top of the colour bar. At the top of the plot the region is cut off by the WAM&rsquo;s 38&nbsp;in reach.</p>
+
+<figure>
+  <img src="../../images/direct-drive-gimbal-wrist/shoulder-shift-sim.jpg" alt="Plot titled Human Arm Wiggle Cost with plus or minus 5 Unit Budget. A yellow region where no shoulder movement is needed, ringed by a band shading to purple where up to about 7 inches is needed" width="1400" height="1005" loading="lazy">
+  <figcaption>How far my shoulder has to move to reach each point, with up to &plusmn;5&nbsp;in allowed (the dotted box).</figcaption>
+</figure>
+
+<p>As I saw it then, the exoskeleton&rsquo;s job should be to line up the operator&rsquo;s flexion&ndash;extension plane with the WAM&rsquo;s. Where the two elbows sit within that plane matters less. The catch is that we would give up the WAM&rsquo;s whole-arm manipulability. Keeping the planes lined up might take an upper-arm attachment, since they can drift apart once the hand moves out of the plane.</p>
+
+<p>The plane idea holds for flexion and extension, and for abduction and adduction. For internal and external rotation the two planes can&rsquo;t be aligned. It&rsquo;s the same offset-centre problem as at the elbow, now at the shoulder, and it probably means another passive joint where the operator meets the WAM. With the operator&rsquo;s shoulder only 7&nbsp;in from the WAM&rsquo;s, it may not be needed. Some rough testing suggested that works.</p>
+
+<h2>A passive joint at the forearm</h2>
+<p>Next we mounted the WAM vertically and fitted the gimbal wrist with a custom attachment that adds one passive joint, to stand in for that extra joint. The test was whether one passive joint is enough, and how the whole system behaves in this layout. The clips show it with and without the passive joint. Watch the operator&rsquo;s body.</p>
+
+<div class="pair">
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/direct-drive-gimbal-wrist/passive-dof.jpg" width="420" height="622">
+      <source src="../../images/direct-drive-gimbal-wrist/passive-dof.mp4" type="video/mp4">
+    </video>
+    <figcaption>With the passive joint.</figcaption>
+  </figure>
+  <figure>
+    <video controls muted loop playsinline preload="none" poster="../../images/direct-drive-gimbal-wrist/no-passive-dof.jpg" width="420" height="750">
+      <source src="../../images/direct-drive-gimbal-wrist/no-passive-dof.mp4" type="video/mp4">
+    </video>
+    <figcaption>Without it.</figcaption>
+  </figure>
+</div>
+
+<p>The passive joint let the operator put their arm where they wanted and still stay roughly lined up with the WAM. We only ran a free-motion test, with no teleoperated tasks, but the first results were very promising, and the WAM&rsquo;s extra range of motion in this layout helped a lot. It was much less tiring than before and fairly usable. It still took a lot of whole-body movement, which suggests it wouldn&rsquo;t work in a dual-arm setup.</p>
+
+<p>The passive joint sat quite low on the operator&rsquo;s arm. That&rsquo;s a limitation of the gimbal setup. With an actuated wrist it would likely go somewhere else.</p>
+
+<h2>Where the WAM should meet the arm</h2>
+<figure>
+  <img src="../../images/direct-drive-gimbal-wrist/contact-point-sim.png" alt="Plot titled Interactive 2-Arm Simulation with Dual Sliders. The WAM arm ends at a contact point partway along the human forearm" width="1400" height="1114" loading="lazy">
+  <figcaption>The same simulation with my shoulder 7&nbsp;in from the WAM&rsquo;s. The WAM meets my forearm at a contact point partway along it.</figcaption>
+</figure>
+
+<p>For the effective length of J4 and the contact point, it looks like we want J4 long and the contact point as close to the operator&rsquo;s hand as possible. That fits what we had seen with the end-effector design. A forearm attachment would still decouple arm movement from wrist movement and give better joint tracking overall, which should make more of the workspace usable.</p>
+
+<h2>Answers</h2>
+<table class="specs">
+  <tr><th>Forearm attachment</th><td>Feasible with a passive joint. With one joint on the forearm, aligned with the elbow, teleoperation worked. A rigid attachment made the operator move their body a lot and was uncomfortable, and the single passive joint mostly removed that.</td></tr>
+  <tr><th>Flat or vertical mount</th><td>Vertical. J2 gets a lot more range with the WAM mounted vertically, so the WAM can match the operator&rsquo;s kinematics much more closely. Mounted flat it can reach a similar pose, but the operator&rsquo;s elbow can&rsquo;t come closer than about 45&deg; to their body. The downside is that the WAM has to sit much higher for tabletop tasks. An elbow-up configuration would need an end-effector style device.</td></tr>
+  <tr><th>Attaching the arm</th><td>A strap with foam works reasonably well. ETH&rsquo;s cable clamping method is more refined and worth considering for a final version.</td></tr>
+  <tr><th>Human wrist range</th><td>Limiting the wrist to a human&rsquo;s range would almost certainly lower task completion. A fourth wrist joint would help make use of the follower WAM&rsquo;s very dexterous wrist.</td></tr>
+  <tr><th>Upper-arm attachment</th><td>Not necessary, and it adds a lot of bulk.</td></tr>
+  <tr><th>Passive joint at the hand</th><td>Doesn&rsquo;t seem necessary, though it needs more testing.</td></tr>
+</table>
