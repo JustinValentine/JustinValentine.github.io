@@ -1,0 +1,169 @@
+      <article class="post wrist-page">
+        <header class="post-header">
+          <p class="eyebrow">Computer Vision and Robotics Group &middot; University of Alberta</p>
+          <h1>A haptic wrist for the WAM</h1>
+          <p class="post-meta">The Alberta wrist. Built with Barrett Technology and demonstrated at IROS 2026 in Pittsburgh.</p>
+        </header>
+
+        <figure>
+          <img src="../images/wrist-front.jpg" alt="The aluminum wrist on an optical table against a black backdrop: a round base, two quarter-circle sectors on side plates, a spoked pulley between them, a black knurled handle across the top and a blue Puck drive on a motor module at the side" width="1600" height="1000">
+        </figure>
+
+        <p class="lede">The Alberta wrist is a force-feedback wrist for the Barrett WAM robot arm. On the end of a four-joint WAM it completes a seven-joint haptic leader: an operator holds the handle and moves their own arm, a second robot arm copies the motion, and the leader pushes back with the forces that robot meets. The wrist&rsquo;s three axes cross at the operator&rsquo;s own wrist, so a contact at the far robot&rsquo;s tool arrives as a torque about the wrist.</p>
+
+        <ul class="stats">
+          <li><strong>3 axes</strong><span>through the operator&rsquo;s wrist</span></li>
+          <li><strong>33&ndash;40&nbsp;Hz</strong><span>Bandwidth</span></li>
+          <li><strong>8.4&nbsp;N&middot;m</strong><span>Peak torque</span></li>
+          <li><strong>500&nbsp;Hz</strong><span>Control loop</span></li>
+        </ul>
+
+        <p>If you&rsquo;re here from <a href="https://www.cs.ualberta.ca/~vis/">our lab&rsquo;s</a> brochure, this is the longer version: what the wrist is for, how it works, what I&rsquo;ve measured, and where to read the details.</p>
+        <p class="jump">On this page: <a href="#action">In action</a> &middot; <a href="#why">What it&rsquo;s for</a> &middot; <a href="#how">How it works</a> &middot; <a href="#specs">Specifications</a> &middot; <a href="#measured">Measured</a> &middot; <a href="#history">History</a> &middot; <a href="#getting">Getting one</a> &middot; <a href="#more">Read more</a></p>
+
+        <div class="post-content">
+<h2 id="action">In action</h2>
+<p>At IROS 2026 in Pittsburgh, hundreds of visitors tried the wrist at <a href="https://barrett.com/">Barrett Technology</a>&rsquo;s booth, in a lightsaber game I wrote for it. The wrist&rsquo;s handle is the hilt. The arm sets where the hilt is and the wrist sets where the blade points. When the blades meet, the arm and the wrist push back, harder for a hit near the hilt than for one near the tip.</p>
+<figure class="square">
+  <iframe src="https://www.youtube-nocookie.com/embed/rJ-n_4hUC28" referrerpolicy="strict-origin-when-cross-origin" title="Haptic Saber Demo at IROS 2026" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  <figcaption>The haptic saber demo at IROS 2026, on YouTube.</figcaption>
+</figure>
+<p>The game runs inside the arm&rsquo;s 500&nbsp;Hz control loop, and its forces come from a model of two blades that can&rsquo;t pass through each other. I go through how it works in <a href="../posts/haptic-lightsaber/index.html">A haptic lightsaber game</a>.</p>
+
+<h2 id="why">What it&rsquo;s for</h2>
+<p>Teleoperation means a person drives a robot from somewhere else. With force feedback the link runs both ways: the operator&rsquo;s arm moves the robot, and what the robot touches pushes back on the operator. That helps wherever a job needs a person&rsquo;s judgement and hands but the person can&rsquo;t or shouldn&rsquo;t be there, and it&rsquo;s a way to show a robot how to do a task by doing the task through it.</p>
+<p>Our setup uses two WAMs. The WAM is a cable-driven robot arm made by Barrett Technology, about the size of a human arm and light enough on its joints to be pushed around by hand. The operator&rsquo;s arm rides along one of them, the leader, and the other, the follower, does the work.</p>
+<figure>
+  <img src="../images/alberta-wrist/iros-booth.jpg" alt="A trade show booth under a Barrett Drive Systems banner, with two white WAM arms on tripods, a large screen, and a table with a Barrett tablecloth; a person sits with an arm in the left WAM" width="1400" height="1050" loading="lazy">
+  <figcaption>September 27, 2026. Barrett&rsquo;s booth at IROS, with me in the leader WAM at the left.</figcaption>
+</figure>
+<p>The wrist is the hard part of a leader arm, for three reasons. It&rsquo;s where the hand meets the machine, so it&rsquo;s where a contact finally has to be felt. It hangs at the far end of the arm, so every gram of motor there is weight the operator swings around with their whole arm. And a human wrist doesn&rsquo;t bend the way a robot&rsquo;s does: ours rolls, pitches and then yaws, while the WAM&rsquo;s rolls, pitches and rolls again.</p>
+<p>A wrist for this job also has three things to do that pull against each other. It should stay out of the way while the follower moves freely, keep up with the operator&rsquo;s own wrist, and feel solid when the follower touches something.</p>
+
+<h2 id="how">How it works</h2>
+<h3>Three axes through your wrist</h3>
+<p>The wrist moves the way a human wrist does. Pronation&ndash;supination (PS) is the forearm&rsquo;s roll, as in turning a doorknob. Flexion&ndash;extension (FE) bends the hand toward the palm or the back of the hand. Ulnar&ndash;radial deviation (UR) tilts it sideways, toward the little finger or the thumb.</p>
+<p>The operator&rsquo;s forearm passes through the large ring bearing at the base, and the hand closes on the handle above it. All three axes cross at one point, and the handle puts the operator&rsquo;s own wrist joint on that point. This decides what the force feedback feels like. If a device pivots about the handle instead, the wrist joint has to swing along an arc whenever the hand bends, the forearm gets dragged along with it, and a torque from the motors turns partly into a shove along the forearm. With the axes through the wrist, a torque from the motors arrives as a torque.</p>
+<p>The wrist comes with three handles. Two are wrist-centred, one wide and one narrow, and the third is centred on the hand. The handle&rsquo;s angle clicks into place on a detent plate and locks with a thumb screw.</p>
+
+<h3>Cables in place of gears</h3>
+<p>Each joint is driven by a cable wound on a small pinion on its motor&rsquo;s shaft, the same kind of transmission the WAM itself uses. A cable drive has no backlash, and the reductions here are low: 8.75:1 on PS and 7.51:1 on the other two joints. A low ratio keeps the motors easy to turn from the handle side, which is what lets the operator feel the follower and not the wrist&rsquo;s own drive.</p>
+
+<h3>A differential for two of the joints</h3>
+<p>PS has a motor to itself. FE and UR share two motors through a cable differential. Each motor turns an input sector, and the two sectors drive a pulley that carries the handle. When both sectors turn the same way, the pulley stays locked in its cage and the whole cage tilts, which is FE. When they turn opposite ways, the cage stays put and the pulley turns on its axle, which is UR. Either motion gets the torque of both motors, and neither motor has to ride on the other&rsquo;s joint.</p>
+<figure>
+  <a href="../images/alberta-wrist/differential.png"><img src="../images/alberta-wrist/differential.png" alt="Two panels of the cable differential. (a) Both blue sectors turned 15 degrees the same way with the green pulley locked in a translucent cage that swings with them. (b) The sectors turned opposite ways and the pulley turned 15 degrees on its axle, with chevrons showing the four colored cables running over the rims" width="2000" height="706" loading="lazy"></a>
+  <figcaption>The differential. (a) FE: both sectors (blue) turn the same way, so the cables lock the pulley (green) in its cage and the cage swings. (b) UR: the sectors turn opposite ways and the pulley turns on its axle while the cage stays put. From my thesis.</figcaption>
+</figure>
+
+<h3>Three more joints on the WAM&rsquo;s own bus</h3>
+<p>Each motor is a TQ ILM50x08 frameless motor in a machined housing, with a hollow cable pinion for a shaft and a Barrett Puck P4-37 drive on its back. That&rsquo;s the WAM&rsquo;s own drive platform, so the wrist joins the arm&rsquo;s CAN bus as three more joints. It runs under the same control library, libbarrett, with the WAM&rsquo;s safety board watching it, and it takes a new torque command every 2&nbsp;ms.</p>
+<p>Between the WAM&rsquo;s elbow and the wrist is a forearm link with one free joint that has a sensor but no motor. A WAM&rsquo;s upper arm is 550&nbsp;mm long, against about 330&nbsp;mm for an adult&rsquo;s, and the free joint takes up the difference, so the operator&rsquo;s shoulder and elbow aren&rsquo;t forced onto the robot&rsquo;s path.</p>
+<figure>
+  <a href="../images/wrist-cad.jpg"><img src="../images/wrist-cad.jpg" alt="Exploded CAD view of the wrist: handle, side plates, differential cage and pulley, input sectors, FE/UR motor modules, PS motor module, PS platform and fixed internal pulley" width="1400" height="1219" loading="lazy"></a>
+  <figcaption>The wrist exploded by subassembly, drawn from the CAD for my thesis.</figcaption>
+</figure>
+<p>The cage, platform, side plates, pulley and handle are 6061-T6 aluminum, and the pinion shafts are 7075-T6. The <a href="../posts/haptic-wrist-barrett/index.html">design and build post</a> has the sections, the FEA and the motor and ratio choices.</p>
+
+<h2 id="specs">Specifications</h2>
+<table class="specs">
+  <tr><th>Joints</th><td>Pronation&ndash;supination (PS), flexion&ndash;extension (FE) and ulnar&ndash;radial deviation (UR), with axes that meet at the operator&rsquo;s wrist</td></tr>
+  <tr><th>Range of motion</th><td>PS 172&deg;, FE 131&deg;, UR 69&deg;, measured between the stops with the other joints centred. FE and UR share the differential, so their limits depend on each other.</td></tr>
+  <tr><th>Peak torque</th><td>PS 8.4&nbsp;N&middot;m. FE or UR alone 14.5&nbsp;N&middot;m, or 7.2&nbsp;N&middot;m on each at once. Set by the drives&rsquo; current limit, and not yet measured at the handle.</td></tr>
+  <tr><th>Continuous torque</th><td>PS 2.6&nbsp;N&middot;m. FE or UR alone 4.5&nbsp;N&middot;m.</td></tr>
+  <tr><th>Position bandwidth</th><td>33&nbsp;Hz (PS), 38&nbsp;Hz (FE) and 40&nbsp;Hz (UR) at &minus;3&nbsp;dB</td></tr>
+  <tr><th>Inertia at the joint</th><td>138, 31.5 and 22.5&nbsp;kg&middot;cm&sup2; (PS, FE, UR)</td></tr>
+  <tr><th>Sliding friction</th><td>361, 65 and 143&nbsp;mN&middot;m (PS, FE, UR)</td></tr>
+  <tr><th>Motors</th><td>Three TQ ILM50x08 frameless motors</td></tr>
+  <tr><th>Drives</th><td>One Barrett Puck&reg; P4-37&trade; per motor, on the WAM&rsquo;s 48&nbsp;V bus</td></tr>
+  <tr><th>Transmission</th><td>Cable. 8.75:1 on PS, and 7.51:1 from each of two motors into a cable differential that FE and UR share.</td></tr>
+  <tr><th>Cables</th><td>1.12&nbsp;mm tungsten on the drives and 1.37&nbsp;mm stainless steel in the differential, both 7&times;7&times;7, with one-way-clutch tensioners</td></tr>
+  <tr><th>Control</th><td>Torque commands at 500&nbsp;Hz over CANopen (CiA 402, cyclic synchronous torque), under libbarrett and the WAM&rsquo;s safety board</td></tr>
+  <tr><th>Position sensing</th><td>At the motors, 4096 counts per turn: 0.010&deg; per count on PS and 0.006&deg; on FE and UR</td></tr>
+  <tr><th>Structure</th><td>6061-T6 aluminum, with 7075-T6 pinion shafts</td></tr>
+  <tr><th>Handles</th><td>Three: two wrist-centred, wide and narrow, and one hand-centred. The angle is set on a detent plate.</td></tr>
+  <tr><th>Mounts on</th><td>A four-joint WAM, through a forearm link with one passive, sensed joint</td></tr>
+</table>
+
+<h2 id="measured">What I&rsquo;ve measured</h2>
+<p>In October 2026 I put the wrist on a bench and ran every joint through a set of experiments for friction, inertia, bandwidth, large motions and rendered contact. Each joint was tested with its axis vertical, so gravity put no torque on it.</p>
+<div class="pair natural plot-video">
+  <figure>
+    <a href="../images/wrist-bandwidth.png"><img src="../images/wrist-bandwidth.png" alt="Bode plot of tracking gain and phase for the three wrist joints, crossing minus 3 dB between 33 and 40 Hz" width="1046" height="962" loading="lazy"></a>
+    <figcaption>Measured tracking response of each joint: &minus;3&nbsp;dB at 33, 38 and 40&nbsp;Hz.</figcaption>
+  </figure>
+  <figure>
+    <video autoplay muted loop playsinline preload="metadata" width="540" height="960">
+      <source src="../images/wrist-test-suite/envelope-fe.mp4" type="video/mp4">
+    </video>
+    <figcaption>October 18, 2026. FE following 4&nbsp;Hz sinusoids that grow from &plusmn;19&deg; to &plusmn;38&deg;, the last at 985&nbsp;&deg;/s.</figcaption>
+  </figure>
+</div>
+<ul>
+  <li><strong>It&rsquo;s light to move.</strong> The inertia at the joints is 138&nbsp;kg&middot;cm&sup2; on PS, 31.5 on FE and 22.5 on UR. On FE and UR that&rsquo;s comparable to the hand&rsquo;s own inertia about the wrist, and on every axis it&rsquo;s at or below OpenWrist, a comparable research wrist exoskeleton.</li>
+  <li><strong>It keeps up.</strong> The position loop follows commands up to 33 to 40&nbsp;Hz. PS follows a &plusmn;10&deg; sinusoid up to 8.3&nbsp;Hz, and FE and UR up to at least 14.9 and 13.8&nbsp;Hz, where the test reached its own limits before the wrist did.</li>
+  <li><strong>It&rsquo;s strong enough to matter.</strong> The design target was 7&nbsp;N&middot;m of peak torque on each axis, the average maximum wrist strength of young men in extension, their weakest direction. The drives allow 8.4&nbsp;N&middot;m on PS and 14.5&nbsp;N&middot;m on FE or UR alone.</li>
+  <li><strong>PS has the most friction.</strong> It slides at 361&nbsp;mN&middot;m, against 65 on FE and 143 on UR.</li>
+  <li><strong>Delay sets how stiff a contact can feel.</strong> Through the 500&nbsp;Hz loop on the control PC, where 3 to 4&nbsp;ms pass between a measurement and the torque it produces, PS holds a virtual spring of 327&nbsp;N&middot;m/rad, and FE and UR hold 33 and 38. In the Puck&rsquo;s own position loop, with light damping, PS stays stable past 2000.</li>
+</ul>
+<p>That last result is the main finding of my thesis, which compares this wrist with the <a href="../posts/wham-wrist/index.html">WHAM wrist</a> that came before it. The stiffness of the contact a leader wrist can render is set by the delay of the loop that renders it, working against the joint&rsquo;s friction, and not by the wrist&rsquo;s inertia or its torque.</p>
+<p>The torques above come from the drives&rsquo; own current measurement. I haven&rsquo;t checked them against an outside sensor yet, and the tests that need one (torque calibration, cable stiffness, continuous torque and transparency with a hand on the handle) are still to run. Every number, plot and method is in <a href="../posts/wrist-test-suite/index.html">A test suite for the haptic wrist</a>, and the <a href="https://github.com/JustinValentine/haptic_wrist_characterization">code is on GitHub</a>.</p>
+
+<h2 id="history">Fourteen years in the making</h2>
+<p>Our lab has worked on force-feedback teleoperation for fourteen years, and on wrists for the leader arm since 2014. The Alberta wrist comes after about a dozen prototypes.</p>
+<ul class="dated">
+  <li><span class="when">2003&ndash;2005</span><span>Before our lab&rsquo;s work, Barrett Technology builds a three-axis gimbal for the end of its WAM, as a teleoperation master for demolition work in nuclear settings (<a href="https://www.osti.gov/servlets/purl/881045">their report to the US Department of Energy</a>). Later versions appear in rehabilitation and DARPA demos. It&rsquo;s the starting point for our wrists.</span></li>
+  <li><span class="when">2014</span><span>A new way of mounting the WAM lets it work as an approximate exoskeleton, with the operator&rsquo;s arm riding along it. One- and two-joint wrists follow, prototyped in wood, with a wooden capstan.</span></li>
+  <li><span class="when">2016</span><span>A three-joint wooden wrist, with sensors on its joints.</span></li>
+  <li><span class="when">2018&ndash;2019</span><span>A group of mechanical engineering students builds the first cable differential and actuates it.</span></li>
+  <li><span class="when">2021&ndash;2024</span><span>A second cable differential, later moved to moteus motor controllers. In 2024 it&rsquo;s the wrist on the leader for our <a href="../posts/mobile-manipulator/index.html">haptic mobile manipulator</a>, which opens a door and turns the valve on a venting pipe by teleoperation for DND&rsquo;s IDEaS challenge.</span></li>
+  <li><span class="when">2023</span><span>I try a <a href="../posts/spherical-wrist-agile-eye/index.html">spherical parallel wrist</a> after Laval&rsquo;s Agile Eye.</span></li>
+  <li><span class="when">2024</span><span>A <a href="../posts/direct-drive-gimbal-wrist/index.html">direct-drive gimbal</a>, to test strapping the WAM to the operator&rsquo;s forearm with and without a passive joint.</span></li>
+  <li><span class="when">2025</span><span>Three more: a <a href="../posts/end-effector-wrist/index.html">direct-drive wrist held like an end effector</a>, a fully actuated wooden wrist with single-stage cable drives, and the compact <a href="../posts/coaxial-semi-differential-wrist/index.html">coaxial semi-differential wrist</a>.</span></li>
+  <li><span class="when">2026</span><span>The <a href="../posts/wham-wrist/index.html">WHAM wrist</a>, with two haptic joints and a thumb joystick, machined in aluminum. Then four months at Barrett Technology and the <a href="../posts/haptic-wrist-barrett/index.html">Alberta wrist</a>.</span></li>
+</ul>
+<ul class="lineage">
+  <li><a class="thumb" href="../posts/spherical-wrist-agile-eye/index.html" tabindex="-1" aria-hidden="true"><img src="../images/spm/spm-assembled.jpg" alt="" loading="lazy"></a><p><span class="year">2023</span><a href="../posts/spherical-wrist-agile-eye/index.html">Spherical wrist</a></p></li>
+  <li><a class="thumb" href="../posts/direct-drive-gimbal-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../images/direct-drive-gimbal-wrist/thumb-full.jpg" alt="" loading="lazy"></a><p><span class="year">2024</span><a href="../posts/direct-drive-gimbal-wrist/index.html">Direct-drive gimbal</a></p></li>
+  <li><a class="thumb" href="../posts/end-effector-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../images/end-effector-wrist/thumb.jpg" alt="" loading="lazy" style="object-position: 100% 60%"></a><p><span class="year">2025</span><a href="../posts/end-effector-wrist/index.html">End-effector wrist</a></p></li>
+  <li><a class="thumb" href="../posts/coaxial-semi-differential-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../images/coaxial-semi-differential-wrist/thumb-full.jpg" alt="" loading="lazy"></a><p><span class="year">2025</span><a href="../posts/coaxial-semi-differential-wrist/index.html">Coaxial semi-differential wrist</a></p></li>
+  <li><a class="thumb" href="../posts/wham-wrist/index.html" tabindex="-1" aria-hidden="true"><img src="../images/wham-wrist/thumb-full.jpg" alt="" loading="lazy"></a><p><span class="year">2026</span><a href="../posts/wham-wrist/index.html">WHAM wrist</a></p></li>
+  <li><a class="thumb" href="../posts/haptic-wrist-barrett/index.html" tabindex="-1" aria-hidden="true"><img src="../images/wrist-lab.jpg" alt="" loading="lazy"></a><p><span class="year">2026</span><a href="../posts/haptic-wrist-barrett/index.html">Alberta wrist</a></p></li>
+</ul>
+<p>The Alberta wrist itself went from cardboard to a conference booth in four months.</p>
+<div class="strip">
+  <figure>
+    <a href="../images/alberta-wrist/cardboard.jpg"><img src="../images/alberta-wrist/cardboard.jpg" alt="A hand holding a cardboard model: a round cardboard disc with two sector-shaped cardboard pieces hot-glued to its edge" loading="lazy"></a>
+    <figcaption>May 26. Cardboard and hot glue.</figcaption>
+  </figure>
+  <figure>
+    <a href="../images/alberta-wrist/printed-final-layout.jpg"><img src="../images/alberta-wrist/printed-final-layout.jpg" alt="A black printed wrist on a desk next to a digital caliper, with a knurled grip over a spoked pulley and a blue Puck on the motor housing" loading="lazy"></a>
+    <figcaption>July 21. Printed.</figcaption>
+  </figure>
+  <figure>
+    <a href="../images/alberta-wrist/first-assembled.jpg"><img src="../images/alberta-wrist/first-assembled.jpg" alt="A hand holding an assembled aluminum wrist with a knurled grip, the spoked pulley, an aluminum sector on one side and a black printed sector on the other" loading="lazy"></a>
+    <figcaption>August 26. Machined.</figcaption>
+  </figure>
+  <figure>
+    <a href="../images/alberta-wrist/on-wam.jpg"><img src="../images/alberta-wrist/on-wam.jpg" alt="Looking down on the aluminum wrist mounted on a white WAM arm, with the knurled handle and a Puck on a motor module" loading="lazy"></a>
+    <figcaption>September 23. On a WAM.</figcaption>
+  </figure>
+</div>
+
+<h2 id="getting">Getting one</h2>
+<p>The Alberta wrist is available for purchase. If you&rsquo;d like one for your WAM, email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+<p>The wrist runs on a WAM whose Pucks speak CANopen. Three pieces of software have to match: CANopen firmware on the P4-37 Pucks, safety board firmware rev 202 or later, and the CANopen branch of libbarrett on an external control PC. So far it&rsquo;s been run from a PC with Ubuntu 20.04 and a PEAK PCAN-USB adapter, and it hasn&rsquo;t been tested with the WAM&rsquo;s embedded PC/104. The control loop is fixed at 500&nbsp;Hz. A user manual is in draft.</p>
+
+<h2 id="more">Read more</h2>
+<ul class="more">
+  <li><a href="../posts/haptic-wrist-barrett/index.html">The Alberta wrist</a><span>The design and the build, from a cardboard model in May to IROS in September, with the motor and ratio choices and the FEA.</span></li>
+  <li><a href="../posts/wrist-test-suite/index.html">A test suite for the haptic wrist</a><span>Every bench measurement, how each one is made, and the comparison with the WHAM wrist. <a href="https://github.com/JustinValentine/haptic_wrist_characterization">Code on GitHub</a>.</span></li>
+  <li><a href="../posts/haptic-lightsaber/index.html">A haptic lightsaber game</a><span>The IROS demo: how the blade forces are computed, the opponents and the Meta Quest 3 viewer.</span></li>
+  <li><a href="../posts/wham-wrist/index.html">Building the WHAM wrist</a><span>The wrist before this one, with two haptic joints, a thumb joystick and tensioners inside the motor pinions.</span></li>
+  <li><a href="../topics/haptics/index.html">All my haptics posts</a><span>The earlier wrists, the mobile manipulator and the rest.</span></li>
+  <li><a href="https://arxiv.org/abs/2607.01201">Sensorless four-channel teleoperation</a><span>Our lab&rsquo;s paper on the WAM leader and follower that the wrist is built for. Noohian, Miller, Valentine, Lynch and Jagersand, arXiv 2607.01201.</span></li>
+  <li>On LinkedIn<span><a href="https://www.linkedin.com/feed/update/urn:li:activity:7503904034324365312/">Four months at Barrett</a> and <a href="https://www.linkedin.com/feed/update/urn:li:activity:7511937046878433280/">the IROS lightsaber duels</a>.</span></li>
+</ul>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+      </article>

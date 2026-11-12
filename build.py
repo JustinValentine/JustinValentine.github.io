@@ -383,7 +383,17 @@ def build_about():
     write(os.path.join(ROOT, "about", "index.html"), page("About", body, 1, current="about", description="About Justin Valentine, who builds robots and other machines in Edmonton.", path="about/"))
 
 
+def build_wrist():
+    """The wrist overview at wrist/, the short address printed on the CVRG lab brochure."""
+    body = open(os.path.join(ROOT, "src", "wrist.html"), encoding="utf-8").read().rstrip()
+    os.makedirs(os.path.join(ROOT, "wrist"), exist_ok=True)
+    write(os.path.join(ROOT, "wrist", "index.html"), page(
+        "A haptic wrist for the WAM", body, 1, path="wrist/", image="images/wrist-front.jpg",
+        description="The Alberta wrist is a three-axis, cable-driven force-feedback wrist for the Barrett WAM, built with Barrett Technology and shown at IROS 2026: what it's for, how it works, what it measures and where to read more."))
+
+
 def build_redirect(path, target, label):
+    os.makedirs(os.path.join(ROOT, path), exist_ok=True)
     write(os.path.join(ROOT, path, "index.html"), f"""<!doctype html>
 <html lang="en">
   <head>
@@ -440,6 +450,7 @@ def main():
     build_feed(posts)
     build_redirect("projects", "../index.html", "the homepage")
     build_redirect("categories", "../topics/index.html", "Topics")
+    build_wrist()
     print(f"Built {len(posts)} posts.")
 
 
