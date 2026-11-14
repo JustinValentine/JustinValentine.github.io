@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tiling the hyperbolic plane | Justin Valentine</title>
-    <meta name="description" content="My Python program for drawing regular hyperbolic tilings in the Poincaré disk. It reflects one polygon across its own edges over and over.">
+    <meta name="description" content="A Python program that draws regular hyperbolic tilings in the Poincaré disk by reflecting one polygon across its own edges, over and over.">
     <link rel="canonical" href="https://justinvalentine.ca/posts/hyperbolic-tilings/">
     <meta property="og:site_name" content="Justin Valentine">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Tiling the hyperbolic plane">
-    <meta property="og:description" content="My Python program for drawing regular hyperbolic tilings in the Poincaré disk. It reflects one polygon across its own edges over and over.">
+    <meta property="og:description" content="A Python program that draws regular hyperbolic tilings in the Poincaré disk by reflecting one polygon across its own edges, over and over.">
     <meta property="og:url" content="https://justinvalentine.ca/posts/hyperbolic-tilings/">
     <meta property="og:image" content="https://justinvalentine.ca/images/hyperbolic-tilings/grow.jpg">
     <meta name="twitter:card" content="summary_large_image">
@@ -47,19 +47,19 @@
   <figcaption>Five pentagons at every corner, each split into five kites.</figcaption>
 </figure>
 
-<p>My program from February 2023 draws tilings like this one. The tiles look like they shrink toward the edge, but in the geometry they live in they&rsquo;re all the same size. They tile the hyperbolic plane, and the disk is a map of it. It&rsquo;s written in Python, builds each tiling from a single polygon and draws it as SVG or PNG. A small desktop interface lets you pick the tiling, colours and size.</p>
+<p>These tiles look like they shrink toward the edge, but in the geometry they live in they&rsquo;re all the same size: they tile the hyperbolic plane, and the disk is a map of it. I wrote the program that draws them in February 2023. It&rsquo;s in Python, builds each tiling from a single polygon and outputs SVG or PNG, with a small desktop interface for picking the tiling, colours and size.</p>
 
 <h2>Which tilings are hyperbolic</h2>
 <p>A regular tiling \(\{p, q\}\) has \(p\)-sided polygons with \(q\) of them meeting at every corner, so each corner angle is \(2\pi/q\). On a flat plane a regular \(p\)-gon has corner angles of \((p-2)\pi/p\), and the two only agree when</p>
 \[ (p - 2)(q - 2) = 4, \]
-<p>which gives squares, triangles and hexagons. In the hyperbolic plane, polygons have smaller angles than flat ones with the same number of sides, so more of them fit around a corner. That gives the condition</p>
+<p>which gives squares, triangles and hexagons. In the hyperbolic plane, polygons have smaller angles than flat ones with the same number of sides, so more of them fit around a corner. The condition becomes</p>
 \[ (p - 2)(q - 2) &gt; 4, \]
 <p>and infinitely many tilings: \(\{5,4\}\), \(\{4,5\}\), \(\{3,7\}\), \(\{8,3\}\) and so on.</p>
 
 <h2>The Poincar&eacute; disk</h2>
-<p>I draw everything in the Poincar&eacute; disk, the unit disk with the metric</p>
+<p>Everything is drawn in the Poincar&eacute; disk, the unit disk with the metric</p>
 \[ ds = \frac{2\,|dz|}{1 - |z|^2}. \]
-<p>Distances blow up near the edge, which is why equal tiles look smaller there. Straight lines in this geometry are diameters and circular arcs that meet the edge of the disk at right angles. The outlines get thinner toward the edge too, scaled with \(\sqrt{1 - |z|^2}\).</p>
+<p>Distances blow up near the edge, hence the shrinking tiles. Straight lines in this geometry are diameters and circular arcs that meet the edge of the disk at right angles. The outlines get thinner toward the edge too, scaled with \(\sqrt{1 - |z|^2}\).</p>
 <p>The first polygon sits at the centre. For a regular \(\{p,q\}\) polygon, the hyperbolic distance \(R\) from its centre to a corner satisfies \(\cosh R = \cot(\pi/p)\cot(\pi/q)\), and in the disk that corner sits at radius \(r = \tanh(R/2)\). Working that through gives</p>
 \[ r = \sqrt{\frac{\cos(\pi/p + \pi/q)}{\cos(\pi/p - \pi/q)}}. \]
 
@@ -69,17 +69,17 @@
 <p>which maps the disk to itself and keeps hyperbolic distances. That turns the edge into a straight diameter, so the reflection is just a complex conjugate rotated into line with \(T_a(b)\):</p>
 \[ w = \overline{T_a(z)}\,\frac{T_a(b)}{\overline{T_a(b)}}, \qquad z' = T_a^{-1}(w) = \frac{w + a}{1 + \bar a w}. \]
 <p>This is steadier than inverting through each edge&rsquo;s circle directly, because edges near the centre are almost straight and their circles have huge radii.</p>
-<p>The tiling grows outward, breadth first, with each tile reflected across each of its edges. A spatial hash on tile centres catches any reflection that lands on a tile that already exists, and the two shared corners get copied exactly so edges don&rsquo;t drift apart. Growth stops once tile centres get within a pixel of the edge of the disk. Past that point the tiles are smaller than a pixel, and there are infinitely many of them.</p>
+<p>The tiling grows outward breadth first, reflecting each tile across each of its edges. A spatial hash on tile centres catches any reflection that lands on an existing tile, and the two shared corners are copied exactly so edges don&rsquo;t drift apart. Growth stops once tile centres get within a pixel of the edge of the disk; past that, the tiles are smaller than a pixel and there are infinitely many of them.</p>
 
 <figure style="max-width: 32rem">
   <video autoplay muted loop playsinline preload="metadata" poster="../../images/hyperbolic-tilings/grow.jpg" width="700" height="700">
     <source src="../../images/hyperbolic-tilings/grow.mp4" type="video/mp4">
   </video>
-  <figcaption>The default kite tiling growing from the centre, rendered by the program one batch of tiles at a time. The full image has 7,055 tiles.</figcaption>
+  <figcaption>The default kite tiling growing from the centre, one batch of tiles at a time. The full image has 7,055 tiles.</figcaption>
 </figure>
 
 <h2>Kites and colours</h2>
-<p>The pastel design at the top starts from \(\{5,5\}\): five pentagons at every corner. I split each pentagon into five kites by joining its centre to the hyperbolic midpoints of its edges, so every kite has corners of 72&deg; and 90&deg; in turn. The colours come from a seeded greedy pass that gives each tile whichever colour its already-coloured neighbours use least, so the same seed always gives the same picture.</p>
+<p>The pastel design at the top starts from \(\{5,5\}\). Joining each pentagon&rsquo;s centre to the hyperbolic midpoints of its edges splits it into five kites, each with corners of 72&deg; and 90&deg; in turn. The colours come from a seeded greedy pass that gives each tile whichever colour its already-coloured neighbours use least, so the same seed always gives the same picture.</p>
 
 <div class="pair natural">
   <figure>
@@ -96,7 +96,7 @@
   </figure>
 </div>
 
-<p>SVG output keeps every edge as an exact circular arc and needs only Python&rsquo;s standard library. PNG output and the desktop preview use Pillow. The tests check the geometry itself: that reflections keep side lengths and angles, that every edge meets the edge of the disk at right angles, that shared edges line up, and that the right number of tiles meet at each corner.</p>
+<p>SVG output keeps every edge as an exact circular arc and needs only Python&rsquo;s standard library; PNG output and the desktop preview use Pillow. The tests check the geometry itself: that reflections keep side lengths and angles, that every edge meets the edge of the disk at right angles, that shared edges line up, and that the right number of tiles meet at each corner.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../painting-robot/index.html">&larr; A painting robot</a><a href="../six-camera-panorama/index.html">A 360° camera from six $20 action cameras &rarr;</a></nav>

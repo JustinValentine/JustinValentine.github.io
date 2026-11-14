@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A direct-drive end-effector wrist | Justin Valentine</title>
-    <meta name="description" content="A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.">
+    <meta name="description" content="A 3D-printed, directly driven leader wrist for the WAM that the operator holds like an end effector, with nothing strapped to the arm; I demoed it at RISEx 2025.">
     <link rel="canonical" href="https://justinvalentine.ca/posts/end-effector-wrist/">
     <meta property="og:site_name" content="Justin Valentine">
     <meta property="og:type" content="article">
     <meta property="og:title" content="A direct-drive end-effector wrist">
-    <meta property="og:description" content="A 3D-printed leader wrist for the WAM with three directly driven joints and a bike-grip handle. The operator holds it like an end effector, with nothing strapped to the arm. I demo it at RISEx 2025.">
+    <meta property="og:description" content="A 3D-printed, directly driven leader wrist for the WAM that the operator holds like an end effector, with nothing strapped to the arm; I demoed it at RISEx 2025.">
     <meta property="og:url" content="https://justinvalentine.ca/posts/end-effector-wrist/">
     <meta property="og:image" content="https://justinvalentine.ca/images/end-effector-wrist/thumb.jpg">
     <meta name="twitter:card" content="summary_large_image">
@@ -58,16 +58,15 @@
   <figcaption>The Z-Y-X version in CAD. Z4, Z5 and Z6 are the axes of J5, J6 and J7.</figcaption>
 </figure>
 
-<p>After the gimbal, I try going the other way. This is a three-joint wrist for the leader WAM in our lab&rsquo;s teleoperation setup. It&rsquo;s an end-effector design: the operator holds a handle at the end of the arm, and nothing is strapped to their forearm. The <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a> before it is our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton.</p>
-<p>I demo this wrist at RISEx 2025, and it&rsquo;s the one on the leader arm in our <a href="https://arxiv.org/abs/2607.01201">sensorless four-channel teleoperation paper</a>.</p>
+<p>The <a href="../direct-drive-gimbal-wrist/index.html">direct-drive gimbal wrist</a> was our test of strapping the WAM to the operator&rsquo;s forearm as an approximate exoskeleton. With this one I went the other way: a three-joint wrist for our lab&rsquo;s leader WAM that the operator simply holds by a handle, with nothing strapped to their forearm. I demoed it at RISEx 2025.</p>
 
 <h2>Why an end-effector design</h2>
-<p>We look at an end-effector design to get away from the discomfort of the exoskeleton-style wrists. Those are only approximate exoskeletons, with many kinematic misalignments with the operator&rsquo;s arm and no redundant degrees of freedom, so they&rsquo;re very uncomfortable to use.</p>
-<p>The second reason is the way physical &ldquo;twisty-turny&rdquo; interfaces work. They often have fewer degrees of freedom than the limb that drives them. A motorcycle throttle or a bike pedal takes the complicated motion of an arm or a leg and maps it onto one degree of freedom. A handle at the end of the arm lets the operator work several degrees of freedom at once, fluidly, through one physical interface.</p>
-<p>How the WAM is mounted matters too. Mounted flat with the elbow up, the WAM may call for more extreme wrist movements than when it&rsquo;s mounted vertically with the elbow down. For a flat mount with the elbow up, an end-effector design seems like a must.</p>
+<p>The first reason was comfort. Our exoskeleton-style wrists are only approximate, with many kinematic misalignments with the operator&rsquo;s arm and no redundant degrees of freedom, which makes them very uncomfortable to use.</p>
+<p>The second is the way physical &ldquo;twisty-turny&rdquo; interfaces work. They often have fewer degrees of freedom than the limb that drives them: a motorcycle throttle or a bike pedal maps the complicated motion of an arm or a leg onto one. A handle at the end of the arm lets the operator work several degrees of freedom at once, fluidly, through one physical interface.</p>
+<p>Mounting matters too. Mounted flat with the elbow up, the WAM may call for more extreme wrist movements than mounted vertically with the elbow down, and for the flat layout an end-effector design seems like a must.</p>
 
 <h2>The build</h2>
-<p>All three joints are driven directly, since that makes prototyping easy. J5 uses a CubeMars GL80, and J6 and J7 each use a CubeMars GL60. The structure is 3D printed, and the handle is a bike grip. There are two versions with different joint layouts, Z-Y-Z and Z-Y-X.</p>
+<p>All three joints are driven directly to keep prototyping easy.</p>
 
 <table class="specs">
   <tr><th>Joints</th><td>3, directly driven</td></tr>
@@ -77,7 +76,7 @@
   <tr><th>Structure</th><td>3D printed, with a bike grip for the handle</td></tr>
 </table>
 
-<p>For comparison, the torques I list for the WAM&rsquo;s own wrist are 6.75&nbsp;N&middot;m at J5 and J6 and 1.36&nbsp;N&middot;m at J7. At peak, the GL80 gives 43% of the WAM&rsquo;s J5 figure and the GL60 gives 26% of its J6 figure. J7 is the exception. There, the GL60&rsquo;s 1.75&nbsp;N&middot;m peak is above the WAM&rsquo;s 1.36. In use, the motors saturate when they render collisions.</p>
+<p>For comparison, the torques I list for the WAM&rsquo;s own wrist are 6.75&nbsp;N&middot;m at J5 and J6 and 1.36&nbsp;N&middot;m at J7. At peak, the GL80 gives 43% of the WAM&rsquo;s J5 figure and the GL60 26% of its J6 figure, though at J7 the GL60 beats the WAM. In use, the motors saturate when rendering collisions.</p>
 
 <h2>Moving the singularity</h2>
 <figure>
@@ -85,7 +84,7 @@
   <figcaption>Left, the first layout, which copies the WAM&rsquo;s wrist (Z-Y-Z). Right, the Z-Y-X layout, where J7 turns about the grip&rsquo;s own axis.</figcaption>
 </figure>
 
-<p>The first version has the same joint layout as the WAM&rsquo;s wrist. That puts a singularity right in the centre of the workspace, and it keeps causing problems. We hit gimbal lock there, and with a degree of freedom gone, J5 and J7 move interchangeably. How well you can pitch and roll the handle then depends on where J5 is.</p>
+<p>Copying the WAM&rsquo;s joint layout put a singularity right in the centre of the workspace, and it kept causing problems. We hit gimbal lock there: with a degree of freedom gone, J5 and J7 move interchangeably, and how well you can pitch and roll the handle depends on where J5 is.</p>
 <p>In the Z-Y-Z layout the handle&rsquo;s orientation is</p>
 \[ R = R_z(\theta_5)\,R_y(\theta_6)\,R_z(\theta_7). \]
 <p>At \(\theta_6 = 0\) the middle rotation drops out and</p>
@@ -102,38 +101,37 @@
 <p>At \(\theta_6 = 0\) it&rsquo;s perpendicular to both the J5 and J6 axes, so the handle can turn about any axis. It only lines up with J5 at \(\theta_6 = \pm 90^\circ\). The singularity is still there, but now it&rsquo;s a quarter turn of J6 away from the home pose.</p>
 
 <h2>Orientation control</h2>
-<p>To get around the singularity, and to open up more design options, we move the wrist off joint-to-joint bidirectional teleoperation and onto orientation-to-orientation control, based on libbarrett&rsquo;s orientation controller. The WAM&rsquo;s other four joints keep their joint-to-joint mapping. It works well. The wrist is still intuitive to operate, and we can move smoothly through the singularity.</p>
+<p>To get around the singularity, and to open up more design options, we moved the wrist from joint-to-joint bidirectional teleoperation to orientation-to-orientation control, based on libbarrett&rsquo;s orientation controller, while the WAM&rsquo;s other four joints kept their joint-to-joint mapping. It worked well: the wrist is still intuitive and moves smoothly through the singularity.</p>
 
 <h2>Using it</h2>
 <figure class="tall">
   <video controls muted loop playsinline preload="none" poster="../../images/end-effector-wrist/teleop-lab.jpg" width="700" height="698">
     <source src="../../images/end-effector-wrist/teleop-lab.mp4" type="video/mp4">
   </video>
-  <figcaption>Teleoperating in the lab. The operator holds the wrist on the leader WAM in front, and the follower WAM is behind it at the pipe fittings.</figcaption>
+  <figcaption>Teleoperating in the lab: the leader WAM with the wrist in front, the follower WAM behind it at the pipe fittings.</figcaption>
 </figure>
 
-<p>Of the prototypes we have at this point, this one does best on task completion and on the operator&rsquo;s mental load.</p>
-<p>Its large range of motion lets the operator use the full range of the WAM&rsquo;s wrist, which is a lot larger than a human wrist&rsquo;s. We find that extra range critical for most tasks. The WAM&rsquo;s hand is much less flexible than a human hand, so it has to be nearly perpendicular to a surface to grasp something on it. A two-finger gripper could partly get around that.</p>
-<p>Here&rsquo;s the total range of each WAM wrist joint, next to the human wrist motion I pair it with:</p>
+<p>Of the prototypes we had then, this one did best on task completion and operator mental load. It lets the operator use the full range of the WAM&rsquo;s wrist, a lot larger than a human wrist&rsquo;s, and we found that extra range critical for most tasks. The WAM&rsquo;s hand is much less flexible than a human hand, so it has to be nearly perpendicular to a surface to grasp something on it. A two-finger gripper could partly get around that.</p>
+<p>Each WAM wrist joint pairs with a human wrist motion:</p>
 <table class="specs">
   <tr><th>J5 (yaw)</th><td>WAM 344&deg;. Human pronation&ndash;supination 180&deg;.</td></tr>
   <tr><th>J6 (pitch)</th><td>WAM 180&deg;. Human flexion&ndash;extension 180&deg;.</td></tr>
   <tr><th>J7 (roll)</th><td>WAM 344&deg;. Human radial&ndash;ulnar deviation 50&deg;.</td></tr>
 </table>
 
-<p>With an experienced operator, the haptics seem to slow tasks down, because moving through free space feels sluggish. Free space feeling free is one of Kenneth Salisbury&rsquo;s three main design considerations for the PHANToM. The feedback does give a sense of safety during a task, though, since you can feel how hard the follower is working.</p>
-<p>Dropping the approximate exoskeleton has downsides. We lose control of the arm as a whole, and the operator often has to help position the WAM with their other arm during a task. That makes the system harder to use, and it limits what you can do in single-arm situations, like one person running two WAMs at once. One fix would be a virtual coupling between the operator&rsquo;s arm and the WAM. Since it would live in software, there&rsquo;s a lot of freedom in how it behaves.</p>
+<p>With an experienced operator the haptics seem to slow tasks down, because free space feels sluggish, and free space feeling free is one of Kenneth Salisbury&rsquo;s three main design considerations for the PHANToM. The feedback does give a sense of safety, though, since you can feel how hard the follower is working.</p>
+<p>Dropping the approximate exoskeleton costs us control of the arm as a whole, and the operator often has to help position the WAM with their other arm. That makes the system harder to use and limits single-arm situations, like one person running two WAMs at once. One fix would be a virtual coupling between the operator&rsquo;s arm and the WAM; living in software, it would leave a lot of freedom in how it behaves.</p>
 
 <h2>At RISEx 2025</h2>
 <figure class="tall">
   <img src="../../images/end-effector-wrist/risex-booth.jpg" alt="Two WAM arms bolted to black plates on a metal frame under a Computer Vision and Robotics Group poster. The left arm has a robot hand over toy blocks on a black table. The right arm ends in a grey printed wrist, and a visitor's hand holds its handle" width="900" height="960" loading="lazy">
-  <figcaption>Our lab&rsquo;s booth. The follower WAM, left, has its hand on a block. A visitor holds the wrist on the leader WAM, right.</figcaption>
+  <figcaption>Our lab&rsquo;s booth. The follower WAM, left, has its hand on a block, and a visitor holds the wrist on the leader WAM, right.</figcaption>
 </figure>
-<p>In November 2025 our lab, the Computer Vision and Robotics Group, has a booth at RISEx, the Robotics &amp; Intelligent Systems Expo at the University of Alberta, and I demo this wrist there. Both WAMs are bolted to a vertical frame, and visitors drive the follower from the leader to stack blocks.</p>
+<p>In November 2025 our lab, the Computer Vision and Robotics Group, had a booth at RISEx, the Robotics &amp; Intelligent Systems Expo at the University of Alberta. Both WAMs were bolted to a vertical frame, and visitors drove the follower from the leader to stack blocks.</p>
 
 <figure>
   <img src="../../images/end-effector-wrist/risex-blocks.jpg" alt="A busy expo floor. In the foreground is the leader WAM with the grey printed wrist; across a table of toy blocks, a visitor reaches toward the follower WAM's hand" width="1280" height="960" loading="lazy">
-  <figcaption>The booth during the expo, with the leader&rsquo;s wrist in the foreground and the follower&rsquo;s hand over the blocks.</figcaption>
+  <figcaption>The booth during the expo, with the leader&rsquo;s wrist in the foreground.</figcaption>
 </figure>
 
 <figure>
@@ -141,11 +139,11 @@
   <figcaption>Our group at the RISEx 2025 booth.</figcaption>
 </figure>
 
-<h2>In the four-channel paper</h2>
-<p>This wrist is on the leader arm in <a href="https://arxiv.org/abs/2607.01201">Sensorless Four-Channel Control Architecture Using Inverse Dynamics Modeling for Human-Scale Bilateral Teleoperation</a>, by Amir Noohian, Dylan Miller, me, Alan Lynch and Martin Jagersand, submitted to IROS 2026. Amir is the first author. The paper describes the leader as a 4-DOF WAM with a 3-DOF custom haptic wrist. Its experiments only control the arm&rsquo;s first four joints, with the wrist joints locked and modelled as a rigid link.</p>
-
 <h2>What comes next</h2>
-<p>For the next design I go back to the forearm. The <a href="../coaxial-semi-differential-wrist/index.html">coaxial wrist</a> straps the operator&rsquo;s forearm into a cuff again, with cable drives instead of direct drive and a fourth joint that adds range.</p>
+<p>For the next design I went back to the forearm. The <a href="../coaxial-semi-differential-wrist/index.html">coaxial wrist</a> straps the operator&rsquo;s forearm into a cuff again, with cable drives instead of direct drive and a fourth joint that adds range.</p>
+
+<h2>Update, July 2026: the four-channel paper</h2>
+<p>This wrist was on the leader arm in <a href="https://arxiv.org/abs/2607.01201">Sensorless Four-Channel Control Architecture Using Inverse Dynamics Modeling for Human-Scale Bilateral Teleoperation</a>, by Amir Noohian (first author), Dylan Miller, me, Alan Lynch and Martin Jagersand, submitted to IROS 2026. The paper describes the leader as a 4-DOF WAM with a 3-DOF custom haptic wrist, though its experiments only control the arm&rsquo;s first four joints, with the wrist joints locked and modelled as a rigid link.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../coaxial-semi-differential-wrist/index.html">&larr; The coaxial semi-differential wrist</a><a href="../wham-wrist/index.html">Building the WHAM wrist &rarr;</a></nav>

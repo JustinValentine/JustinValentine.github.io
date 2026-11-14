@@ -2,7 +2,7 @@ title: Localizing a Create 2 with two lasers
 date: 2022-03
 topics: simulation, software, control
 math: yes
-summary: My 2022 idea for finding a robot in a room from two laser ranges to markers on the walls. I work out the geometry in a pygame simulation and write Python to drive an iRobot Create 2 over its serial port.
+summary: My idea for locating a robot in a room from two laser ranges to wall markers, worked out in pygame, plus Python to drive an iRobot Create 2.
 image: images/two-laser-localization/sim-poster.jpg
 video: images/two-laser-localization/sim.mp4
 ---
@@ -10,10 +10,10 @@ video: images/two-laser-localization/sim.mp4
   <video controls muted loop playsinline preload="none" poster="../../images/two-laser-localization/sim-poster.jpg" width="1068" height="800">
     <source src="../../images/two-laser-localization/sim.mp4" type="video/mp4">
   </video>
-  <figcaption>My simulation of the idea, Pos.py from March 2022. In the original you move the robot (the grey disc) with the mouse. For this post I swap the mouse for a scripted loop through all four quadrants and leave the drawing code unchanged. Green squares are the wall markers, red lines the two laser ranges and white circles every position that fits each range. The yellow dots are where the circles cross. Blue joins the two markers in use, magenta joins the two crossings, and the orange lines project the crossings onto the top and left walls.</figcaption>
+  <figcaption>Pos.py, my simulation from March 2022. The original moved the robot (grey disc) with the mouse; here a scripted loop through all four quadrants replaces it, with the drawing code unchanged. Green squares are wall markers, red lines the laser ranges, white circles every position that fits each range and yellow dots the crossings. Blue joins the markers in use, magenta joins the crossings, and orange projects the crossings onto the top and left walls.</figcaption>
 </figure>
 
-<p>In early 2022 I&rsquo;m working with an iRobot Create 2, which the repo&rsquo;s first README calls Anton the Robot Vacuum, and I have an idea for how it could find itself in a room. Put a marker at the middle of each wall. If the robot knows its distance to two of them, one on a side wall and one on the top or bottom wall, it knows where it is up to a single ambiguity. Two lasers give the two distances. I work the geometry out in a small pygame simulation and, separately, write the Python that drives the Create 2 over its serial cable. The code lives in a private GitHub repo, with commits from February to May 2022.</p>
+<p>I have an iRobot Create 2, which the repo&rsquo;s README calls Anton the Robot Vacuum, and an idea for how it could find itself in a room. Put a marker at the middle of each wall. If the robot knows its distance to two of them, one on a side wall and one on the top or bottom, it knows where it is up to a single ambiguity, and two lasers can measure those distances. I worked out the geometry in a small pygame simulation and, separately, wrote the Python that drives the Create 2 over its serial cable. It all lives in a private GitHub repo.</p>
 
 <table class="specs">
   <tr><th>Robot</th><td>iRobot Create 2</td></tr>
@@ -21,11 +21,11 @@ video: images/two-laser-localization/sim.mp4
   <tr><th>Robot commands</th><td>iRobot Open Interface: Start (128), Safe mode (131), Drive Direct (145), Song (140) and Play Song (141)</td></tr>
   <tr><th>Localization</th><td>Two laser ranges to markers at the wall midpoints, solved by intersecting two circles</td></tr>
   <tr><th>Software</th><td>Python, pyserial, pygame, NumPy</td></tr>
-  <tr><th>Dates</th><td>February 23 to May 9, 2022, from the git history. The simulation is from March 20.</td></tr>
+  <tr><th>Dates</th><td>From February 23, 2022, in the git history. The simulation is from March 20.</td></tr>
 </table>
 
 <h2>The idea</h2>
-<p>The room is a square with a marker at the middle of each wall. The robot uses the two markers nearest to it: the one on the top or bottom wall, whichever is closer, and the one on the left or right wall. In the code that choice is a quadrant check. Comparing \(x\) with the room&rsquo;s centre line picks left or right, and comparing \(y\) picks top or bottom. Call the two markers \(A\) and \(B\) and the two laser ranges \(r_A\) and \(r_B\). The robot is somewhere on a circle of radius \(r_A\) around \(A\) and somewhere on a circle of radius \(r_B\) around \(B\), so it has to be at one of the two points where those circles cross.</p>
+<p>The robot uses the two markers nearest to it, picked by a quadrant check: comparing \(x\) with the room&rsquo;s centre line picks left or right, and comparing \(y\) picks top or bottom. Call them \(A\) and \(B\), with laser ranges \(r_A\) and \(r_B\). The robot lies on a circle of radius \(r_A\) around \(A\) and on one of radius \(r_B\) around \(B\), so it must be at one of the two points where those circles cross.</p>
 
 <figure style="max-width: 30rem">
   <svg viewBox="0 0 440 528" role="img" aria-labelledby="geo-title geo-desc" style="width:100%;height:auto;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
@@ -88,7 +88,7 @@ video: images/two-laser-localization/sim.mp4
       <text x="262" y="513">marker not in use</text>
     </g>
   </svg>
-  <figcaption>The geometry for a robot in the top-right quadrant. The marker positions are known and the lasers measure \(r_A\) and \(r_B\). The two circles cross at the robot \(P\) and at \(P'\), its mirror image across \(AB\).</figcaption>
+  <figcaption>A robot in the top-right quadrant. The lasers measure \(r_A\) and \(r_B\) to the known markers, and the two circles cross at the robot \(P\) and at \(P'\), its mirror image across \(AB\).</figcaption>
 </figure>
 
 <h2>The math</h2>
@@ -98,42 +98,48 @@ video: images/two-laser-localization/sim.mp4
 \[ s = a = \frac{r_A^2 - r_B^2 + D^2}{2D}, \]
 \[ t = \pm h = \pm\sqrt{r_A^2 - a^2}, \]
 \[ P = A + a\,\hat{\mathbf e} \pm h\,\hat{\mathbf n} . \]
-<p>That&rsquo;s what <code>FindCirInt</code> in Pos.py computes. It returns <code>None</code> when the circles miss each other or one sits inside the other.</p>
+<p>That&rsquo;s what <code>FindCirInt</code> in Pos.py computes, returning <code>None</code> when the circles miss or one sits inside the other.</p>
 
-<p>Pos.py also reads the answer off as angles, and this is where the room&rsquo;s shape comes in. With the markers at the wall midpoints, \(AB\) is the diagonal of the quadrant, so it runs at 45&deg; to both walls. The chord between the two crossings has length \(c = 2h\) and spans an angle \(2\varphi\) at \(A\), with</p>
+<p>Pos.py also reads the answer off as angles, which is where the room&rsquo;s shape comes in. With the markers at the wall midpoints, \(AB\) is the diagonal of the quadrant, at 45&deg; to both walls. The chord between the two crossings has length \(c = 2h\) and spans an angle \(2\varphi\) at \(A\), with</p>
 \[ \sin\varphi = \frac{c}{2 r_A} . \]
-<p>The two candidates then sit at 45&deg; &plusmn; \(\varphi\) from the wall through \(A\). In a frame at \(A\) with one axis along the wall and the other pointing into the room,</p>
+<p>So the two candidates sit at 45&deg; &plusmn; \(\varphi\) from the wall through \(A\). In a frame at \(A\) with one axis along the wall and the other pointing into the room,</p>
 \[ P - A = r_A\,(\cos\theta,\ \sin\theta), \]
 \[ \theta = 45^\circ \pm \varphi . \]
-<p>Those are <code>FindWidthC1</code> and <code>FindHeightC1</code>, and the simulation draws its orange lines from these coordinates. Inside a quadrant \(\varphi\) never goes past 45&deg;, so taking the arcsine is safe.</p>
+<p>Those are <code>FindWidthC1</code> and <code>FindHeightC1</code>, which give the simulation its orange lines. Inside a quadrant \(\varphi\) never passes 45&deg;, so the arcsine is safe.</p>
 
-<p>Here is an example in the simulation&rsquo;s 800-pixel room, where the markers sit 5 pixels in from the walls and \(y\) points down. The robot is at \((640, 150)\), the top marker is \(A = (400, 5)\) and the right marker is \(B = (795, 400)\). Then</p>
+<p>For example, in the simulation&rsquo;s 800-pixel room, with the markers 5 pixels in from the walls and \(y\) pointing down, the robot is at \((640, 150)\), the top marker is \(A = (400, 5)\) and the right marker is \(B = (795, 400)\). Then</p>
 \[ r_A = 280.4, \quad r_B = 294.2, \]
 \[ D = 558.6, \quad a = 272.2, \]
 \[ h = 67.2, \quad \varphi = 13.9^\circ . \]
 <p>The angles \(45^\circ \mp 13.9^\circ\) give the two candidates \((640, 150)\) and \((545, 245)\).</p>
 
 <h2>Two answers</h2>
-<p>The two candidates are mirror images across \(AB\). Since \(AB\) is the diagonal of the quadrant, and reflecting a square across its diagonal maps it onto itself, both candidates always land in the same quadrant. Knowing the quadrant doesn&rsquo;t say which one is the robot. The simulation draws both in yellow and doesn&rsquo;t choose between them. It also takes the quadrant from the true position, the mouse, which a real robot would need to get some other way.</p>
-<p>The two candidates are \(2h\) apart, twice the robot&rsquo;s distance from \(AB\). They&rsquo;re far apart when the robot is deep in a corner or near the middle of the room, and they merge as it crosses \(AB\). You can see them come together and split again in the video above.</p>
+<p>The candidates are mirror images across \(AB\). Since \(AB\) is the quadrant&rsquo;s diagonal, and reflecting a square across its diagonal maps it onto itself, both always land in the same quadrant, so the quadrant can&rsquo;t tell them apart. The simulation draws both in yellow and doesn&rsquo;t choose. It also cheats on the quadrant, taking it from the true position (the mouse), which a real robot would have to get some other way.</p>
+<p>They&rsquo;re \(2h\) apart, twice the robot&rsquo;s distance from \(AB\): far apart deep in a corner or near the middle of the room, and merging as the robot crosses \(AB\), as in the video.</p>
 
 <h2>How sensitive it is</h2>
-<p>The simulation uses exact distances. To see how laser noise would carry into the position, linearize. A small move \(\delta P\) changes each range by the part of \(\delta P\) along that laser:</p>
+<p>The simulation uses exact distances. To see how laser noise would carry into the position, linearize: a small move \(\delta P\) changes each range by the part of \(\delta P\) along that laser:</p>
 \[ \delta r_A = \hat{\mathbf u}_A \cdot \delta P, \qquad \delta r_B = \hat{\mathbf u}_B \cdot \delta P, \]
 <p>where \(\hat{\mathbf u}_A\) and \(\hat{\mathbf u}_B\) are unit vectors from the markers to the robot. Stack them as the rows of a \(2 \times 2\) matrix \(J\), so \(\delta P = J^{-1}\,\delta\mathbf r\). If both ranges have independent errors with standard deviation \(\sigma\), the RMS position error is</p>
 \[ \sigma_P = \sigma\sqrt{\operatorname{tr}\!\big((J^{\mathsf T} J)^{-1}\big)} = \frac{\sqrt{2}\,\sigma}{|\sin\gamma|}, \]
-<p>where \(\gamma\) is the angle between the two laser lines at the robot. The best case, when the lasers cross at a right angle, is \(\sqrt 2\,\sigma\). By Thales&rsquo; theorem that happens on the circle with \(AB\) as its diameter, which passes through the centre of the room and the corner of the quadrant. The error grows as the robot approaches \(AB\). On \(AB\) itself the two lasers point in opposite directions and the circles only touch.</p>
+<p>where \(\gamma\) is the angle between the two laser lines at the robot. The best case, lasers crossing at a right angle, is \(\sqrt 2\,\sigma\), and by Thales&rsquo; theorem that happens on the circle with \(AB\) as its diameter, through the centre of the room and the corner of the quadrant. The error grows as the robot approaches \(AB\). On \(AB\) itself the lasers point in opposite directions and the circles only touch.</p>
 
 <figure style="max-width: 32rem">
   <img src="../../images/two-laser-localization/error-map.png" alt="A square map of the room shaded in six bands of blue. Light bands near the centre and the four corners mark error ratios of 1.41 to 2. Dark bands run between neighbouring wall markers in a diamond, where the ratio is over 10" width="1000" height="1180" loading="lazy">
-  <figcaption>Computed for this post, not measured: \(\sigma_P/\sigma\) over the simulation&rsquo;s room, using Pos.py&rsquo;s marker positions and quadrant rule. The dashed lines are the quadrant boundaries. About 44% of the room is under 2 and 9% is over 10. Feeding noisy ranges through Pos.py&rsquo;s own <code>FindCirInt</code> agrees with the formula to within 1% away from the dark bands. Right on a marker line, about half the noisy readings give circles that don&rsquo;t meet at all.</figcaption>
+  <figcaption>Computed for this post, not measured: \(\sigma_P/\sigma\) over the simulation&rsquo;s room, with Pos.py&rsquo;s marker positions and quadrant rule. Dashed lines are the quadrant boundaries. About 44% of the room is under 2 and 9% is over 10. Away from the dark bands, noisy ranges fed through Pos.py&rsquo;s own <code>FindCirInt</code> match the formula to within 1%; right on a marker line, about half of them give circles that don&rsquo;t meet at all.</figcaption>
 </figure>
 
 <h2>Driving the Create 2</h2>
-<p>The other half of the repo talks to the robot. The Create 2 takes commands over its serial port through iRobot&rsquo;s Open Interface. My scripts open the port at 115200 baud, send Start (128) and Safe mode (131), and then drive with Drive Direct (145), which takes the right and left wheel speeds in mm/s as signed 16-bit big-endian numbers:</p>
+<p>The other half of the repo talks to the robot through iRobot&rsquo;s Open Interface. My scripts open the serial port at 115200 baud, send Start (128) and Safe mode (131), then drive with Drive Direct (145), which takes right and left wheel speeds in mm/s as signed 16-bit big-endian numbers:</p>
 <pre><code>cmd = struct.pack(">Bhh", 145, V_r, V_l)
 sendCommandRaw(cmd)</code></pre>
-<p>The first test script, from February 2022, plays a single quarter-second note when it connects (opcodes 140 and 141). It then opens a 400 &times; 400 pygame window that stands for a 1&nbsp;m &times; 1&nbsp;m floor, and moving the mouse paints grid cells into a path. For the test drive the script uses four fixed waypoints near the corners of that square instead: a diagonal, one side and the other diagonal. <code>RobotMove</code> covers each leg by turning in place with the wheels at &plusmn;300&nbsp;mm/s and then driving straight at 300&nbsp;mm/s. Both moves are timed, using half the Create 2&rsquo;s wheel spacing, 117.5&nbsp;mm, for the turn. Nothing measures where the robot actually ends up. In May I cut it down to a keyboard drive: 1 forward, 2 back and 3 stop, at 500&nbsp;mm/s, the fastest Drive Direct allows.</p>
+<p>The first test script, from February 2022, played a quarter-second note on connecting (opcodes 140 and 141) and opened a 400 &times; 400 pygame window standing in for a 1&nbsp;m &times; 1&nbsp;m floor, where the mouse painted grid cells into a path. The test drive ignored the path in favour of four fixed waypoints near the corners: a diagonal, one side and the other diagonal. <code>RobotMove</code> turned in place with the wheels at &plusmn;300&nbsp;mm/s, then drove straight at 300&nbsp;mm/s. Both moves were timed, the turn using half the Create 2&rsquo;s wheel spacing, 117.5&nbsp;mm, and nothing measured where the robot actually ended up.</p>
 
 <h2>Where it stands</h2>
-<p>The repo stops there. The simulation and the drive code are separate, and there&rsquo;s no code in it that reads real laser ranges or runs <code>FindCirInt</code> on the robot. A Create 2 shows up again a year later, as the base of the <a href="../six-camera-panorama/index.html">six-camera panorama rig</a> from my CMPUT 428 project with Justin Rozeboom.</p>
+<p>The simulation and the drive code haven&rsquo;t met: nothing in the repo reads real laser ranges or runs <code>FindCirInt</code> on the robot.</p>
+
+<h2>Update, May 2022</h2>
+<p>In May I cut the test script down to a keyboard drive: 1 forward, 2 back and 3 stop, at 500&nbsp;mm/s, the fastest Drive Direct allows. The repo stops there, at May 9, 2022. The simulation and the drive code never met.</p>
+
+<h2>Update, April 2023</h2>
+<p>A Create 2 showed up again a year later, as the base of the <a href="../six-camera-panorama/index.html">six-camera panorama rig</a> from my CMPUT 428 project with Justin Rozeboom.</p>

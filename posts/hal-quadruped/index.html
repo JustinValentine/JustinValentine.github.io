@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HAL, a quadruped with an actuated spine | Justin Valentine</title>
-    <meta name="description" content="HAL is my quadruped, built like Solo 8 but with a motorized spine so it might do a backflip, or even a double. I go through the figure-skater math behind the spine and a year of building, then HAL Gym, where I&#x27;m training it to flip.">
+    <meta name="description" content="A quadruped like Solo 8 but with a motorized spine, meant to backflip: the figure-skater physics behind it, a year of building, and HAL Gym for training the flip.">
     <link rel="canonical" href="https://justinvalentine.ca/posts/hal-quadruped/">
     <meta property="og:site_name" content="Justin Valentine">
     <meta property="og:type" content="article">
     <meta property="og:title" content="HAL, a quadruped with an actuated spine">
-    <meta property="og:description" content="HAL is my quadruped, built like Solo 8 but with a motorized spine so it might do a backflip, or even a double. I go through the figure-skater math behind the spine and a year of building, then HAL Gym, where I&#x27;m training it to flip.">
+    <meta property="og:description" content="A quadruped like Solo 8 but with a motorized spine, meant to backflip: the figure-skater physics behind it, a year of building, and HAL Gym for training the flip.">
     <meta property="og:url" content="https://justinvalentine.ca/posts/hal-quadruped/">
     <meta property="og:image" content="https://justinvalentine.ca/images/hal/hal-first-legs.jpg">
     <meta name="twitter:card" content="summary_large_image">
@@ -49,27 +49,27 @@
   <figcaption>April 7, 2024. HAL stands on its own legs.</figcaption>
 </figure>
 
-<p>The goal for HAL is simple: a quadruped similar to <a href="https://open-dynamic-robot-initiative.github.io/">Solo 8</a>, the open-source robot from the Open Dynamic Robot Initiative, that can do a backflip, or even a double backflip. The big change from Solo is an articulated spine. HAL&rsquo;s body is two halves joined by a QDD100 actuator, and each half carries two legs. Each leg has two joints, driven through belts from motors on the body, so there are eight LA8308 motors in all.</p>
+<p>HAL is a quadruped similar to <a href="https://open-dynamic-robot-initiative.github.io/">Solo 8</a>, the open-source robot from the Open Dynamic Robot Initiative, and the goal is a backflip, or even a double. The big change from Solo is an articulated spine: HAL&rsquo;s body is two halves joined by a QDD100 actuator, each carrying two legs. Each leg has two joints, belt-driven from motors on the body, so there are eight LA8308 motors in all.</p>
 
 <h2>Why a spine</h2>
-<p>My reasoning starts with a figure skater. Once the robot leaves the ground, nothing can change its angular momentum about its centre of mass, because gravity acts at that point. So in flight</p>
+<p>The reasoning starts with a figure skater. Once the robot leaves the ground, nothing can change its angular momentum about its centre of mass, because gravity acts at that point. So in flight</p>
 \[ L = I(t)\,\omega(t) = \text{constant}, \]
 <p>and the robot turns through</p>
 \[ \Delta\theta = \int_0^{T} \frac{L}{I(t)}\,dt, \qquad T = \frac{2v_z}{g}, \]
-<p>where \(T\) is the flight time for a takeoff speed \(v_z\). A rigid robot turns through \(LT/I\). A skater who pulls their arms in lowers \(I\) and spins faster, and opens up again to slow down for the landing. A spine gives the robot a way to do the same: fold to spin faster in the middle of the flip, then straighten out before the feet come down.</p>
-<p>A flip of \(n\) full turns needs \(\Delta\theta = 2\pi n\). For a rigid body that means a takeoff angular momentum of</p>
+<p>where \(T\) is the flight time for a takeoff speed \(v_z\). A rigid robot turns through \(LT/I\). A skater who pulls their arms in lowers \(I\) and spins faster, then opens up to slow down for the landing. A spine lets the robot do the same: fold to spin faster mid-flip, then straighten out before the feet come down.</p>
+<p>A flip of \(n\) full turns needs \(\Delta\theta = 2\pi n\), so a rigid body needs a takeoff angular momentum of</p>
 \[ L = \frac{2\pi n\, I}{T}. \]
-<p>For example, a jump that peaks 0.5&nbsp;m above takeoff gives \(v_z = \sqrt{2gh} = 3.1\) m/s and \(T = 0.64\) s. A double flip (\(n = 2\)) then needs an average pitch rate of about 20 rad/s for the whole flight.</p>
-<p>How much the spine helps depends on how much mass it can move. In HAL&rsquo;s MuJoCo model, where for now only the motors have mass (3.3&nbsp;kg in all), the pitch inertia about the centre of mass is 0.047&nbsp;kg&middot;m&sup2; with the spine straight and 0.044&nbsp;kg&middot;m&sup2; with it at its 0.6&nbsp;rad stop. That&rsquo;s about 7%, because the motors sit close to the spine axis. The real robot&rsquo;s legs and pulleys will change that number.</p>
-<p>The spine also lets the robot turn without any angular momentum at all. If it flexes in the air, the two halves rotate in opposite directions so that the total stays zero. In the same model, flexing from straight to the 0.6&nbsp;rad stop pitches the rear half back by 0.30&nbsp;rad (17&deg;) and the front half forward by the same amount. That&rsquo;s a way to trim the landing angle after the flip is already committed.</p>
-<p>On the real robot, the spine can make HAL jump:</p>
+<p>A jump that peaks 0.5&nbsp;m above takeoff gives \(v_z = \sqrt{2gh} = 3.1\) m/s and \(T = 0.64\) s, so a double flip (\(n = 2\)) needs an average pitch rate of about 20 rad/s for the whole flight.</p>
+<p>How much the spine helps depends on how much mass it can move. In HAL&rsquo;s MuJoCo model, where for now only the motors have mass (3.3&nbsp;kg in all), the pitch inertia about the centre of mass is 0.047&nbsp;kg&middot;m&sup2; with the spine straight and 0.044&nbsp;kg&middot;m&sup2; with it at its 0.6&nbsp;rad stop. That&rsquo;s only about 7%, because the motors sit close to the spine axis; the real robot&rsquo;s legs and pulleys will change that number.</p>
+<p>The spine also lets the robot turn with no angular momentum at all. Flex it in the air and the two halves rotate in opposite directions, so the total stays zero. In the same model, flexing from straight to the 0.6&nbsp;rad stop pitches the rear half back by 0.30&nbsp;rad (17&deg;) and the front half forward by the same amount, which is a way to trim the landing angle once the flip is committed.</p>
+<p>On the real robot, the spine can also make HAL jump.</p>
 <figure>
   <iframe src="https://www.youtube-nocookie.com/embed/1ys1p49WGNA" referrerpolicy="strict-origin-when-cross-origin" title="Spine test #1" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
   <figcaption>Spine test #1, on YouTube.</figcaption>
 </figure>
 
 <h2>The first build</h2>
-<p>I start with mostly 3D-printed parts (carbon-fibre nylon) on an aluminum chassis that I mill on a Tormach.</p>
+<p>I started with mostly 3D-printed parts (carbon-fibre nylon) on an aluminum chassis milled on a Tormach.</p>
 
 <div class="pair portrait">
   <figure>
@@ -103,7 +103,7 @@
     <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-leg-tripod.jpg" width="540" height="960">
       <source src="../../images/hal/hal-leg-tripod.mp4" type="video/mp4">
     </video>
-    <figcaption>January 16. The leg swings on the tripod.</figcaption>
+    <figcaption>January 16. The leg swinging on the tripod.</figcaption>
   </figure>
   <figure>
     <video controls muted loop playsinline preload="none" poster="../../images/hal/hal-leg-rail.jpg" width="540" height="960">
@@ -125,7 +125,7 @@
 </div>
 
 <h2>Milling the pulleys</h2>
-<p>Each leg joint is driven through a small pulley on the motor and a big pulley on the joint, eight of each, plus eight top knee pulleys. The first ones are printed. Over the summer of 2024 I mill all of them in aluminum.</p>
+<p>Each leg joint is driven through a small pulley on the motor and a big pulley on the joint, eight of each, plus eight top knee pulleys. The first ones were printed; over the summer of 2024 I milled all of them in aluminum.</p>
 
 <div class="pair">
   <figure>
@@ -173,13 +173,16 @@
 </div>
 
 <h2>HAL Gym</h2>
-<p>To train it to flip, I&rsquo;ve written HAL Gym, a set of MuJoCo environments for jumping, flipping, walking and running. Vincent Zhang has since tidied it into an installable Gymnasium package.</p>
-<p>More recently I&rsquo;ve rebuilt the full 3D model from the CAD for MuJoCo MJX, with motor models that limit torque by current and back-EMF. On top of it I&rsquo;ve set up a backflip task that trains with Brax PPO on thousands of simulated robots in parallel, with domain randomization. The training isn&rsquo;t finished yet.</p>
+<p>To train the flip, I wrote HAL Gym, a set of MuJoCo environments for jumping, flipping, walking and running.</p>
 
 <figure>
   <img src="../../images/hal-sim.jpg" alt="The HAL quadruped's MuJoCo model standing on a plain floor" width="1200" height="750" loading="lazy" style="background: #fff">
-  <figcaption>HAL&rsquo;s MuJoCo model, rebuilt from the CAD.</figcaption>
+  <figcaption>HAL&rsquo;s MuJoCo model.</figcaption>
 </figure>
+
+<h2>Update</h2>
+<p>Vincent Zhang has since tidied HAL Gym into an installable Gymnasium package.</p>
+<p>I also rebuilt the full 3D model from the CAD for MuJoCo MJX, with motor models that limit torque by current and back-EMF, and set up a backflip task that trains with Brax PPO on thousands of simulated robots in parallel, with domain randomization. The training isn&rsquo;t finished yet.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../direct-drive-gimbal-wrist/index.html">&larr; A simple direct-drive gimbal wrist</a><a href="../dectalk-rnn/index.html">Writing DECtalk songs with an RNN &rarr;</a></nav>

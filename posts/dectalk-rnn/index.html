@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Writing DECtalk songs with an RNN | Justin Valentine</title>
-    <meta name="description" content="My CMPUT 652 course project: a character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing.">
+    <meta name="description" content="A character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing.">
     <link rel="canonical" href="https://justinvalentine.ca/posts/dectalk-rnn/">
     <meta property="og:site_name" content="Justin Valentine">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Writing DECtalk songs with an RNN">
-    <meta property="og:description" content="My CMPUT 652 course project: a character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing.">
+    <meta property="og:description" content="A character-level LSTM, trained on 1,085 DECtalk song files, that writes new songs for the old speech synthesizer to sing.">
     <meta property="og:url" content="https://justinvalentine.ca/posts/dectalk-rnn/">
     <meta property="og:image" content="https://justinvalentine.ca/images/dectalk-rnn/piano-roll.png">
     <meta name="twitter:card" content="summary_large_image">
@@ -44,7 +44,7 @@
         <div class="post-content">
 <p class="byline">A course project for CMPUT 652, Procedural Content Generation via Machine Learning, at the University of Alberta.</p>
 
-<p>DECtalk is a speech synthesizer from the 1980s, and it can also sing. You give it phonemes, each with a length and a pitch, and it holds each sound for that long on that note. People have written a lot of songs for it this way. I train a recurrent neural network on about a thousand of these song files and have it write new ones. The idea comes from the video <a href="https://youtu.be/8AwSZdNknIE">AI learns to sing CREEPY music</a>. The code, the trained weights and the samples are on <a href="https://github.com/JustinValentine/DECtalk_RNN">GitHub</a>.</p>
+<p>DECtalk is a speech synthesizer from the 1980s, and it can also sing. You give it phonemes, each with a length and a pitch, and it holds each sound for that long on that note. People have written a lot of songs for it this way. I trained a recurrent neural network on about a thousand of these song files and had it write new ones, an idea I got from the video <a href="https://youtu.be/8AwSZdNknIE">AI learns to sing CREEPY music</a>. Code, trained weights and samples are on <a href="https://github.com/JustinValentine/DECtalk_RNN">GitHub</a>.</p>
 
 <figure>
   <img src="../../images/dectalk-rnn/piano-roll.png" alt="Two piano rolls of pitch number against time: Deck the Halls from the training data on top, and a song written by the network below" width="1440" height="920">
@@ -53,7 +53,7 @@
 
 <figure>
   <audio controls preload="none" src="../../images/dectalk-rnn/good-song-3.m4a" style="width: 100%"></audio>
-  <figcaption>One of the generated songs. The text of its first two lines is further down.</figcaption>
+  <figcaption>A generated song.</figcaption>
 </figure>
 
 <h2>The song format</h2>
@@ -65,13 +65,13 @@ WIH&lt;200,20&gt;TH&lt;100&gt;BAW&lt;200,18&gt;Z&lt;100&gt;AH&lt;200,20&gt;V&lt;
 FAO&lt;150,20&gt;LAO&lt;150,22&gt;LAO&lt;150,23&gt;LAO&lt;125,20&gt;LAO&lt;450,22&gt;LAO&lt;150,20&gt;
 LAO&lt;300,18&gt;LAO&lt;300,17&gt;LAO&lt;450,18&gt;_&lt;150&gt;</code></pre>
 
-<p>The bracketed commands at the top set things up. <code>[:PHONE ON]</code> turns on phoneme input, <code>[:nv]</code> picks one of DECtalk&rsquo;s voices, <code>[:ra 180]</code> sets the speaking rate, and <code>[:dv ...]</code> tweaks the voice&rsquo;s settings. After that come the phonemes. <code>DEH&lt;350,25&gt;</code> is the &ldquo;de&rdquo; in &ldquo;deck&rdquo;, held for 350&nbsp;ms at pitch 25. Consonants at the end of a syllable usually get a length and no pitch, and <code>_</code> is a rest. The run of <code>LAO</code> is &ldquo;fa la la la la la la la la&rdquo;.</p>
+<p>The bracketed commands at the top set things up: <code>[:PHONE ON]</code> turns on phoneme input, <code>[:nv]</code> picks one of DECtalk&rsquo;s voices, <code>[:ra 180]</code> sets the speaking rate and <code>[:dv ...]</code> tweaks the voice. Then come the phonemes. <code>DEH&lt;350,25&gt;</code> is the &ldquo;de&rdquo; in &ldquo;deck&rdquo;, held for 350&nbsp;ms at pitch 25. Consonants at the end of a syllable usually get a length and no pitch, <code>_</code> is a rest, and the run of <code>LAO</code> is &ldquo;fa la la la la la la la la&rdquo;.</p>
 
 <h2>The data</h2>
-<p>The training songs come from <a href="https://theflameofhope.co/SONGS%20FOR%20PC'.html">theflameofhope.co</a>, which has pages of DECtalk songs sorted by category. A short script, <code>scrape.py</code>, downloads every <code>.txt</code> file linked from the Christmas, children&rsquo;s, country, gospel and rock pages. That gives 1,085 songs, everything from hymns and worship songs to Christmas carols and DECtalk versions of Madonna and Beatles songs. Joined into one string, that&rsquo;s about 4.3 million characters, drawn from 81 distinct characters.</p>
+<p>The training songs come from <a href="https://theflameofhope.co/SONGS%20FOR%20PC'.html">theflameofhope.co</a>, which sorts its DECtalk songs into category pages. A short script, <code>scrape.py</code>, downloads every <code>.txt</code> file linked from the Christmas, children&rsquo;s, country, gospel and rock pages: 1,085 songs, from hymns and Christmas carols to DECtalk versions of Madonna and the Beatles. Joined into one string, that&rsquo;s about 4.3 million characters drawn from 81 distinct characters.</p>
 
 <h2>The model</h2>
-<p>The network is a character-level LSTM in PyTorch. It reads the song text one character at a time and predicts the next one. I don&rsquo;t tell it anything about phonemes or pitches. To the model, <code>DEH&lt;350,25&gt;</code> is just eleven characters in a row.</p>
+<p>The network is a character-level LSTM in PyTorch that reads the song text one character at a time and predicts the next. It knows nothing about phonemes or pitches; to the model, <code>DEH&lt;350,25&gt;</code> is just eleven characters in a row.</p>
 
 <table class="specs">
   <tr><th>Input</th><td>One-hot vector over the 81 characters</td></tr>
@@ -83,12 +83,12 @@ LAO&lt;300,18&gt;LAO&lt;300,17&gt;LAO&lt;450,18&gt;_&lt;150&gt;</code></pre>
 
 <p>At each step the network takes the current character as a one-hot vector \(\mathbf{x}_t\), updates its state and scores every possible next character:</p>
 \[ \mathbf{h}_t = \operatorname{LSTM}(\mathbf{x}_t,\ \mathbf{h}_{t-1}), \qquad \mathbf{z}_t = W\mathbf{h}_t + \mathbf{b} . \]
-<p>Here \(\mathbf{h}_t\) stands for the state of both layers, and \(W\) and \(\mathbf{b}\) are the linear layer applied to the top layer&rsquo;s output. Training minimizes the cross-entropy between the softmax of \(\mathbf{z}_t\) and the character that actually comes next. To generate a song, I feed in <code>[:</code>, which is how every DECtalk command starts, and then sample each next character from</p>
+<p>Here \(\mathbf{h}_t\) stands for the state of both layers, and \(W\) and \(\mathbf{b}\) are the linear layer applied to the top layer&rsquo;s output. Training minimizes the cross-entropy between the softmax of \(\mathbf{z}_t\) and the character that actually comes next. To generate a song, I feed in <code>[:</code>, which is how every DECtalk command starts, and sample each next character from</p>
 \[ p(c_{t+1} = i) = \frac{\exp(z_{t,i}/T)}{\sum_j \exp(z_{t,j}/T)} \]
-<p>with temperature \(T = 0.8\). The sampled character goes back in as the next input. A temperature below 1 shifts probability toward the characters the model already rates highest.</p>
+<p>with temperature \(T = 0.8\), feeding each sampled character back in as the next input. A temperature below 1 shifts probability toward the characters the model already rates highest.</p>
 
 <h2>What it writes</h2>
-<p>In every sample the brackets and the <code>&lt;length,pitch&gt;</code> tags open and close in pairs, except at the very end, where the 1,000 characters run out partway through a phoneme. The samples run between 23 and 53 seconds. In all twenty I&rsquo;ve kept, the settings line at the top appears word for word in the training songs. The one in the sample below, <code>[:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]</code>, shows up in 412 of the 1,085 songs. Here&rsquo;s the start of that sample, the one at the top of the post, with line breaks added:</p>
+<p>In every sample the brackets and the <code>&lt;length,pitch&gt;</code> tags open and close in pairs, except at the very end, where the 1,000 characters run out partway through a phoneme. The samples run 23 to 53 seconds. In all twenty I kept, the settings line at the top appears word for word in the training songs. The one in the song at the top of the post, <code>[:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]</code>, shows up in 412 of the 1,085. Here&rsquo;s how that song starts, with line breaks added:</p>
 
 <pre><code>[:nv] [:ra 180] [:dv hs 95 br 0 as 90 ap 90 gn 75]
 [AY&lt;200,25&gt;MAH&lt;125,22&gt;ST&lt;75&gt;LAY&lt;300,25&gt;F&lt;100&gt;IH&lt;300,20&gt;Z&lt;100&gt;
@@ -105,14 +105,14 @@ DXIH&lt;125&gt;D&lt;75&gt;SAO&lt;125&gt;NX&lt;75&gt;IH&lt;125&gt;N&lt;75&gt;MAY&
   <figcaption>The &ldquo;la&rdquo; sample.</figcaption>
 </figure>
 
-<p>The twenty samples I&rsquo;ve kept in the repo each come with a WAV, sorted into a good folder and a bad folder. This one is from the bad folder:</p>
+<p>The twenty kept samples each have a WAV in the repo, sorted into a good folder and a bad folder.</p>
 
 <figure>
   <audio controls preload="none" src="../../images/dectalk-rnn/bad-song-5.m4a" style="width: 100%"></audio>
   <figcaption>A sample from the bad folder, in the Betty voice (<code>[:nb]</code>).</figcaption>
 </figure>
 
-<p>The README also links <a href="https://webspeak.terminal.ink/">webspeak.terminal.ink</a>, where you can play generated text in a browser.</p>
+<p>The README also links <a href="https://webspeak.terminal.ink/">webspeak.terminal.ink</a>, which plays generated text in a browser.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
         <nav class="post-nav" aria-label="Older and newer posts"><a href="../hal-quadruped/index.html">&larr; HAL, a quadruped with an actuated spine</a><a href="../sketch-generation-flow-matching/index.html">Drawing sketches with guided flow matching &rarr;</a></nav>
