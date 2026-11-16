@@ -76,6 +76,13 @@
       <description>A four-joint, cable-driven leader wrist for the WAM, with two drives stacked as rings around the forearm and a fourth motor that turns the whole wrist.</description>
     </item>
     <item>
+      <title>A boom for testing one HAL leg</title>
+      <link>https://justinvalentine.ca/posts/hal-leg-boom/</link>
+      <guid>https://justinvalentine.ca/posts/hal-leg-boom/</guid>
+      <pubDate>Fri, 20 Jun 2025 12:00:00 +0000</pubDate>
+      <description>A parallelogram boom that holds one of HAL&#x27;s legs level so it can hop around in a circle on its own.</description>
+    </item>
+    <item>
       <title>Drawing sketches with guided flow matching</title>
       <link>https://justinvalentine.ca/posts/sketch-generation-flow-matching/</link>
       <guid>https://justinvalentine.ca/posts/sketch-generation-flow-matching/</guid>
