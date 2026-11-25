@@ -6,6 +6,13 @@
     <description>Robots and the tools around them, by Justin Valentine.</description>
     <language>en</language>
     <item>
+      <title>A ball-balancing robot that bounces to Jingle Bells</title>
+      <link>https://justinvalentine.ca/posts/ball-balancing-robot/</link>
+      <guid>https://justinvalentine.ca/posts/ball-balancing-robot/</guid>
+      <pubDate>Wed, 25 Nov 2026 12:00:00 +0000</pubDate>
+      <description>My spherical wrist turned into a ball-balancing platform, with stereo cameras, a model-based controller, and a ball that bounces out Jingle Bells. So far, in simulation.</description>
+    </item>
+    <item>
       <title>A test suite for the haptic wrist</title>
       <link>https://justinvalentine.ca/posts/wrist-test-suite/</link>
       <guid>https://justinvalentine.ca/posts/wrist-test-suite/</guid>

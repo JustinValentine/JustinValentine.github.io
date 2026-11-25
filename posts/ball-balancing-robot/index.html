@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A ball-balancing robot that bounces to Jingle Bells | Justin Valentine</title>
+    <meta name="description" content="My spherical wrist turned into a ball-balancing platform, with stereo cameras, a model-based controller, and a ball that bounces out Jingle Bells. So far, in simulation.">
+    <link rel="canonical" href="https://justinvalentine.ca/posts/ball-balancing-robot/">
+    <meta property="og:site_name" content="Justin Valentine">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A ball-balancing robot that bounces to Jingle Bells">
+    <meta property="og:description" content="My spherical wrist turned into a ball-balancing platform, with stereo cameras, a model-based controller, and a ball that bounces out Jingle Bells. So far, in simulation.">
+    <meta property="og:url" content="https://justinvalentine.ca/posts/ball-balancing-robot/">
+    <meta property="og:image" content="https://justinvalentine.ca/images/ball-balancer/jingle-bells.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="../../favicon.ico" sizes="any">
+    <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-title" href="../../index.html">Justin Valentine</a>
+        <div class="nav-links">
+          <a href="../../topics/index.html">Topics</a>
+          <a href="../../about/index.html#papers">Papers</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../cv.pdf">CV</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <article class="post">
+        <header class="post-header">
+          <h1>A ball-balancing robot that bounces to Jingle Bells</h1>
+          <p class="post-meta">November 25, 2026 &middot; <a href="../../topics/control/index.html">Control</a>, <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/simulation/index.html">Simulation</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a></p>
+        </header>
+        <div class="post-content">
+<figure>
+  <video controls playsinline preload="metadata" poster="../../images/ball-balancer/jingle-bells.jpg" width="1280" height="720">
+    <source src="../../images/ball-balancer/jingle-bells.mp4" type="video/mp4">
+  </video>
+  <figcaption>The simulated robot bouncing a ping-pong ball to Jingle Bells. Each note sounds when the ball hits the plate. Turn the sound on.</figcaption>
+</figure>
+
+<p>Every bounce in that video is one note. The robot doesn&rsquo;t play anything: the ball hits the plate on the beat, and the length of each note is set by how long the ball stays in the air. Short notes are small hops and the held notes (&ldquo;bells&rdquo;, &ldquo;way&rdquo;) are big ones.</p>
+
+<p>This is the simulation. The real robot is built, but the controller hasn&rsquo;t run on it yet, so treat everything below as where I am, not where I ended up. I&rsquo;ll add photos and hardware video as I get them.</p>
+
+<h2>Where it came from</h2>
+<p>The platform started as my <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a>. I adapted it into a three-legged platform with a round acrylic plate on top. Bir Parkash has a <a href="https://bir-tech.vercel.app/portfolio/ball-balancing-robot">write-up of it balancing a ball</a> with one camera and a PD controller in Python and OpenCV, at about 60 frames a second.</p>
+<p>I wanted it to do more than hold the ball still, so I rebuilt the sensing and the control around two goals: hold the ball as tightly as the hardware allows, and bounce it on purpose.</p>
+
+<h2>The hardware</h2>
+<ul>
+  <li>Three EaglePower 8308 motors, the same ones as in my haptic bow demo, on moteus r4.11 controllers. They drive the plate directly through a crank and a rod each, with a PEAK CAN card in a Linux PC.</li>
+  <li>A 6.35&nbsp;mm acrylic plate, with the cameras underneath looking up through it.</li>
+  <li>Two Point Grey Dragonfly Express cameras as a stereo pair, triggered together by a Nucleo at 200 frames a second. Each one needs its own FireWire bus.</li>
+</ul>
+<p>The three cranks set the plate&rsquo;s roll, pitch and twist. Twisting is the odd one. Turning all three cranks together twists the plate, and it drops as it twists, so I run it at 20&deg; of twist. From there, twisting further lowers the plate and twisting back raises it, which gives the up-and-down stroke for bouncing.</p>
+
+<h2>Seeing the ball</h2>
+<p>The tracker is C++ with libdc1394 and OpenCV. It finds the ball in both images, matches them and triangulates, so every frame gives a 3D position, not just where the ball is on the plate. That matters once the ball leaves the plate.</p>
+<p>The catch is that the cameras look through the acrylic, and the plate tilts, so the refraction changes from frame to frame. The controller writes the plate&rsquo;s current tilt to a file, and the tracker uses it to bend each ray through the plate before triangulating. I calibrate the pair with a ChArUco board, with the acrylic taken off.</p>
+<p>Stereo depth gets worse with distance (roughly with distance squared), so a ball 200&nbsp;mm above the plate is measured much less precisely than one resting on it. The filter that reads the camera accounts for that.</p>
+
+<h2>Control</h2>
+<p>A camera frame is several milliseconds old by the time it reaches the controller, so a Kalman filter tracks the ball and predicts where it is now. It has three models for the ball: rolling on the plate, flying, and bouncing off it.</p>
+<p>Balancing is an LQR on the plate tilt. One thing surprised me. The plate tilts about a point well below its surface, so tilting it also slides the surface sideways under the ball. The controller has to correct for that, or the ball oscillates.</p>
+<p>For bouncing, each impact is planned. From the predicted flight, the controller picks the tilt and the stroke speed at impact so that the ball comes off at the right height and lands back near the target. It learns the ball&rsquo;s bounciness as it goes and corrects the height after every bounce.</p>
+<p>The gravity load of the plate and links is fitted with a calibration routine. The plate moves through about 40 poses, approaching each from both sides so friction cancels, and a model is fitted to the torques. The motors then don&rsquo;t need stiff gains just to hold the plate up.</p>
+
+<h2>Bouncing to a song</h2>
+<figure>
+  <img src="../../images/ball-balancer/jingle-rhythm.png" alt="Ball height above the plate over one line of Jingle Bells. The ball touches the plate on vertical gridlines 200 ms apart, with small hops for the short notes and big arcs for the held notes. Under each impact are the note and the syllable: E E E for jingle bells twice, then E G C D E for jingle all the way." width="1344" height="592" loading="lazy" style="background: #fff">
+  <figcaption>The ball&rsquo;s height above the plate over one line of Jingle Bells, in simulation. It lands on the 200&nbsp;ms grid, and the held notes are the big arcs.</figcaption>
+</figure>
+<p>Each note is a bounce, and the time until the next one is the note&rsquo;s length. Short notes at a 200&nbsp;ms beat need hops of about 50&nbsp;mm, and the held notes, 400&nbsp;ms, need about 190&nbsp;mm. To hit those, the plate has to strike at up to 0.8&nbsp;m/s.</p>
+<p>Getting it on the beat took two things. The ball&rsquo;s flight time has to be predicted well, including air drag, which is significant for a ping-pong ball. And the controller keeps a running correction for each note length, because the flights it asks for and the flights it gets are never quite the same. In simulation most impacts land within about 5&nbsp;ms of the beat.</p>
+<p>It also knows Twinkle Twinkle, Ode to Joy, Mary Had a Little Lamb and Shave and a Haircut. Jingle Bells is the one that sounds best.</p>
+
+<h2>How much I trust the simulation</h2>
+<p>The simulator is MuJoCo with the robot built from my Fusion assembly. The controller is the same C++ code that will run on the robot, so the simulation tests the real thing, not a copy of it.</p>
+<p>The risk is in what I can&rsquo;t measure well. To test it, I run it on simulated robots that are each wrong in their own random way, within ranges I think are realistic:</p>
+<ul>
+  <li>how far off the camera calibration is;</li>
+  <li>how accurately the encoders are zeroed;</li>
+  <li>how far the build is off from the CAD;</li>
+  <li>how accurate the motor torque is;</li>
+  <li>friction, extra mass on the plate;</li>
+  <li>camera noise, delays and dropped frames;</li>
+  <li>how bouncy the ball is.</li>
+</ul>
+<p>On 32 of those, every robot balanced the ball, typically within 2&nbsp;mm of the target and 3.5&nbsp;mm at worst, and every one bounced it steadily at 200&nbsp;mm.</p>
+<p>That test also found things to fix. A 1&nbsp;mm error in where the cameras sit made the ball look like it was inside the plate, which threw the songs off the beat by 40&nbsp;ms. The ball now rests for half a second before it launches, and the controller learns that offset from it.</p>
+<p>The songs are still the most fragile part. On the randomized robots most notes stay within about 10&nbsp;ms, but a few land well off, and on 7 of the 32 the ball got away partway through. A less bouncy ball is the worst case, since it needs more torque than I allow the motors.</p>
+
+<h2>Next</h2>
+<p>Next is the real robot: zero the encoders, calibrate the cameras, measure the delays, and run the gravity calibration. Then balance, bounce, and see if it can play Jingle Bells. I&rsquo;ll add photos and video here as I go.</p>
+<p>The code is on GitHub: <a href="https://github.com/JustinValentine/ball-balancing-robot">ball-balancing-robot</a>.</p>
+        </div>
+        <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
+        <nav class="post-nav" aria-label="Older and newer posts"><a href="../wrist-test-suite/index.html">&larr; A test suite for the haptic wrist</a><span></span></nav>
+        <section class="comments" id="comments">
+          <h2>Comments</h2>
+          <script src="https://giscus.app/client.js" data-repo="JustinValentine/JustinValentine.github.io" data-repo-id="R_kgDOVkY93w"
+            data-category="Announcements" data-category-id="DIC_kwDOVkY9384DKtdl" data-mapping="pathname" data-strict="1"
+            data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en"
+            data-loading="lazy" crossorigin="anonymous" async></script>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a> &middot; <a href="https://github.com/JustinValentine">GitHub</a> &middot; <a href="https://scholar.google.com/citations?user=Dwp3tBEAAAAJ&amp;hl=en">Google Scholar</a> &middot; <a href="../../index.xml">RSS</a></p>
+    </footer>
+    <script>
+      // With reduced motion on, hold autoplaying clips on their first frame.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("video[autoplay]").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+      }
+    </script>
+    <script>
+      // YouTube won't play embeds on a page opened from disk (file://), so there each
+      // embed becomes its thumbnail, linking to the video on YouTube.
+      if (location.protocol === "file:") {
+        document.querySelectorAll('iframe[src*="youtube"]').forEach(function (f) {
+          var id = f.src.split("/embed/")[1].split("?")[0];
+          var a = document.createElement("a");
+          a.href = "https://www.youtube.com/watch?v=" + id; a.target = "_blank"; a.rel = "noopener";
+          a.className = "yt-link";
+          a.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt=""><span>Watch on YouTube</span>';
+          f.replaceWith(a);
+        });
+      }
+    </script>
+  </body>
+</html>
