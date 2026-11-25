@@ -3,21 +3,24 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>A ball-balancing robot that bounces to Jingle Bells | Justin Valentine</title>
-    <meta name="description" content="My spherical wrist turned into a ball-balancing platform, with stereo cameras, a model-based controller, and a ball that bounces out Jingle Bells. So far, in simulation.">
+    <title>Turning my spherical wrist into a ball-balancing robot | Justin Valentine</title>
+    <meta name="description" content="A three-motor platform that balances, rolls and bounces a ping-pong ball, with stereo cameras looking up through the plate. Built, and so far running in simulation.">
     <link rel="canonical" href="https://justinvalentine.ca/posts/ball-balancing-robot/">
     <meta property="og:site_name" content="Justin Valentine">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="A ball-balancing robot that bounces to Jingle Bells">
-    <meta property="og:description" content="My spherical wrist turned into a ball-balancing platform, with stereo cameras, a model-based controller, and a ball that bounces out Jingle Bells. So far, in simulation.">
+    <meta property="og:title" content="Turning my spherical wrist into a ball-balancing robot">
+    <meta property="og:description" content="A three-motor platform that balances, rolls and bounces a ping-pong ball, with stereo cameras looking up through the plate. Built, and so far running in simulation.">
     <meta property="og:url" content="https://justinvalentine.ca/posts/ball-balancing-robot/">
-    <meta property="og:image" content="https://justinvalentine.ca/images/ball-balancer/jingle-bells.jpg">
+    <meta property="og:image" content="https://justinvalentine.ca/images/ball-balancer/circle.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="../../favicon.ico" sizes="any">
     <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="alternate" type="application/rss+xml" title="Justin Valentine" href="../../index.xml">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
   </head>
   <body>
     <header class="site-header">
@@ -35,7 +38,7 @@
     <main>
       <article class="post">
         <header class="post-header">
-          <h1>A ball-balancing robot that bounces to Jingle Bells</h1>
+          <h1>Turning my spherical wrist into a ball-balancing robot</h1>
           <p class="post-meta">November 25, 2026 &middot; <a href="../../topics/control/index.html">Control</a>, <a href="../../topics/vision/index.html">Computer vision</a>, <a href="../../topics/simulation/index.html">Simulation</a>, <a href="../../topics/mechanisms/index.html">Mechanisms</a></p>
         </header>
         <div class="post-content">
@@ -43,63 +46,102 @@
   <video controls playsinline preload="metadata" poster="../../images/ball-balancer/jingle-bells.jpg" width="1280" height="720">
     <source src="../../images/ball-balancer/jingle-bells.mp4" type="video/mp4">
   </video>
-  <figcaption>The simulated robot bouncing a ping-pong ball to Jingle Bells. Each note sounds when the ball hits the plate. Turn the sound on.</figcaption>
+  <figcaption>The simulated robot bouncing a ping-pong ball to Jingle Bells. Each note sounds when the ball hits the plate, so turn the sound on.</figcaption>
 </figure>
 
-<p>Every bounce in that video is one note. The robot doesn&rsquo;t play anything: the ball hits the plate on the beat, and the length of each note is set by how long the ball stays in the air. Short notes are small hops and the held notes (&ldquo;bells&rdquo;, &ldquo;way&rdquo;) are big ones.</p>
+<p>This is a three-motor platform that balances a ping-pong ball on a clear plate, rolls it around, and bounces it. Two cameras under the plate track the ball in 3D at 200 frames a second.</p>
+<p>The robot is built and the software is written, but the controller has only run in simulation so far, and everything on this page is from the simulator. I&rsquo;ll add photos and video of the real robot as I get them.</p>
 
-<p>This is the simulation. The real robot is built, but the controller hasn&rsquo;t run on it yet, so treat everything below as where I am, not where I ended up. I&rsquo;ll add photos and hardware video as I get them.</p>
+<h2>From a wrist to a platform</h2>
+<p>The robot started as my <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a> from 2023, which could only rotate about a point. I adapted it into a platform. Each motor now swings a crank, and a rod with a ball joint on top joins the crank to a round acrylic plate. The three motor axes still meet at one point above the base, as they did in the wrist.</p>
+<p>Bir Parkash got it balancing a ball first, with one camera and a PD controller in Python, and has <a href="https://bir-tech.vercel.app/portfolio/ball-balancing-robot">a write-up of that version</a>. I wanted to see how far it could go with faster cameras and a model of the ball, so the vision and control here are new.</p>
 
-<h2>Where it came from</h2>
-<p>The platform started as my <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a>. I adapted it into a three-legged platform with a round acrylic plate on top. Bir Parkash has a <a href="https://bir-tech.vercel.app/portfolio/ball-balancing-robot">write-up of it balancing a ball</a> with one camera and a PD controller in Python and OpenCV, at about 60 frames a second.</p>
-<p>I wanted it to do more than hold the ball still, so I rebuilt the sensing and the control around two goals: hold the ball as tightly as the hardware allows, and bounce it on purpose.</p>
+<figure>
+  <img src="../../images/ball-balancer/poses.jpg" alt="Two renders of the robot: three motors on a wooden ring, each with a black crank and rod up to a clear round plate. On the left the plate has dropped onto the motors. On the right the legs are raised and an orange ball sits on the plate" width="1812" height="760" loading="lazy">
+  <figcaption>The simulator&rsquo;s model, built from my Fusion assembly. Left: with the motors off. Right: the pose it works at.</figcaption>
+</figure>
 
-<h2>The hardware</h2>
-<ul>
-  <li>Three EaglePower 8308 motors, the same ones as in my haptic bow demo, on moteus r4.11 controllers. They drive the plate directly through a crank and a rod each, with a PEAK CAN card in a Linux PC.</li>
-  <li>A 6.35&nbsp;mm acrylic plate, with the cameras underneath looking up through it.</li>
-  <li>Two Point Grey Dragonfly Express cameras as a stereo pair, triggered together by a Nucleo at 200 frames a second. Each one needs its own FireWire bus.</li>
-</ul>
-<p>The three cranks set the plate&rsquo;s roll, pitch and twist. Twisting is the odd one. Turning all three cranks together twists the plate, and it drops as it twists, so I run it at 20&deg; of twist. From there, twisting further lowers the plate and twisting back raises it, which gives the up-and-down stroke for bouncing.</p>
+<table class="specs">
+  <tr><th>Motors</th><td>Three EaglePower 8308s, direct drive, the same motor as in my haptic bow demo</td></tr>
+  <tr><th>Drives</th><td>moteus r4.11, on CAN from a Linux PC with a PEAK card</td></tr>
+  <tr><th>Plate</th><td>6.35&nbsp;mm clear acrylic</td></tr>
+  <tr><th>Cameras</th><td>Two Point Grey Dragonfly Express under the plate, each on its own FireWire bus, triggered together by a Nucleo board at 200&nbsp;Hz</td></tr>
+  <tr><th>Ball</th><td>40&nbsp;mm ping-pong ball</td></tr>
+</table>
 
-<h2>Seeing the ball</h2>
-<p>The tracker is C++ with libdc1394 and OpenCV. It finds the ball in both images, matches them and triangulates, so every frame gives a 3D position, not just where the ball is on the plate. That matters once the ball leaves the plate.</p>
-<p>The catch is that the cameras look through the acrylic, and the plate tilts, so the refraction changes from frame to frame. The controller writes the plate&rsquo;s current tilt to a file, and the tracker uses it to bend each ray through the plate before triangulating. I calibrate the pair with a ChArUco board, with the acrylic taken off.</p>
-<p>Stereo depth gets worse with distance (roughly with distance squared), so a ball 200&nbsp;mm above the plate is measured much less precisely than one resting on it. The filter that reads the camera accounts for that.</p>
+<p>There are no homing switches. With the motors off, the plate drops until the cranks sit on the base with the elbows down, and I take that pose as the encoder zero.</p>
 
-<h2>Control</h2>
-<p>A camera frame is several milliseconds old by the time it reaches the controller, so a Kalman filter tracks the ball and predicts where it is now. It has three models for the ball: rolling on the plate, flying, and bouncing off it.</p>
-<p>Balancing is an LQR on the plate tilt. One thing surprised me. The plate tilts about a point well below its surface, so tilting it also slides the surface sideways under the ball. The controller has to correct for that, or the ball oscillates.</p>
-<p>For bouncing, each impact is planned. From the predicted flight, the controller picks the tilt and the stroke speed at impact so that the ball comes off at the right height and lands back near the target. It learns the ball&rsquo;s bounciness as it goes and corrects the height after every bounce.</p>
-<p>The gravity load of the plate and links is fitted with a calibration routine. The plate moves through about 40 poses, approaching each from both sides so friction cancels, and a model is fitted to the torques. The motors then don&rsquo;t need stiff gains just to hold the plate up.</p>
+<h2>A plate that can&rsquo;t move straight up</h2>
+<p>Three motors give the plate three motions: roll, pitch and twist. It can&rsquo;t move straight up and down, which is what bouncing a ball needs.</p>
+<p>What it can do is twist. Turning all three cranks together twists the plate about the vertical, and the plate drops as it twists. With twist angle \(\psi\), the height follows</p>
+\[ z \approx z_0 - k\,\psi^2, \qquad k \approx 170\ \text{mm/rad}^2 . \]
+<p>At \(\psi = 0\) the slope is zero, so a small twist does nothing. I run the plate at 20&deg; of twist instead, where each degree moves it 2&nbsp;mm. Twisting back raises the plate and twisting further lowers it, and that is the stroke that hits the ball. A strike at 0.8&nbsp;m/s takes a twist rate of about 390&deg;/s.</p>
 
-<h2>Bouncing to a song</h2>
+<figure>
+  <img src="../../images/ball-balancer/twist-poses.jpg" alt="Three side views of the robot at 5, 20 and 35 degrees of twist, with a dashed line at the plate height for 20 degrees. At 5 degrees the plate is 20 millimetres above the line and at 35 degrees it is 42 millimetres below it" width="1824" height="560" loading="lazy">
+  <figcaption>The plate at three twists. The dashed line is its height at 20&deg;.</figcaption>
+</figure>
+
+<p>The twist isn&rsquo;t free. A ball that lands off centre on a twisting plate gets dragged sideways a little, and the bounce planner has to allow for it.</p>
+
+<h2>Seeing the ball through the plate</h2>
+<p>The cameras sit under the plate and look up through it, so nothing above the plate gets in the way of the ball. The tracker is C++ on libdc1394 and OpenCV. In each image it finds the ball&rsquo;s outline. Every outline pixel is a ray that just grazes the ball, so I fit the sphere that touches all the rays from both cameras. That gives the centre in 3D directly, and the fitted radius tells me when the two cameras have matched the wrong blobs.</p>
+<p>The acrylic bends those rays. A ray crossing the plate at 30&deg; comes out 1.2&nbsp;mm to the side of where it went in, more at steeper angles, and the plate tilts while the robot runs. So the controller sends the tracker the plate&rsquo;s tilt, and the tracker traces each ray through the acrylic before the fit.</p>
+
+<figure>
+  <img src="../../images/ball-balancer/refraction.png" alt="Sketch of two cameras looking up through a tilted acrylic plate at a ball. Each ray bends inside the plate and the two meet at the ball. Dashed straight rays from the same points meet at a different place, below the ball" width="1344" height="800" loading="lazy" style="background: #fff">
+  <figcaption>The plate&rsquo;s thickness is exaggerated. Ignoring the acrylic puts the ball in the wrong place, and by a different amount as the plate tilts.</figcaption>
+</figure>
+
+<p>I calibrate the pair with a ChArUco board, with the acrylic taken off.</p>
+
+<h2>Knowing where the ball is now</h2>
+<p>A camera frame is about 6&nbsp;ms old by the time the controller has it, and at 2&nbsp;m/s the ball moves 12&nbsp;mm in that time. A Kalman filter tracks the ball and predicts it forward to the present. It has a model for each thing the ball does: rolling on the plate, flying, and hitting the plate.</p>
+<p>Two details are specific to this setup. A ping-pong ball is a hollow shell, so on a plate tilted by \(\theta\) it accelerates at \(\tfrac{3}{5}\,g\,\theta\), not the \(\tfrac{5}{7}\) of a solid ball. And stereo depth gets worse with the square of the distance. The cameras are close to the plate, so a ball 200&nbsp;mm up is measured about five times less precisely than one resting on it, and the filter trusts each measurement accordingly.</p>
+
+<h2>Balancing</h2>
+<p>Balancing is an LQR on the plate&rsquo;s tilt. The first version oscillated, and the cause was the mechanism. The plate doesn&rsquo;t tilt about its own surface: tilting it by 1&deg; also slides the surface about 1.5&nbsp;mm sideways under the ball, and a rolling hollow ball picks up 40% of that motion. The controller now works in a coordinate with that slide taken out, and the oscillation is gone.</p>
+<p>The second version held the ball well but was twitchy, because camera noise went straight to the motors. I didn&rsquo;t want that on real hardware. Now only the feedback is low-pass filtered, target moves are jerk-limited, and crank speed and acceleration are capped. In simulation it holds the ball to about 0.1&nbsp;mm and recovers from 60&nbsp;mm off centre in about a second.</p>
+
+<figure>
+  <video autoplay muted loop playsinline preload="metadata" poster="../../images/ball-balancer/circle.jpg" width="1280" height="720">
+    <source src="../../images/ball-balancer/circle.mp4" type="video/mp4">
+  </video>
+  <figcaption>Rolling the ball round an 80&nbsp;mm circle every 4 seconds. The radius comes out at 81&nbsp;mm and the motors peak at 0.43&nbsp;N&middot;m.</figcaption>
+</figure>
+
+<p>Holding the plate up shouldn&rsquo;t need stiff motor gains either, so the weight of the plate and legs is calibrated, with a method from my haptic wrist library. The plate moves through about 40 poses and approaches each one from both sides, so friction cancels, and a 22-parameter model of the weight is fitted to the motor torques. With that fed forward, gains as soft as 10&nbsp;N&middot;m/rad work.</p>
+
+<h2>Bouncing</h2>
+<p>Each impact is planned while the ball is in the air. From the predicted flight, the controller picks the plate&rsquo;s tilt and stroke speed at impact so that the ball leaves at the right height and comes down on the target. The flight model includes air drag, which at 2&nbsp;m/s is already 5% of gravity for a ping-pong ball. The controller measures how bouncy the ball is from its own impacts and corrects the height after every bounce. In simulation a 100&nbsp;mm bounce stays within about 2.5&nbsp;mm.</p>
+
+<h2>Jingle Bells</h2>
+<p>A ball that is in the air for a time \(T\) rises to</p>
+\[ h = \frac{g\,T^2}{8}, \]
+<p>so the bounce height sets the time to the next impact. That makes each bounce a note: at a 200&nbsp;ms beat a short note is a 49&nbsp;mm hop, and a held note of 400&nbsp;ms is a 196&nbsp;mm one. The notes in the video are added at the moments the simulated ball hits the plate.</p>
+
 <figure>
   <img src="../../images/ball-balancer/jingle-rhythm.png" alt="Ball height above the plate over one line of Jingle Bells. The ball touches the plate on vertical gridlines 200 ms apart, with small hops for the short notes and big arcs for the held notes. Under each impact are the note and the syllable: E E E for jingle bells twice, then E G C D E for jingle all the way." width="1344" height="592" loading="lazy" style="background: #fff">
-  <figcaption>The ball&rsquo;s height above the plate over one line of Jingle Bells, in simulation. It lands on the 200&nbsp;ms grid, and the held notes are the big arcs.</figcaption>
+  <figcaption>The ball&rsquo;s height over one line of the song. The held notes are the big arcs.</figcaption>
 </figure>
-<p>Each note is a bounce, and the time until the next one is the note&rsquo;s length. Short notes at a 200&nbsp;ms beat need hops of about 50&nbsp;mm, and the held notes, 400&nbsp;ms, need about 190&nbsp;mm. To hit those, the plate has to strike at up to 0.8&nbsp;m/s.</p>
-<p>Getting it on the beat took two things. The ball&rsquo;s flight time has to be predicted well, including air drag, which is significant for a ping-pong ball. And the controller keeps a running correction for each note length, because the flights it asks for and the flights it gets are never quite the same. In simulation most impacts land within about 5&nbsp;ms of the beat.</p>
-<p>It also knows Twinkle Twinkle, Ode to Joy, Mary Had a Little Lamb and Shave and a Haircut. Jingle Bells is the one that sounds best.</p>
 
-<h2>How much I trust the simulation</h2>
-<p>The simulator is MuJoCo with the robot built from my Fusion assembly. The controller is the same C++ code that will run on the robot, so the simulation tests the real thing, not a copy of it.</p>
-<p>The risk is in what I can&rsquo;t measure well. To test it, I run it on simulated robots that are each wrong in their own random way, within ranges I think are realistic:</p>
-<ul>
-  <li>how far off the camera calibration is;</li>
-  <li>how accurately the encoders are zeroed;</li>
-  <li>how far the build is off from the CAD;</li>
-  <li>how accurate the motor torque is;</li>
-  <li>friction, extra mass on the plate;</li>
-  <li>camera noise, delays and dropped frames;</li>
-  <li>how bouncy the ball is.</li>
-</ul>
-<p>On 32 of those, every robot balanced the ball, typically within 2&nbsp;mm of the target and 3.5&nbsp;mm at worst, and every one bounced it steadily at 200&nbsp;mm.</p>
-<p>That test also found things to fix. A 1&nbsp;mm error in where the cameras sit made the ball look like it was inside the plate, which threw the songs off the beat by 40&nbsp;ms. The ball now rests for half a second before it launches, and the controller learns that offset from it.</p>
-<p>The songs are still the most fragile part. On the randomized robots most notes stay within about 10&nbsp;ms, but a few land well off, and on 7 of the 32 the ball got away partway through. A less bouncy ball is the worst case, since it needs more torque than I allow the motors.</p>
+<p>The flights never come out exactly as asked, so the controller keeps a running correction for each note length. Most impacts then land within about 5&nbsp;ms of the beat. It also knows Twinkle Twinkle, Ode to Joy, Mary Had a Little Lamb, and Shave and a Haircut.</p>
+
+<h2>The simulator</h2>
+<p>The simulator is MuJoCo. A script exports every body from my Fusion assembly and works out which link each one belongs to from the joints it touches, so the model is the real geometry. The controller is one C++ library, and the simulator and the robot&rsquo;s runtime both call it, so what I test is the code that will run.</p>
+<p>What worries me is everything I can&rsquo;t measure well. So I run the controller on simulated robots that are each wrong in their own random way: camera calibration, encoder zeros, build errors of up to 1&nbsp;mm, motor torque off by up to 15%, friction, extra mass on the plate, camera noise, delays, dropped frames, and how bouncy the ball is.</p>
+
+<table class="specs">
+  <tr><th>Balancing</th><td>32 of 32 robots; typically 2&nbsp;mm from the target, 3.5&nbsp;mm at worst</td></tr>
+  <tr><th>Bouncing, 200&nbsp;mm</th><td>32 of 32; height off by 7&nbsp;mm typically, 16&nbsp;mm at worst</td></tr>
+  <tr><th>Jingle Bells</th><td>Notes typically about 10&nbsp;ms off the beat, and 7 of 32 robots lose the ball partway through</td></tr>
+</table>
+
+<p>The test has already found things. Cameras mounted 1&nbsp;mm higher than the software thinks made the ball look as if it was inside the plate, and that put the songs 40&nbsp;ms off the beat. A resting ball sits exactly one radius above the plate, so the controller now learns that error while the ball rests, before the first bounce.</p>
+<p>The songs are still the fragile part. A ball that is less bouncy than I assumed is the worst case, since keeping the beat then takes more torque than the 2.5&nbsp;N&middot;m I allow the motors.</p>
 
 <h2>Next</h2>
-<p>Next is the real robot: zero the encoders, calibrate the cameras, measure the delays, and run the gravity calibration. Then balance, bounce, and see if it can play Jingle Bells. I&rsquo;ll add photos and video here as I go.</p>
+<p>Next is the real robot: zero the encoders, calibrate the cameras, measure the delays, and run the gravity calibration. Then balancing, then bouncing, and then I&rsquo;ll find out whether it can keep a beat.</p>
 <p>The code is on GitHub: <a href="https://github.com/JustinValentine/ball-balancing-robot">ball-balancing-robot</a>.</p>
         </div>
         <p class="post-contact">Questions or comments? Email me at <a href="mailto:justin@justinvalentine.ca">justin@justinvalentine.ca</a>.</p>
