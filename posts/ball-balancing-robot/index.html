@@ -46,14 +46,14 @@
   <video controls playsinline preload="metadata" poster="../../images/ball-balancer/jingle-bells.jpg" width="1280" height="720">
     <source src="../../images/ball-balancer/jingle-bells.mp4" type="video/mp4">
   </video>
-  <figcaption>The simulated robot bouncing a ping-pong ball to Jingle Bells. Each note sounds when the ball hits the plate, so turn the sound on.</figcaption>
+  <figcaption>The simulated robot bouncing a ping-pong ball to the rhythm of Jingle Bells. Turn the sound on: there is a click at each moment the simulated ball hits the plate.</figcaption>
 </figure>
 
 <p>This is a three-motor platform that balances a ping-pong ball on a clear plate, rolls it around, and bounces it. Two cameras under the plate track the ball in 3D at 200 frames a second.</p>
-<p>The robot is built and the software is written, but the controller has only run in simulation so far, and everything on this page is from the simulator. I&rsquo;ll add photos and video of the real robot as I get them.</p>
+<p>The robot is built and the software is written, but the controller has only run in simulation so far, and the videos and numbers on this page are from the simulator. I&rsquo;ll add photos and video of the real robot as I get them.</p>
 
 <h2>From a wrist to a platform</h2>
-<p>The robot started as my <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a> from 2023, which could only rotate about a point. I adapted it into a platform. Each motor now swings a crank, and a rod with a ball joint on top joins the crank to a round acrylic plate. The three motor axes still meet at one point above the base, as they did in the wrist.</p>
+<p>The robot started as my <a href="../spherical-wrist-agile-eye/index.html">spherical wrist</a> from 2023, which could only rotate about a point. I adapted it into a platform. Each motor now swings a crank, and a rod with a ball joint on top joins the crank to a round acrylic plate.</p>
 <p>Bir Parkash got it balancing a ball first, with one camera and a PD controller in Python, and has <a href="https://bir-tech.vercel.app/portfolio/ball-balancing-robot">a write-up of that version</a>. I wanted to see how far it could go with faster cameras and a model of the ball, so the vision and control here are new.</p>
 
 <figure>
@@ -72,10 +72,13 @@
 <p>There are no homing switches. With the motors off, the plate drops until the cranks sit on the base with the elbows down, and I take that pose as the encoder zero.</p>
 
 <h2>A plate that can&rsquo;t move straight up</h2>
-<p>Three motors give the plate three motions: roll, pitch and twist. It can&rsquo;t move straight up and down, which is what bouncing a ball needs.</p>
-<p>What it can do is twist. Turning all three cranks together twists the plate about the vertical, and the plate drops as it twists. With twist angle \(\psi\), the height follows</p>
-\[ z \approx z_0 - k\,\psi^2, \qquad k \approx 170\ \text{mm/rad}^2 . \]
-<p>At \(\psi = 0\) the slope is zero, so a small twist does nothing. I run the plate at 20&deg; of twist instead, where each degree moves it 2&nbsp;mm. Twisting back raises the plate and twisting further lowers it, and that is the stroke that hits the ball. A strike at 0.8&nbsp;m/s takes a twist rate of about 390&deg;/s.</p>
+<p>In each leg the crank and the rod turn about parallel axes, so the ball joint at the top stays in one plane, the plane normal to the motor axis \(\mathbf{a}_i\). Put the plate at rotation \(R\) and translation \(\mathbf{t}\) from its home pose, with ball joint \(i\) at \(\mathbf{s}_i\) from the plate&rsquo;s centre. Each joint staying in its plane gives</p>
+\[ \mathbf{a}_i \cdot \big(\mathbf{t} + (R - I)\,\mathbf{s}_i\big) = 0, \qquad i = 1, 2, 3 . \]
+<p>That is three linear equations for \(\mathbf{t}\). On the usual three-leg platform the motor axes are horizontal, the three \(\mathbf{a}_i\) lie in one plane, and the equations leave the height free and pin the twist. That gives heave, roll and pitch.</p>
+<p>Mine came from a spherical wrist, so its motor axes tilt up at \(\alpha = 30^\circ\) and meet at a point. Then the \(\mathbf{a}_i\) span all three directions, any rotation \(R\) is allowed, and \(\mathbf{t}\) follows from it. I get roll, pitch and twist, and no heave, which is the one motion bouncing a ball needs.</p>
+<p>The way out is the twist. With the ball joints at radius \(\rho = 202\)&nbsp;mm, solving the equations for a pure twist \(\psi\) gives</p>
+\[ z(\psi) = -\rho \cot\alpha\,(1 - \cos\psi) \;\approx\; -\tfrac{1}{2}\,\rho\cot\alpha\;\psi^2 , \]
+<p>so the plate drops as it twists, by 175&nbsp;mm per radian squared. At \(\psi = 0\) the slope is zero and a small twist does nothing. I run the plate at 20&deg; of twist instead, where each degree moves it 2&nbsp;mm. Twisting back raises the plate and twisting further lowers it, and that is the stroke that hits the ball. The fastest strike I allow, 0.8&nbsp;m/s, takes a twist rate of about 390&deg;/s.</p>
 
 <figure>
   <img src="../../images/ball-balancer/twist-poses.jpg" alt="Three side views of the robot at 5, 20 and 35 degrees of twist, with a dashed line at the plate height for 20 degrees. At 5 degrees the plate is 20 millimetres above the line and at 35 degrees it is 42 millimetres below it" width="1824" height="560" loading="lazy">
@@ -85,23 +88,52 @@
 <p>The twist isn&rsquo;t free. A ball that lands off centre on a twisting plate gets dragged sideways a little, and the bounce planner has to allow for it.</p>
 
 <h2>Seeing the ball through the plate</h2>
-<p>The cameras sit under the plate and look up through it, so nothing above the plate gets in the way of the ball. The tracker is C++ on libdc1394 and OpenCV. In each image it finds the ball&rsquo;s outline. Every outline pixel is a ray that just grazes the ball, so I fit the sphere that touches all the rays from both cameras. That gives the centre in 3D directly, and the fitted radius tells me when the two cameras have matched the wrong blobs.</p>
-<p>The acrylic bends those rays. A ray crossing the plate at 30&deg; comes out 1.2&nbsp;mm to the side of where it went in, more at steeper angles, and the plate tilts while the robot runs. So the controller sends the tracker the plate&rsquo;s tilt, and the tracker traces each ray through the acrylic before the fit.</p>
+<p>The cameras sit under the plate and look up through it, so nothing above the plate gets in the way of the ball. The tracker is C++ on libdc1394 and OpenCV.</p>
+<p>In each image it finds the ball&rsquo;s outline. Every outline pixel is a ray, from a point \(\mathbf{o}_j\) along a direction \(\mathbf{d}_j\), that just grazes the ball. So the ball is the sphere, with centre \(\mathbf{c}\) and radius \(r\), that all the rays from both cameras touch:</p>
+\[ \min_{\mathbf{c},\,r}\; \sum_j \Big( \big\lVert (\mathbf{c} - \mathbf{o}_j) \times \mathbf{d}_j \big\rVert - r \Big)^2 . \]
+<p>A few Gauss&ndash;Newton steps solve it. Fitting the radius as well means a threshold that eats into the ball&rsquo;s edge doesn&rsquo;t move the centre, and a radius far from the ball&rsquo;s tells me the two cameras matched the wrong blobs.</p>
+
+<figure>
+  <img src="../../images/ball-balancer/camera-view.png" alt="A pair of grey camera images, left and right, each with a white disc for the ball, at different positions in the two images" width="1290" height="480" loading="lazy">
+  <figcaption>A rendered stereo pair of the kind I test the tracker on, while I don&rsquo;t have real frames to show.</figcaption>
+</figure>
+
+<p>The acrylic bends those rays. A ray that meets a plate of thickness \(d\) and index \(n = 1.49\) at an angle \(\theta\) comes out parallel to itself but shifted sideways by</p>
+\[ \Delta = d\,\sin\theta \left( 1 - \frac{\cos\theta}{\sqrt{n^2 - \sin^2\theta}} \right) , \]
+<p>which is 1.2&nbsp;mm at 30&deg; and 2.1&nbsp;mm at 45&deg; for my 6.35&nbsp;mm plate. The shift depends on the plate&rsquo;s tilt, and the plate tilts while the robot runs. So the controller sends the tracker the plate&rsquo;s tilt, and the tracker moves each ray&rsquo;s origin \(\mathbf{o}_j\) by its shift before the fit.</p>
 
 <figure>
   <img src="../../images/ball-balancer/refraction.png" alt="Sketch of two cameras looking up through a tilted acrylic plate at a ball. Each ray bends inside the plate and the two meet at the ball. Dashed straight rays from the same points meet at a different place, below the ball" width="1344" height="800" loading="lazy" style="background: #fff">
   <figcaption>The plate&rsquo;s thickness is exaggerated. Ignoring the acrylic puts the ball in the wrong place, and by a different amount as the plate tilts.</figcaption>
 </figure>
 
-<p>I calibrate the pair with a ChArUco board, with the acrylic taken off.</p>
+<p>I calibrate the pair with a ChArUco board, with the acrylic taken off. A ChArUco board is a chessboard with a numbered marker in every white square, so each corner can be identified even when only part of the board is in view, and that lets me fill the corners of both images.</p>
+
+<figure>
+  <img src="../../images/ball-balancer/board.png" alt="A chessboard pattern, 12 squares by 9, with a different black-and-white square marker inside each white square" width="1200" height="900" loading="lazy" style="background: #fff">
+  <figcaption>The calibration board: 12 by 9 squares of 100&nbsp;mm.</figcaption>
+</figure>
 
 <h2>Knowing where the ball is now</h2>
 <p>A camera frame is about 6&nbsp;ms old by the time the controller has it, and at 2&nbsp;m/s the ball moves 12&nbsp;mm in that time. A Kalman filter tracks the ball and predicts it forward to the present. It has a model for each thing the ball does: rolling on the plate, flying, and hitting the plate.</p>
-<p>Two details are specific to this setup. A ping-pong ball is a hollow shell, so on a plate tilted by \(\theta\) it accelerates at \(\tfrac{3}{5}\,g\,\theta\), not the \(\tfrac{5}{7}\) of a solid ball. And stereo depth gets worse with the square of the distance. The cameras are close to the plate, so a ball 200&nbsp;mm up is measured about five times less precisely than one resting on it, and the filter trusts each measurement accordingly.</p>
+<p>In flight a ping-pong ball is light enough that drag matters:</p>
+\[ \dot{\mathbf{v}} = \mathbf{g} - k\,\lVert\mathbf{v}\rVert\,\mathbf{v}, \qquad k = \frac{\rho_\text{air}\,C_d\,A}{2m} \approx 0.13\ \text{m}^{-1} , \]
+<p>which at 2&nbsp;m/s is already 5% of gravity.</p>
+<p>The filter also has to know how good each measurement is. With focal length \(f\) and baseline \(b\), a stereo pair that is off by \(\sigma_d\) in disparity is off in depth by</p>
+\[ \sigma_z = \frac{z^2}{f\,b}\,\sigma_d , \]
+<p>so depth gets worse with the square of the distance. The cameras are close to the plate, so a ball 200&nbsp;mm up is measured about five times less precisely than one resting on it, and the filter weights each measurement accordingly.</p>
 
 <h2>Balancing</h2>
-<p>Balancing is an LQR on the plate&rsquo;s tilt. The first version oscillated, and the cause was the mechanism. The plate doesn&rsquo;t tilt about its own surface: tilting it by 1&deg; also slides the surface about 1.5&nbsp;mm sideways under the ball, and a rolling hollow ball picks up 40% of that motion. The controller now works in a coordinate with that slide taken out, and the oscillation is gone.</p>
-<p>The second version held the ball well but was twitchy, because camera noise went straight to the motors. I didn&rsquo;t want that on real hardware. Now only the feedback is low-pass filtered, target moves are jerk-limited, and crank speed and acceleration are capped. In simulation it holds the ball to about 0.1&nbsp;mm and recovers from 60&nbsp;mm off centre in about a second.</p>
+<p>A ball rolling on a tilted plate accelerates down the slope. Write \(\mathbf{n}\) for the horizontal part of the plate&rsquo;s normal, which points to the low side. If the surface under the ball also moves sideways by \(\mathbf{s}\), a ball with moment of inertia \(\beta m r^2\) rolling without slipping follows</p>
+\[ \ddot{\mathbf{x}} = \frac{1}{1+\beta}\,g\,\mathbf{n} + \frac{\beta}{1+\beta}\,\ddot{\mathbf{s}} . \]
+<p>A ping-pong ball is a hollow shell, \(\beta = \tfrac{2}{3}\), so the factors are \(\tfrac{3}{5}\) and \(\tfrac{2}{5}\), not the \(\tfrac{5}{7}\) and \(\tfrac{2}{7}\) of a solid ball.</p>
+<p>The second term matters here because of the mechanism. Solving the leg equations for a small tilt gives \(\mathbf{t} = -\rho\tan\alpha\;\mathbf{n}\): the plate turns about a point \(\rho\tan\alpha = 116\)&nbsp;mm above the ball joints, which is \(c = 88\)&nbsp;mm above its own surface. So tilting the plate slides the surface toward the high side, \(\mathbf{s} = -c\,\mathbf{n}\), about 1.5&nbsp;mm per degree. (At 20&deg; of twist the slide also turns partly sideways; the controller uses the exact numbers.) From tilt to ball position that makes</p>
+\[ \frac{X(s)}{N(s)} = \frac{3g}{5\,s^2} - \frac{2c}{5} = -\frac{2c}{5}\cdot\frac{s^2 - \dfrac{3g}{2c}}{s^2} , \]
+<p>which has a zero in the right half-plane at \(\sqrt{3g/2c} \approx 13\)&nbsp;rad/s. In plain terms, when the plate tilts to send the ball one way, the surface first carries it a little the other way. My first controller ignored that and oscillated.</p>
+<p>The fix is a change of variable. With \(\boldsymbol{\xi} = \mathbf{x} + \tfrac{2}{5}\,c\,\mathbf{n}\), the slide cancels and</p>
+\[ \ddot{\boldsymbol{\xi}} = \tfrac{3}{5}\,g\,\mathbf{n} , \]
+<p>a plain double integrator. Balancing is an LQR on \(\boldsymbol{\xi}\), its rate and its integral, together with the tilt and tilt rate.</p>
+<p>The second version held the ball well but was twitchy, because camera noise went straight to the motors, and I didn&rsquo;t want that on real hardware. The tilt command now passes through a critically damped second-order filter with a 60&nbsp;ms time constant, which is why tilt and tilt rate are states in the LQR. Target moves are jerk-limited, and crank speed and acceleration are capped. In simulation it holds the ball to about 0.1&nbsp;mm and recovers from 60&nbsp;mm off centre in about a second.</p>
 
 <figure>
   <video autoplay muted loop playsinline preload="metadata" poster="../../images/ball-balancer/circle.jpg" width="1280" height="720">
@@ -110,31 +142,40 @@
   <figcaption>Rolling the ball round an 80&nbsp;mm circle every 4 seconds. The radius comes out at 81&nbsp;mm and the motors peak at 0.43&nbsp;N&middot;m.</figcaption>
 </figure>
 
-<p>Holding the plate up shouldn&rsquo;t need stiff motor gains either, so the weight of the plate and legs is calibrated, with a method from my haptic wrist library. The plate moves through about 40 poses and approaches each one from both sides, so friction cancels, and a 22-parameter model of the weight is fitted to the motor torques. With that fed forward, gains as soft as 10&nbsp;N&middot;m/rad work.</p>
+<h2>Gravity calibration</h2>
+<p>Holding the plate up shouldn&rsquo;t need stiff motor gains, so the weight of the plate and legs is fed forward. The holding torque is linear in the masses and mass moments of the plate, cranks and rods, \(\boldsymbol{\tau} = Y(\mathbf{q})\,\boldsymbol{\pi}\), with 22 parameters in \(\boldsymbol{\pi}\), and I fit them with a method from my haptic wrist library.</p>
+<p>The plate moves through about 40 poses and stops at each one twice, once coming from each side. Friction opposes the motion, so the two readings are \(\tau_g + \tau_f\) and \(\tau_g - \tau_f\). Their average is the gravity torque, and half their difference is the friction, which I get for free. A least-squares fit, pulled gently toward the CAD values where the data say little, gives \(\boldsymbol{\pi}\). With that fed forward, gains as soft as 10&nbsp;N&middot;m/rad work.</p>
 
 <h2>Bouncing</h2>
-<p>Each impact is planned while the ball is in the air. From the predicted flight, the controller picks the plate&rsquo;s tilt and stroke speed at impact so that the ball leaves at the right height and comes down on the target. The flight model includes air drag, which at 2&nbsp;m/s is already 5% of gravity for a ping-pong ball. The controller measures how bouncy the ball is from its own impacts and corrects the height after every bounce. In simulation a 100&nbsp;mm bounce stays within about 2.5&nbsp;mm.</p>
+<p>Each impact is planned while the ball is in the air. At the impact the plate moves up at \(u\), the ball arrives at \(v^-\) (negative, since it is falling) and leaves at \(v^+\), and with restitution \(e\)</p>
+\[ v^+ - u = -e\,(v^- - u) \quad\Longrightarrow\quad u = \frac{v^+ + e\,v^-}{1 + e} . \]
+<p>For a steady bounce \(v^- = -v^+\), so \(u = v^+\,(1-e)/(1+e)\). With \(e = 0.88\) that is 6% of the ball&rsquo;s speed: a 100&nbsp;mm bounce needs the plate to be rising at only 9&nbsp;cm/s when the ball lands.</p>
+<p>The same equation in three dimensions, with the plate&rsquo;s tilt as the other unknown, sets where the ball comes down. The controller estimates \(e\) from its own impacts and corrects the height after every bounce. In simulation a 100&nbsp;mm bounce stays within about 2.5&nbsp;mm.</p>
 
 <h2>Jingle Bells</h2>
-<p>A ball that is in the air for a time \(T\) rises to</p>
-\[ h = \frac{g\,T^2}{8}, \]
-<p>so the bounce height sets the time to the next impact. That makes each bounce a note: at a 200&nbsp;ms beat a short note is a 49&nbsp;mm hop, and a held note of 400&nbsp;ms is a 196&nbsp;mm one. The notes in the video are added at the moments the simulated ball hits the plate.</p>
+<p>A ball can&rsquo;t play notes, but it can keep time. One that is in the air for a time \(T\) rises to</p>
+\[ h = \frac{g\,T^2}{8} , \]
+<p>so the height of each bounce sets the time to the next one. At a 200&nbsp;ms beat a short note is a 49&nbsp;mm hop and a held note of 400&nbsp;ms is a 196&nbsp;mm one.</p>
 
 <figure>
-  <img src="../../images/ball-balancer/jingle-rhythm.png" alt="Ball height above the plate over one line of Jingle Bells. The ball touches the plate on vertical gridlines 200 ms apart, with small hops for the short notes and big arcs for the held notes. Under each impact are the note and the syllable: E E E for jingle bells twice, then E G C D E for jingle all the way." width="1344" height="592" loading="lazy" style="background: #fff">
+  <img src="../../images/ball-balancer/jingle-rhythm.png" alt="Ball height above the plate over one line of Jingle Bells. The ball touches the plate on vertical gridlines 200 ms apart, with small hops for the short syllables and big arcs after bells and way" width="1344" height="544" loading="lazy" style="background: #fff">
   <figcaption>The ball&rsquo;s height over one line of the song. The held notes are the big arcs.</figcaption>
 </figure>
 
-<p>The flights never come out exactly as asked, so the controller keeps a running correction for each note length. Most impacts then land within about 5&nbsp;ms of the beat. It also knows Twinkle Twinkle, Ode to Joy, Mary Had a Little Lamb, and Shave and a Haircut.</p>
+<p>The strike equation says what each change costs. Going from a short note into a held one, the ball arrives at 1&nbsp;m/s and has to leave at 2, so the plate strikes at 0.58&nbsp;m/s. Going back, it arrives at 2 and has to leave at 1, and \(u\) comes out at &minus;0.40&nbsp;m/s: the plate has to be moving down, giving way under the ball.</p>
+<p>The flights never come out exactly as asked, so the controller keeps a running correction for each note length. Most impacts then land within about 5&nbsp;ms of the beat. It also knows the rhythms of Twinkle Twinkle, Ode to Joy, Mary Had a Little Lamb, and Shave and a Haircut.</p>
 
 <h2>The simulator</h2>
 <p>The simulator is MuJoCo. A script exports every body from my Fusion assembly and works out which link each one belongs to from the joints it touches, so the model is the real geometry. The controller is one C++ library, and the simulator and the robot&rsquo;s runtime both call it, so what I test is the code that will run.</p>
+<p>The ball&rsquo;s bounce took some care. I model the contact as a spring and damper, and a damping ratio \(\zeta\) gives a restitution of</p>
+\[ e = \exp\!\left( -\frac{\pi\,\zeta}{\sqrt{1 - \zeta^2}} \right) , \]
+<p>so \(e = 0.88\) needs \(\zeta = 0.04\).</p>
 <p>What worries me is everything I can&rsquo;t measure well. So I run the controller on simulated robots that are each wrong in their own random way: camera calibration, encoder zeros, build errors of up to 1&nbsp;mm, motor torque off by up to 15%, friction, extra mass on the plate, camera noise, delays, dropped frames, and how bouncy the ball is.</p>
 
 <table class="specs">
   <tr><th>Balancing</th><td>32 of 32 robots; typically 2&nbsp;mm from the target, 3.5&nbsp;mm at worst</td></tr>
   <tr><th>Bouncing, 200&nbsp;mm</th><td>32 of 32; height off by 7&nbsp;mm typically, 16&nbsp;mm at worst</td></tr>
-  <tr><th>Jingle Bells</th><td>Notes typically about 10&nbsp;ms off the beat, and 7 of 32 robots lose the ball partway through</td></tr>
+  <tr><th>Jingle Bells</th><td>Impacts typically about 10&nbsp;ms off the beat, and 7 of 32 robots lose the ball partway through</td></tr>
 </table>
 
 <p>The test has already found things. Cameras mounted 1&nbsp;mm higher than the software thinks made the ball look as if it was inside the plate, and that put the songs 40&nbsp;ms off the beat. A resting ball sits exactly one radius above the plate, so the controller now learns that error while the ball rests, before the first bounce.</p>
